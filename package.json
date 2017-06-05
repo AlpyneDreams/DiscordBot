@@ -1,0 +1,26 @@
+{
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "description": "module: \tevents \tcommands",
+  "main": "index.js",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "deep-assign": "^2.0.0",
+    "discord.js": "^11.0.0",
+    "eventemitter2": "^4.1.0",
+    "got": "^6.7.1",
+    "hjson": "^2.4.1",
+    "jsonschema": "^1.1.1",
+    "libsodium-wrappers": "^0.5.1",
+    "opusscript": "0.0.3",
+    "random-seed": "^0.3.0",
+    "rethinkdbdash": "^2.3.28",
+    "string": "^3.3.3",
+    "uws": "^0.14.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "DankParrot",
+  "license": "ISC"
+}

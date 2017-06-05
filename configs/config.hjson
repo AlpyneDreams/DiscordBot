@@ -1,0 +1,52 @@
+base: default.hjson
+
+commandPrefix: --
+token: data/tokens/token
+paths: {
+	logs: data/logs
+	profile: data/profiles/profile.json
+}
+
+// Modules
+modules: {
+	disquotes: {
+		disabled: true
+	}
+
+	notify: {
+		disabled: true
+	}
+	
+	reddit: {
+		disabled: true
+	}
+}
+
+// Profile Overrides
+profile: {
+
+	users: {
+		// @DankParrot
+		"138361044518174721": {"tags": ["*"]}
+	},
+
+	guilds: {
+		// VCC
+		"186525910625681408": {
+			"roles": {
+				// Consul
+				"186526501615828992": {
+					"tags": ["admin", "mod"]
+				},
+				// monster_metropolice
+				"186526644058456066": {
+					"tags": ["admin", "mod"]
+				},
+				// monster_combot
+				"221172531233685504": {
+					"tags": ["mod"]
+				}
+			}
+		}
+	}
+}

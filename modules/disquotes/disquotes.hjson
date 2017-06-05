@@ -1,0 +1,10 @@
+{
+	port: 80
+	url: "http://localhost"
+	api: "/api/bot"
+	keys: {
+		api: "L1GCPUzT8hNJD3BRIk0vlcgUDz6R2pni3hBHATZVQgE="
+		// shard: "c81cae0ad1c8cf39d000a314f8eaa6a9"
+		// global: "549ff42404c55f58ffba2f0e60842546"
+	}
+}

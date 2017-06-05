@@ -1,0 +1,8 @@
+
+data/logs/*
+data/logs_disquotes/*
+data/profiles/*
+data/tokens/*
+node_modules/*
+
+ffmpeg

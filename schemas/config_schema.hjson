@@ -1,0 +1,34 @@
+{
+	$schema: "http://json-schema.org/draft-04/schema"
+	properties: {
+		base: {type: "string"}
+		commandPrefix: {type: "string"}
+		token: {type: "string"}
+		selfCommands: {type: "boolean"}
+		paths: {
+			type: "object"
+			properties: {
+				modules: {type: "string"}
+				profile: {type: "string"}
+				logs: {type: "string"}
+			}
+		}
+		moduleWhitelist: {type: "boolean"}
+		modules: {
+			type: "object"
+			additionalProperties: {
+				type: "object"
+				properties: {
+					disabled: {type: "boolean"}
+				}
+			}
+		}
+		profile: {
+			type: "object"
+		}
+		client: {
+			type: "object"
+		}
+	}
+	required: ["commandPrefix", "token", "selfCommands", "paths"]
+}

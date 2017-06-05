@@ -1,0 +1,29 @@
+[16:47:29] console.log
+[16:47:29] [INFO] console.info
+[16:47:29] [WARN] console.warn
+[16:47:29] [ERROR] console.error
+[16:48:41] console.log
+[16:48:41] [1m[36m[INFO] console.info[39m[22m
+[16:48:41] [INFO] console.info
+[16:48:41] [1m[33m[WARN] console.warn[39m[22m
+[16:48:41] [WARN] console.warn
+[16:48:41] [1m[31m[ERROR] console.error[39m[22m
+[16:48:41] [ERROR] console.error
+[16:48:55] console.log
+[16:49:47] console.log
+[16:49:47] console.log (file: 'test')
+[16:49:58] console.log
+[16:50:04] console.log
+[16:50:24] console.log
+[16:52:50] console.log
+[16:52:50] [INFO] console.info
+[16:52:50] [WARN] console.warn
+[16:52:50] [ERROR] console.error
+[16:53:27] console.log
+[16:53:27] [INFO] console.info
+[16:53:27] [WARN] console.warn
+[16:53:27] [ERROR] console.error
+[17:02:42] console.log
+[17:02:42] [INFO] console.info
+[17:02:42] [WARN] console.warn
+[17:02:42] [ERROR] console.error

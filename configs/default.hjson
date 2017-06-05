@@ -1,0 +1,14 @@
+$schema: "schemas/config_schema.hjson"
+
+commandPrefix: !
+
+paths: {
+	modules: modules
+	profile: profile.json
+	logs: logs
+}
+
+selfCommands: false
+
+// modules must have an entry in config.modules to be loaded
+moduleWhitelist: false

@@ -57,8 +57,6 @@ exports.commands = {
 	"8ball": {
 		args: [0, 1],
 		execute(e) {
-
-
 			var rmin = min || 0;
 			var rmax = max || magic8ball.length - 1;
 

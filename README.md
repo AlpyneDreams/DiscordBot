@@ -3,19 +3,34 @@ This documentation is very work in progress.
 ### Folders
 
 ```
-bot/            core bot code
-configs/        config files
+bot/
+    Command.js
+    Config.js
+    DiscordBot.js
+    Module.js
+    Profile.js
+    TagManager.js
+
+configs/
     default.hjson
+
 data/
-    logs/           log files
-    profiles/       profile json files
-    tokens/         token files
-modules/        modules
-schemas/        json schemas
-index.js        startup file
+    logs/
+    profiles/
+    tokens/
+
+modules/
+    core.js - Basic features
+
+
+schemas/
+    config_schema.hjson
+
+index.js
 ```
 
 ### Startup
+Added ffmpeg to your path if you need it.
 ```
 node index <config>
 ```
@@ -48,18 +63,18 @@ Typical command structure:
 ```
 Command {
     reload: bool - reload the module when this command is executed?
-    
-    
+
+
     requirements: requirement string (either 'dm' or 'guild')
         or
     requirements: array of requirement strings
-    
-    
+
+
     tags: required tag
         or
     tags: array of required tags
-    
-    
+
+
     args: number of args
         or
     args: [min, max]
@@ -78,5 +93,6 @@ Command {
     error: acts like 'response' but only sent when there's an error
 }
 ```
+Commands can also just be functions or strings.
 
 Everything is 100% optional in both of these structures.

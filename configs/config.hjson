@@ -16,8 +16,12 @@ modules: {
 	notify: {
 		disabled: true
 	}
-	
+
 	reddit: {
+		disabled: true
+	}
+
+	vox: {
 		disabled: true
 	}
 }

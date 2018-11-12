@@ -65,11 +65,15 @@ class Module {
 			commands: imports.commands,
 			events: imports.events,
 			name,
-			file
+			file,
+			defaultCommand: imports.defaultCommand,
+			defaultProfile: imports.defaultProfile,
 		})
 
+		// don't use imports after this point
+
 		// Create a profile for this module if one does not exist
-		bot.profile.modules[name] = bot.profile.modules[name] || {}
+		bot.profile.modules[name] = bot.profile.modules[name] || this.defaultProfile || {}
 		this.profile = bot.profile.modules[name]
 
 		for (var cmd in this.commands) {

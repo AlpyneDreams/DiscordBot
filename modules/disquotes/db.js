@@ -1,4 +1,4 @@
-// temp
+
 var r = require('rethinkdbdash')({db: 'disquotes'})
 
 function createMessage(e) {
@@ -62,6 +62,7 @@ module.exports.getQuote = async function(client, guildId, name) {
 	.nth(0)
 	.run()
 }
+
 module.exports.addQuote = async function(e) {
 	var msg = await module.exports.getMessage(e.args[0])
 	return await r.table('quotes')
@@ -76,11 +77,28 @@ module.exports.addQuote = async function(e) {
 	})
 	.run()
 }
+
+module.exports.addToQuote = async function(qid, id) {
+	var msg = await module.exports.getMessage(id)
+	return await r.db('disquotes').table('quotes')
+	.get(qid)
+	.update({messages: r.row('messages').append(msg)})
+	.run()
+}
+
 module.exports.deleteQuote = async function(guild, name) {
 	return await r.table('quotes')
 	.filter(r.row('guild').eq(guild))
 	.filter(r.row('name').eq(name))
 	.nth(0).delete()
+	.run()
+}
+
+module.exports.renameQuote = async function(guild, name, rename) {
+	return await r.table('quotes')
+	.filter(r.row('guild').eq(guild))
+	.filter(r.row('name').eq(name))
+	.nth(0).update({name: rename})
 	.run()
 }
 

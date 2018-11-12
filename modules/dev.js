@@ -5,12 +5,13 @@ function exec(cmd, options) {
 	return child_process.execSync(cmd, Object.assign({encoding: 'utf8'}, options))
 }
 
+module.exports.defaultCommand = {tags: 'owner'}
+
 module.exports.commands = {
 	"eval": {
 		help: "For development only.",
 		usage: "<expression>",
 		args: 1,
-		tags: 'owner',
 		async execute(e) {
 			try {
 				var code = e.args[0]
@@ -21,6 +22,10 @@ module.exports.commands = {
 					code = code.slice(match[0].length)
 				}
 				var result = eval(code)
+				if (result && result.then) {
+					result = await result
+				}
+
 				var formattedResult = util.inspect(result, {depth: depth})
 
 				if (formattedResult.length > 1500) formattedResult = formattedResult.slice(0, 1500) + '\n...'
@@ -35,7 +40,6 @@ module.exports.commands = {
 		help: "For development only. Lazy eval, doesn't print output.",
 		usage: "<expression>",
 		args: 1,
-		tags: "owner",
 		execute(e) {
 			try {
 				var result = eval(e.args[0])
@@ -47,7 +51,6 @@ module.exports.commands = {
 	"modules.unload": {
 		help: "Unstable but effective way to kill a module.",
 		usage: "<module>",
-		tags: "owner",
 		args: 1,
 		execute(e) {
 			var module = e.bot.profile.modules[e.args[0]]
@@ -61,7 +64,6 @@ module.exports.commands = {
 		help: "Reloads all modules or one specific module.",
 		usage: "[module]",
 		args: [0, 1],
-		tags: 'owner',
 		execute(e) {
 			var oldCount = Object.keys(e.bot.modules).length
 			if (e.args.length == 0) {
@@ -102,7 +104,6 @@ module.exports.commands = {
 	},
 
 	"error": {
-		tags: 'owner',
 		args: 1,
 		execute(e) {
 			throw new Error(e.args[0])
@@ -110,15 +111,21 @@ module.exports.commands = {
 	},
 
 	"profile.reload": {
-		tags: 'owner',
 		execute(e) {
 			e.bot.profile.reload()
 		}
 	},
-	
-	
+
+	"config.reload": {
+		execute(e) {
+			const Config = require('../bot/Config.js')
+			e.bot.config = new Config(e.bot.config.meta.path)
+			e.channel.send("Done.")
+		}
+	},
+
+
 	"emoji.export": {
-		tags: 'owner',
 		execute(e) {
 			var fs = require('fs')
 			var https = require('https')
@@ -127,7 +134,7 @@ module.exports.commands = {
 				var request = https.get(m.url, function(response) {
 					response.pipe(stream);
 				});
-				
+
 			})
 		}
 	}
@@ -135,7 +142,6 @@ module.exports.commands = {
 }
 module.exports.commands['pipe'] = {
 	args: 1,
-	tags: 'owner',
 	execute(e) {
 		if (!e.profile[e.author.id]) {
 			e.channel.send("Not piping anywhere. Use `pipe.start`.")
@@ -148,7 +154,6 @@ module.exports.commands['pipe'] = {
 
 module.exports.commands['pipe.start'] = {
 	args: [0, 1],
-	tags: 'owner',
 	execute(e) {
 		if (e.args.length > 0) {
 			try {
@@ -165,7 +170,6 @@ module.exports.commands['pipe.start'] = {
 }
 
 module.exports.commands['pipe.stop'] = {
-	tags: 'owner',
 	execute(e) {
 		e.profile[e.author.id] = {}
 		e.channel.send("Removed your pipes.")

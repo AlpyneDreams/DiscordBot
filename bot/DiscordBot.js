@@ -26,28 +26,22 @@ class DiscordBot {
 		console.logdir = this.config.paths.logs
 		console.record = true
 
+		// setup Profile (JSON data file) and TagManager (basic permissions)
 		this.profile = new Profile(this.config.paths.profile, this.config)
 		this.tagManager = new TagManager(this.profile.users, this.profile.guilds)
 
 		this.commands = {}
 		this.modules = {}
 
-		this.createClient()
+		this.client = new Discord.Client(this.config.client || {})
+		this.configureClient()
 
 		this.loadAllModules()
 	}
-
-	// Instantiates the discord.js client
-	createClient() {
-		this.client = new Discord.Client(this.config.client || {})
-		this.configureClient()
-	}
-
 	// Attaches core event listeners to the Discord.js client
 	configureClient() {
-		var commandRegex = new RegExp(`^${this.config.commandPrefix}(.+)`, "i")
-
 		this.client.on("message", msg => {
+			var commandRegex = new RegExp(`^${this.config.commandPrefix}((?:.|[\n\r])+)`, "i")
 
 			if (msg.author.id == this.client.user.id && !this.config.selfCommands) {
 				// Bot can't accept commands from itself.
@@ -60,7 +54,6 @@ class DiscordBot {
 
 				this.executeCommand(rawCommand, msg)
 			}
-
 		})
 	}
 
@@ -69,7 +62,6 @@ class DiscordBot {
 		var cmd = this.commands[fullCommand[0]]
 
 		if (cmd) {
-
 			// commands with {reload: true} will always reload
 			// their module before executing. use only for
 			// development and debugging purposes
@@ -97,7 +89,8 @@ class DiscordBot {
 	 */
 	loadModule(file, {init = true}) {
 		try {
-			this.modules[path.basename(file, path.extname(file))] = new Module(file, this, init)
+			this.modules[path.basename(file, path.extname(file))]
+			 = new Module(file, this, init)
 		} catch (e) {
 			if (e instanceof Error)
 				console.error(e.stack)
@@ -122,7 +115,6 @@ class DiscordBot {
 	loadAllModules(init = true) {
 		var dir = this.config.paths.modules
 		fs.readdirSync(dir).forEach(file => {
-			//var moduleName = file.match(/(.+?)(\.\w+)?$/)[1]
 			this.loadModule(path.join(dir, file), init)
 		});
 
@@ -138,6 +130,9 @@ class DiscordBot {
 	 * you want to upadate events
 	 */
 	reloadModule(name, path) {
+		for (var m in require.cache) {
+			delete require.cache[m]
+		}
 		console.info("Reloading Module: " + name)
 		if (this.modules[name]) {
 			for (var c in this.commands) {

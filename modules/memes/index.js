@@ -11,17 +11,17 @@ function listCopypasta() {
 }
 
 function getCopypasta(name) {
-	name = name.toLowerCase()
-	if (fs.existsSync(__dirname + "/copypastas/" + name + ".txt")) {
-		return fs.readFileSync(__dirname + "/copypastas/" + name + ".txt", {encoding: 'UTF-8'})
-	} else {
+	name = __dirname + "/copypastas/" + name.toLowerCase() + ".txt"
+	if (fs.existsSync(name))
+		return fs.readFileSync(name, {encoding: 'UTF-8'})
+	else
 		return "Valid Pastas: " + listCopypasta()
-	}
 }
 
 exports.commands = {
 	"pasta": {
 		usage: "<copypasta>",
+		help: "Pastes a copypasta.",
 		args: [0, 1],
 		execute(e) {
 

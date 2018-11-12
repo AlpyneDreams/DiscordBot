@@ -1,7 +1,9 @@
-// TODO move command execution code into this class
+
 class Command {
 
 	constructor(command, module) {
+
+		if (!command) return
 
 		Object.assign(this, {
 			reload: false,
@@ -21,7 +23,21 @@ class Command {
 			error: null
 		})
 
-		Object.assign(this, command)
+		if (module.defaultCommand) {
+			Object.assign(this, module.defaultCommand)
+		}
+
+		switch (typeof command) {
+			case 'function':
+				Object.assign(this, {execute: command})
+				break
+			case 'object':
+				Object.assign(this, command)
+				break
+			default:
+				Object.assign(this, {response: command, help: command})
+		}
+
 
 		this.module = module
 	}

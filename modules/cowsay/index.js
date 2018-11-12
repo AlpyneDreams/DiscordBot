@@ -10,14 +10,6 @@ function padding(length, char = ' ') {
 	return str
 }
 
-function padLeft(length, char, str) {
-	return (pad + str).slice(-pad.length)
-}
-
-function padRight(pad, str) {
-	return (str + pad).substring(0, pad.length)
-}
-
 // gets the longest string length from an array
 function getWidth(lines) {
 	var max = 0
@@ -30,7 +22,8 @@ function getWidth(lines) {
 exports.commands = {}
 exports.commands.cowsay = {
 	args: 1,
-	reload: true,
+	help: "Partial clone of GNU cowsay.",
+	usage: "<message>",
 	execute(e) {
 		var msg = ''
 		var text = e.content.slice(e.content.indexOf(e.args[0]))
@@ -45,10 +38,11 @@ exports.commands.cowsay = {
 			msg += '< ' + text + ' >\n'
 		} else {
 			// multi-line bubble sides
-			msg += '/ ' + padRight(padding(width), lines[0]) + ' \\\n'
+			//msg += '/ ' + padRight(padding(width), lines[0]) + ' \\\n'
+			msg += '/ ' + lines[0].padEnd(width) + ' \\\n'
 			for (var i = 1; i < height - 1; i++)
-				msg += '| ' + padRight(padding(width), lines[i]) + ' |\n'
-			msg += '\\ ' + padRight(padding(width), lines[height - 1]) + ' /\n'
+				msg += '| ' + lines[i].padEnd(width) + ' |\n'
+			msg += '\\ ' + lines[height - 1].padEnd(width) + ' /\n'
 		}
 		// bottom of speech bubble
 		// original cowsay used '-' instead of '‾'

@@ -21,7 +21,6 @@ function addRoleTags(guild, role, profile, tags) {
 	}
 
 	profile.save()
-
 }
 
 function removeRoleTags(guild, role, profile, tags) {
@@ -60,10 +59,11 @@ function getRoleInfo(guild, role, profile) {
 	return text
 }
 
+module.exports.defaultCommand = {tags: 'admin'}
+
 module.exports.commands = {
 
 	'roles': {
-		tags: 'admin',
 		reload: true,
 		execute(e) {
 			var text = '```yaml'
@@ -77,7 +77,6 @@ module.exports.commands = {
 	},
 
 	"role": {
-		tags: 'admin',
 		reload: true,
 		args: 1,
 		execute(e) {
@@ -90,7 +89,6 @@ module.exports.commands = {
 	},
 
 	"role.tags.add": {
-		tags: 'admin',
 		args: 2,
 		usage: '<role> <tag>',
 		execute(e) {
@@ -102,7 +100,6 @@ module.exports.commands = {
 	},
 
 	"role.tags.remove": {
-		tags: 'admin',
 		args: 2,
 		usage: '<role> <tag>',
 		execute(e) {

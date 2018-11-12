@@ -1,14 +1,8 @@
 
 // Really simple response commands
 commands: {
-	lenny: {
-		response: ( ͡° ͜ʖ ͡°)
-		help: ( ͡° ͜ʖ ͡°)
-	}
-	wtf: {
-		response: ಠ_ಠ
-		help: ಠ_ಠ
-	}
+	lenny: ( ͡° ͜ʖ ͡°)
+	wtf: ಠ_ಠ
 	walk: {
 		args: [1]
 		response: ( ͡° ͜ʖ ͡°) ╯╲___卐卐卐卐 Don't mind me just taking $& for a walk

@@ -41,7 +41,7 @@ exports.events = {
 
 }
 
-function getDefaultHelp(e, modulename = '') {
+function getDefaultHelp(e, modulename = '', checkTags = true) {
 	var bot = e.bot
 	var author = e.author
 
@@ -53,14 +53,15 @@ function getDefaultHelp(e, modulename = '') {
 			continue
 
 		// exclude commands the the user can't use
-		if (cmd.tags && !bot.tagManager.hasTags(e, cmd.tags))
-			continue
+		if ((cmd.tags.length <= 0) || (bot.tagManager.hasTags(e, cmd.tags) && checkTags)) {
+			cmdList.push(c)
+		}
 
-		cmdList.push(c)
+
 	}
 
 	return	(modulename == '' ? "Commands: ```" : 'Commands from module: `' + modulename + '` ```')
-			+ (cmdList.length > 0 ? cmdList.sort().join(', ') : "\n")
+			+ (cmdList.length > 0 ? cmdList.sort().join(', ') : "[no commands]")
 			+ "```\nUse `"
 			+ bot.config.commandPrefix + "help <command>` for information on a specific command,\n"
 			+ "Use `"
@@ -82,7 +83,7 @@ exports.commands = {
 		usage: "<message>",
 		tags: 'admin',
 		execute(e) {
-			e.channel.send(e.content.slice(e.content.indexOf(e.args[0])))
+			e.channel.send(e.args[0])
 		}
 	},
 	"help": {
@@ -95,6 +96,8 @@ exports.commands = {
 			if (e.args.length <= 0) {
 				// same as '>>commands'
 				e.channel.send(getDefaultHelp(e));
+			} else if (e.args[0] === '--min') {
+				e.channel.send(getDefaultHelp(e, '', false))
 			} else {
 				if (bot.commands[e.args[0]]) {
 

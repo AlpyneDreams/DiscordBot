@@ -1,6 +1,5 @@
 
-data/logs/*
-data/logs_disquotes/*
+data/logs*
 data/profiles/*
 data/tokens/*
 node_modules/*

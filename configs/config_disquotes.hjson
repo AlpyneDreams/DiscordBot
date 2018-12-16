@@ -1,18 +1,19 @@
+{
+	base: default.hjson
+	commandPrefix: !
+	token: data/tokens/token_disquotes
+	paths: {
+		logs: data/logs_disquotes
+		profile: data/profiles/profile_disquotes.json
+	}
 
-base: default.hjson
-commandPrefix: !
-token: data/tokens/token_disquotes
-paths: {
-	logs: data/logs_disquotes
-	profile: data/profiles/profile_disquotes.json
-}
+	moduleWhitelist: true
 
-moduleWhitelist: true
-
-modules: {
-	core: {}
-	dev: {}
-	logging: {}
-	permissions: {}
-	disquotes: {}
+	modules: {
+		core: {}
+		dev: {}
+		logging: {}
+		permissions: {}
+		disquotes: {}
+	}
 }

@@ -38,6 +38,7 @@ class DiscordBot {
 
 		this.loadAllModules()
 	}
+	
 	// Attaches core event listeners to the Discord.js client
 	configureClient() {
 		this.client.on("message", msg => {

@@ -6,7 +6,7 @@ exports.init = function(e) {bot = e}
 exports.events = {
 	ready() {
 		console.log(`Ready. Handling ${bot.client.guilds.size} guilds.`)
-		bot.client.user.setGame(bot.config.commandPrefix + "help")
+		bot.client.user.setActivity(bot.config.commandPrefix + "help", {type: "LISTENING"})
 	},
 
 	disconnected(e) {
@@ -94,7 +94,7 @@ exports.commands = {
 			var bot = e.bot
 
 			if (e.args.length <= 0) {
-				// same as '>>commands'
+				// same as 'commands'
 				e.channel.send(getDefaultHelp(e));
 			} else if (e.args[0] === '--min') {
 				e.channel.send(getDefaultHelp(e, '', false))
@@ -162,6 +162,7 @@ exports.commands = {
 
 	"tags": {
 		help: "Shows the permission tags you have and lists all other tags that exist.",
+		tags: 'admin',
 		execute(e) {
 			if (e.bot.profile.users[e.author.id] || e.bot.profile.users[e.author.id].tags) {
 				e.channel.send("Your tags: `" + e.bot.tagManager.getTags(e).join(', ') + "`")

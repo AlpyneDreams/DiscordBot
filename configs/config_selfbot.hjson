@@ -1,0 +1,16 @@
+{
+	base: default.hjson
+	commandPrefix: /
+	token: data/tokens/token_selfbot
+	paths: {
+		logs: data/logs_selfbot
+		profile: data/profiles/profile_selfbot.json
+	}
+
+	moduleWhitelist: true
+
+	modules: {
+		core: {}
+		dev: {}
+	}
+}

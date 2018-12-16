@@ -72,6 +72,7 @@ class Module {
 
 		// don't use imports after this point
 
+		if (!bot.profile.modules) bot.profile.modules = {}
 		// Create a profile for this module if one does not exist
 		bot.profile.modules[name] = bot.profile.modules[name] || this.defaultProfile || {}
 		this.profile = bot.profile.modules[name]

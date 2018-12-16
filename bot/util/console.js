@@ -1,4 +1,4 @@
-// https://gist.github.com/DankParrot/3f5f194f073be7e96f84748dbe9e9eb7 - Version 3
+// https://gist.github.com/DankParrot/3f5f194f073be7e96f84748dbe9e9eb7 - Version 3.1
 
 const fs = require('fs')
 const slugify = require("underscore.string/slugify")
@@ -25,7 +25,7 @@ function spew(msg = '', {path = '', file = '', error = false, echo = true, recor
 	timestamp += ':' + ("00" + date.getSeconds()).slice(-2)
 
 	// prepend the timestamp to the message
-	msg = "[" + timestamp + "] " + stripANSI(msg)
+	msg = "[" + timestamp + "] " + msg
 
 	if (echo) {
 		if (!error) {
@@ -66,7 +66,7 @@ function spew(msg = '', {path = '', file = '', error = false, echo = true, recor
 		var datestamp = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
 
 		// record the message
-		fs.writeFileSync(console.logdir + '/' + path + datestamp + file + '.txt', msg + "\r\n", {flag:"a+"})
+		fs.writeFileSync(console.logdir + '/' + path + datestamp + file + '.txt', stripANSI(msg) + "\r\n", {flag:"a+"})
 	}
 }
 

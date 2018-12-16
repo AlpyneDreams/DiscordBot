@@ -189,7 +189,8 @@ exports.commands = {
 		}
 	},
 
-	"invite": {
+	"install": {
+		description: "Sends a link to add this bot to your server.",
 		async execute(e) {
 			var app = await e.client.fetchApplication()
 			e.channel.send(`https://discordapp.com/api/oauth2/authorize?client_id=${app.id}&scope=bot&permissions=0`)

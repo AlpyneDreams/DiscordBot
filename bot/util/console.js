@@ -1,8 +1,11 @@
-const fs = require('fs');
-const STR = require("string");
+// https://gist.github.com/DankParrot/3f5f194f073be7e96f84748dbe9e9eb7 - Version 3
+
+const fs = require('fs')
+const slugify = require("underscore.string/slugify")
+const stripANSI = require('strip-ansi')
 
 // Use "colors/safe" if you don't want to modify String.prototype
-const colors = require("colors");
+const colors = require("colors")
 
 
 var _log = console.log
@@ -22,7 +25,7 @@ function spew(msg = '', {path = '', file = '', error = false, echo = true, recor
 	timestamp += ':' + ("00" + date.getSeconds()).slice(-2)
 
 	// prepend the timestamp to the message
-	msg = "[" + timestamp + "] " + msg
+	msg = "[" + timestamp + "] " + stripANSI(msg)
 
 	if (echo) {
 		if (!error) {
@@ -34,35 +37,36 @@ function spew(msg = '', {path = '', file = '', error = false, echo = true, recor
 		}
 	}
 
-	if (record && console.record) {
+	if (record && console.record && path !== null) {
 		if (file) {
 			// if a filename is specified then clean it up
 			// and prepend a dash
-			file = '-' + STR(file).slugify().toString();
+			file = '-' + slugify(file)
 		}
 
 		if (path) {
 			// if a path is specified then clean it up
 			// and append a slash
-			path = STR(path).slugify().toString() + '/';
+			path = path.replace('\\', '/').split('/').filter(s => s.length > 0).map(st => slugify(st)).join('/')
+			path = slugify(path) + '/'
 		}
 
 		// if the path doesn't exist then make it
 		if (!fs.existsSync(console.logdir + '/' + path)) {
 			try {
-				fs.mkdirSync(console.logdir + '/' + path);
+				fs.mkdirSync(console.logdir + '/' + path, {recursive: true})
 			} catch (err) {
-				console.error('[CONSOLE] Cannot create directory "' + path + '"');
-				log(msg, '', file, error);
+				console.error('[CONSOLE] Cannot create directory "' + path + '"')
+				log(msg, '', file, error)
 			}
 		}
 
 		// generate a datestamp
 		// months start from 0 because javascript was designed by gibbons
-		var datestamp = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+		var datestamp = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
 
 		// record the message
-		fs.writeFileSync(console.logdir + '/' + path + datestamp + file + '.txt', msg + "\r\n", {flag:"a+"});
+		fs.writeFileSync(console.logdir + '/' + path + datestamp + file + '.txt', msg + "\r\n", {flag:"a+"})
 	}
 }
 
@@ -72,35 +76,26 @@ function log(msg = '', path = '', file = '') {
 
 function info(msg = '', path = '', file = '') {
 	msg = '[INFO] ' + msg
-	// print formatted message to console
 	spew(msg.cyan.bold, {path, file, error: false, echo: true, record: false})
-	// print unformatted message to file
-	spew(msg, {path, file, error: false, echo: false, record: true})
 }
 
 // console.error and console.warn
 function error(msg = '', path = '', file = '') {
 	msg = '[ERROR] ' + msg
-	// print formatted message to console
 	spew(msg.red.bold, {path, file, error: false, echo: true, record: false})
-	// print unformatted message to file
-	spew(msg, {path, file, error: true, echo: false, record: true})
 }
 
 function warn(msg = '', path = '', file = '') {
 	msg = '[WARN] ' + msg
-	// print formatted message to console
 	spew(msg.yellow.bold, {path, file, error: false, echo: true, record: false})
-	// print unformatted message to file
-	spew(msg, {path, file, error: false, echo: false, record: true})
 }
 
 // Redefine functions
-console.log = log;
-console.info = info;
+console.log = log
+console.info = info
 
-console.error = error;
-console.warn = warn;
+console.error = error
+console.warn = warn
 
 // insert a white bold text modifier before logging anything else
 _log(''.white.bold)

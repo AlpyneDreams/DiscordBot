@@ -16,8 +16,7 @@
     "opusscript": "0.0.6",
     "random-seed": "^0.3.0",
     "rethinkdbdash": "^2.3.31",
-    "strip-ansi": "^5.0.0",
-    "underscore.string": "^3.3.5"
+    "strip-ansi": "^5.0.0"
   },
   "scripts": {
     "start": "node index configs/config.hjson"

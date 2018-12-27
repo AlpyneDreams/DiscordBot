@@ -1,7 +1,6 @@
-// https://gist.github.com/DankParrot/3f5f194f073be7e96f84748dbe9e9eb7 - Version 3.1
+// https://gist.github.com/DankParrot/3f5f194f073be7e96f84748dbe9e9eb7 - Version 3.2
 
 const fs = require('fs')
-const slugify = require("underscore.string/slugify")
 const stripANSI = require('strip-ansi')
 
 // Use "colors/safe" if you don't want to modify String.prototype
@@ -15,6 +14,9 @@ console.muted = false
 console.record = true
 console.logdir = 'logs'
 
+function slugify(str) {
+	return str.replace(/[^\w+!@#$%^&()_/\-\[\]{} ]/g, '-')
+}
 
 function spew(msg = '', {path = '', file = '', error = false, echo = true, record = true} = {}) {
 
@@ -71,31 +73,33 @@ function spew(msg = '', {path = '', file = '', error = false, echo = true, recor
 }
 
 function log(msg = '', path = '', file = '') {
-	spew(msg, {path, file, error: false, echo: true, record: true})
+	spew(msg, {path, file, error: false})
 }
 
 function info(msg = '', path = '', file = '') {
 	msg = '[INFO] ' + msg
-	spew(msg.cyan.bold, {path, file, error: false, echo: true, record: false})
+	spew(msg.cyan.bold, {path, file, error: false})
 }
 
 // console.error and console.warn
 function error(msg = '', path = '', file = '') {
 	msg = '[ERROR] ' + msg
-	spew(msg.red.bold, {path, file, error: false, echo: true, record: false})
+	spew(msg.red.bold, {path, file, error: true})
 }
 
 function warn(msg = '', path = '', file = '') {
 	msg = '[WARN] ' + msg
-	spew(msg.yellow.bold, {path, file, error: false, echo: true, record: false})
+	spew(msg.yellow.bold, {path, file, error: true})
 }
 
 // Redefine functions
 console.log = log
 console.info = info
-
 console.error = error
 console.warn = warn
+
+// New functions
+console.spew = spew
 
 // insert a white bold text modifier before logging anything else
 _log(''.white.bold)

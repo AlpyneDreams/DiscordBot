@@ -4,6 +4,7 @@
 		base: {type: "string"}
 		commandPrefix: {type: "string"}
 		token: {type: "string"}
+		selfCommandsOnly: {type: "boolean"}
 		selfCommands: {type: "boolean"}
 		paths: {
 			type: "object"
@@ -23,12 +24,19 @@
 				}
 			}
 		}
+		extraModules: {
+			type: "array"
+			items: {
+				type: "string"
+			}
+		}
 		profile: {
 			type: "object"
 		}
 		client: {
 			type: "object"
 		}
+		debug: {type: "boolean"}
 	}
 	required: ["commandPrefix", "token", "selfCommands", "paths"]
 }

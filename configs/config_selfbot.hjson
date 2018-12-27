@@ -1,16 +1,36 @@
 {
 	base: default.hjson
-	commandPrefix: /
+	commandPrefix: >>
 	token: data/tokens/token_selfbot
 	paths: {
+		modules: modules_selfbot
 		logs: data/logs_selfbot
 		profile: data/profiles/profile_selfbot.json
 	}
 
 	moduleWhitelist: true
+	selfCommandsOnly: true
+
+	debug: false
 
 	modules: {
-		core: {}
-		dev: {}
+		logging: {}
+		
 	}
+
+	profile: {
+		modules: {
+			logging: {
+				notedUsers: {
+				}
+				notedGuilds: {
+				}
+			}
+		}
+	}
+
+	extraModules: [
+		modules/core
+		modules/dev
+	]
 }

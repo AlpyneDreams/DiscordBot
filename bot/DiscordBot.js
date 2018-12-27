@@ -2,7 +2,6 @@
 
 const fs = require("fs")
 const path = require("path")
-const EventEmitter = require('events').EventEmitter
 
 const Hjson = require('hjson')
 
@@ -38,14 +37,21 @@ class DiscordBot {
 
 		this.loadAllModules()
 	}
+
+	get allowSelfCommands() {
+		return this.config.selfCommands || this.config.selfCommandsOnly
+	}
 	
 	// Attaches core event listeners to the Discord.js client
 	configureClient() {
 		this.client.on("message", msg => {
 			var commandRegex = new RegExp(`^${this.config.commandPrefix}((?:.|[\n\r])+)`, "i")
 
-			if (msg.author.id == this.client.user.id && !this.config.selfCommands) {
-				// Bot can't accept commands from itself.
+			if (msg.author.id === this.client.user.id && !this.allowSelfCommands) {
+				// If bot can't accept messages from itself
+				return
+			} else if (msg.author.id !== this.client.user.id && this.config.selfCommandsOnly) {
+				// Bot can only accept self commands, like a selfbot
 				return
 			}
 
@@ -54,6 +60,11 @@ class DiscordBot {
 				var rawCommand = match[1]
 
 				this.executeCommand(rawCommand, msg)
+			}
+		})
+		this.client.on("debug", info => {
+			if (this.config.debug) {
+				console.log(`[DEBUG] ${info}`)
 			}
 		})
 	}
@@ -88,10 +99,10 @@ class DiscordBot {
 	 * init specifies whether to
 	 * call the module's init function
 	 */
-	loadModule(file, {init = true}) {
+	loadModule(file, init = true, force = false) {
 		try {
 			this.modules[path.basename(file, path.extname(file))]
-			 = new Module(file, this, init)
+			 = new Module(file, this, init, force)
 		} catch (e) {
 			if (e instanceof Error)
 				console.error(e.stack)
@@ -119,6 +130,12 @@ class DiscordBot {
 			this.loadModule(path.join(dir, file), init)
 		});
 
+		if (this.config.extraModules) {
+			for (var module of this.config.extraModules) {
+				this.loadModule(module, init, true)
+			}
+		}
+
 		this.profile.save()
 
 		console.info(`Finished loading ${Object.keys(this.modules).length} modules, and ${Object.keys(this.commands).length} commands.`)
@@ -145,7 +162,7 @@ class DiscordBot {
 			delete this.modules[name]
 		}
 
-		this.loadModule(path, {init: false})
+		this.loadModule(path, false, true)
 	}
 
 	/**

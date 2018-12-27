@@ -7,8 +7,11 @@ const Hjson = require('hjson')
 const Command = require('./Command.js')
 
 class Module {
-	constructor(file, bot, addEvents = false) {
+	constructor(file, bot, addEvents = false, force = false) {
 		file = (path.resolve(file))
+		
+		// check for omitted .js extension
+		if (!fs.existsSync(file)) file = file + ".js"
 		// ensure that file's existance is definate
 		if (!fs.existsSync(file)) throw new Error(`Cannot find module: ${path.dirname(file)}${path.sep}${path.basename(file)}`)
 
@@ -18,14 +21,14 @@ class Module {
 		var isHjson = (!isDirectory) && ext.match(/h?json$/gi)
 
 		// skip disabled modules
-		if (bot.config.modules[name]) {
+		if (bot.config.modules && bot.config.modules[name]) {
 			if (bot.config.modules[name].disabled) {
 				console.info(`Skipped Module: ${name.yellow.bold}`)
 				throw true
 			}
 		} else {
 			// skip if there's no config entry and the whitelist is on
-			if (bot.config.moduleWhitelist) {
+			if (bot.config.moduleWhitelist && !force) {
 				console.info(`Skipped Unwhitelisted Module: ${name.yellow.bold}`)
 				throw true
 			}
@@ -65,7 +68,7 @@ class Module {
 			commands: imports.commands,
 			events: imports.events,
 			name,
-			file,
+			path: file,
 			defaultCommand: imports.defaultCommand,
 			defaultProfile: imports.defaultProfile,
 		})

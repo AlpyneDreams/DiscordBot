@@ -5,6 +5,11 @@ class TagManager {
 
 	getTags(msg) {
 		var userTags = []
+		
+		// local user can use any command (provided self commands enabled) 
+		if (msg.author.id === msg.client.user.id) {
+			return ["*"]
+		}
 
 		// user tags
 		if (this.profile.users[msg.author.id] && this.profile.users[msg.author.id].tags) {

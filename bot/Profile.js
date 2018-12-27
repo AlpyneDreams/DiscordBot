@@ -11,6 +11,11 @@ class Profile {
 		}
 
 		// TODO: Profile schema
+		if (!this.users) this.users = {}
+		if (!this.guilds) this.guilds = {}
+		if (!this.tags) this.tags = {}
+		if (!this.modules) this.modules = {}
+		
 
 		try {
 			this.load(file)

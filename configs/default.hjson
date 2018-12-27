@@ -9,7 +9,10 @@
 		logs: logs
 	}
 
+	selfCommandsOnly: false
 	selfCommands: false
+
+	debug: false
 
 	// modules must have an entry in config.modules to be loaded
 	moduleWhitelist: false

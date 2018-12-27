@@ -6,7 +6,9 @@ exports.init = function(e) {bot = e}
 exports.events = {
 	ready() {
 		console.log(`Ready. Handling ${bot.client.guilds.size} guilds.`)
-		bot.client.user.setActivity(bot.config.commandPrefix + "help", {type: "LISTENING"})
+
+		if (bot.client.user.bot)
+			bot.client.user.setActivity(bot.config.commandPrefix + "help", {type: "LISTENING"})
 	},
 
 	disconnected(e) {
@@ -19,16 +21,12 @@ exports.events = {
 		}
 	},
 
-	debug(msg) {
-		//console.log(("[DEBUG] " + msg).cyan.bold);
-	},
-
 	warn(msg) {
-		console.warn(msg);
+		console.warn(`[Discord] ${msg}`);
 	},
 
 	error(err) {
-		console.error(err.stack);
+		console.error(`[Discord] ${err.name}: ${err.message}`);
 	},
 
 	guildCreate(guild) {
@@ -164,7 +162,8 @@ exports.commands = {
 		help: "Shows the permission tags you have and lists all other tags that exist.",
 		tags: 'admin',
 		execute(e) {
-			if (e.bot.profile.users[e.author.id] || e.bot.profile.users[e.author.id].tags) {
+			var userTags = e.bot.tagManager.getTags(e)
+			if (userTags.length > 0) {
 				e.channel.send("Your tags: `" + e.bot.tagManager.getTags(e).join(', ') + "`")
 			} else {
 				e.channel.send("You have no tags.")
@@ -191,6 +190,7 @@ exports.commands = {
 
 	"install": {
 		description: "Sends a link to add this bot to your server.",
+		requirements: 'bot',
 		async execute(e) {
 			var app = await e.client.fetchApplication()
 			e.channel.send(`https://discordapp.com/api/oauth2/authorize?client_id=${app.id}&scope=bot&permissions=0`)

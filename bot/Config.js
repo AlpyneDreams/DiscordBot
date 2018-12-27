@@ -43,7 +43,7 @@ class Config {
 
 	loadSchema(file) {
 		if (fs.existsSync(file)) {
-			console.log(`Loading Schema: ${file}`)
+			console.log(`Loading Schema: "${file}"`)
 			this.meta.schema = Hjson.parse(fs.readFileSync(file, {encoding: 'utf-8'}))
 		} else {
 			throw new Error(`Failed to locate config schema file: ${file}`)

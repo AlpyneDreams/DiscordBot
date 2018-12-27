@@ -130,6 +130,13 @@ class Command {
 					case 'guild':
 						if (msg.channel.type == 'dm') return
 						break
+					case 'bot':
+						if (!bot.client.user.bot) return
+						break
+					case 'userbot':
+						if (bot.client.user.bot) return
+						break
+
 				}
 			}
 		}

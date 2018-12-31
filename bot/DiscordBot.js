@@ -1,5 +1,4 @@
 
-
 const fs = require("fs")
 const path = require("path")
 
@@ -89,6 +88,7 @@ class DiscordBot {
 				}
 			}
 
+			console.log("Executing command '" + msg.content + "' from " + msg.author.username)
 			cmd.invoke(this, fullCommand, msg, checkTags)
 		}
 	}
@@ -192,11 +192,23 @@ class DiscordBot {
 			token = this.config.token
 		}
 
-		console.log("Connecting to Discord.")
+		console.log("Connecting to Discord...")
 
 		this.client.login(token).catch((err) => {
 			console.error(err)
 		})
+	}
+
+	async destroy() {
+		console.info("Destroying client.")
+		if (this.client.user.bot) {
+			await this.client.destroy()
+		} else {
+			// if selfbot then just disconnect, don't logout
+			// because we don't want the token to be cancelled
+			await this.client.ws.destroy()
+			await this.client.rest.destroy()
+		}
 	}
 }
 

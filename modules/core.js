@@ -7,17 +7,21 @@ exports.events = {
 	ready() {
 		console.log(`Ready. Handling ${bot.client.guilds.size} guilds.`)
 
-		if (bot.client.user.bot)
+		if (bot.client.user.bot) {
 			bot.client.user.setActivity(bot.config.commandPrefix + "help", {type: "LISTENING"})
+		} else {
+			// prevent selfbot from interfering with status
+			bot.client.ws.send({op: 3, d: {activities: [], status: "idle", afk: true, since: Date.now() - 600000}})
+		}
 	},
 
-	disconnected(e) {
+	disconnect(e) {
 		if (e.wasClean) {
 			console.info("Disconnected from Discord [Code: " + e.code + "]")
-			console.info('Reason: "' + e.reason + '"')
+			if (e.reason) console.info('Reason: "' + e.reason + '"')
 		} else {
 			console.warn("Disconnected from Discord [Code: " + e.code + "]")
-			console.warn('Reason: "' + e.reason + '"')
+			if (e.reason) console.warn('Reason: "' + e.reason + '"')
 		}
 	},
 

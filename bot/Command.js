@@ -120,7 +120,7 @@ class Command {
 	async invoke(bot, fullCommand, msg, checkTags = true) {
 
 		// check if the command must (or must not) be via direct message
-		if (this.requirements) {
+		if (this.requirements && this.requirements.length > 0) {
 			var requirements = Array.isArray(this.requirements) ? this.requirements : [this.requirements]
 			for (var req of this.requirements) {
 				switch (req.toLowerCase()) {
@@ -164,7 +164,6 @@ class Command {
 		}
 
 		if (this.execute) {
-			console.log("Executing command '" + msg.content + "' from " + msg.author.username)
 			try {
 				// command context object
 				var e = msg
@@ -175,6 +174,7 @@ class Command {
 				await this.execute(e)
 			} catch (e) {
 				console.error(e.stack)
+				if (!this.channel) return
 				if (!this.error) {
 					msg.channel.send(`An internal error has occured.\n- ${e.name}: ${e.message}`, {code: 'diff'})
 				} else {

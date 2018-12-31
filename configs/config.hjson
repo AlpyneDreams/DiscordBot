@@ -25,11 +25,11 @@
 		vox: {
 			disabled: true
 		}
+
 	}
 
 	// Profile Overrides
 	profile: {
-
 		users: {
 			// @DankParrot
 			"138361044518174721": {"tags": ["*"]}

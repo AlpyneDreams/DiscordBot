@@ -1,5 +1,5 @@
 
-var colors = require('colors/safe')
+var colors = require('ansi-colors')
 
 module.exports.defaultProfile = {
 	notedUsers: [],
@@ -25,16 +25,20 @@ function getPrettyStatus(status) {
     else return status.toUpperCase()
 }
 
+module.exports.getPrettyStatus = getPrettyStatus
+
 function bell() {
 	process.stdout.write('\u0007')
 }
 
 
 function getGuildFolder(guild) {
-	if (guild.name)
+	if (guild && guild.name)
 		return `Guilds/${guild.name}-${guild.id}`
-	else
+	else if (guild.id)
 		return `Guilds/${guild.id}`
+	else
+		return `Guilds/[undefined]`
 }
 
 function getChannelFolder(channel) {
@@ -62,17 +66,17 @@ function onTypingStartStop(channel, user, stop = false) {
 	// only log noted event to reduce clutter
 	if (!noted) return
 
-	var color = stop ? colors.grey : colors.cyan
+	var color = stop ? 'grey' : 'cyan'
 	var event = stop ? 'STOP' : 'START'
 
 	if (channel.type === 'dm') {
 		console.spew(
-			color(`[TYPING ${event}] ${user.username} in a DM channel`),
+			`[TYPING ${event}] ${user.username} in a DM channel`[color],
 			{path: getChannelFolder(channel), echo: noted}
 		)
 	} else if (channel.guild && channel.guild.id in profile.notedGuilds) {
 		console.spew(
-			color(`[TYPING ${event}] ${user.username} in #${channel.name}`),
+			`[TYPING ${event}] ${user.username} in #${channel.name}`[color],
 			{path: getChannelFolder(channel), echo: noted}
 		)
 	}
@@ -81,22 +85,38 @@ function onTypingStartStop(channel, user, stop = false) {
 module.exports.events = {
 	
 	/* presenceUpdate
-	 * 	- noted users 
-	 *	- in noted guilds
+	 * 	- noted users
+	 *	- in noted guilds (no bell)
 	 */
-
 	presenceUpdate(old, cur) {
-		var noted = cur.user.id in profile.notedUsers
-
+		var noted = cur.user.id in profile.notedUsers || cur.guild.id in profile.notedGuilds
+		// only beep for noted users
+		var important =  cur.user.id in profile.notedUsers
+		
 		if (!noted) return
+		
+		const color = important ? 'cyan' : 'reset'
 
 		if (cur.presence.status !== old.presence.status) {
-			bell()
+			if (important) bell()
+
+			const oldStatus = getPrettyStatus(old.presence.status)
+			const newStatus = getPrettyStatus(cur.presence.status)
+
 			console.spew(
-				`[STATUS] ${old.user.username} [${getPrettyStatus(old.presence.status)}] -> [${getPrettyStatus(cur.presence.status)}]`.cyan.bold,
+				`[STATUS] {0} [{1}] -> [{2}]`.format(cur.user.username, oldStatus, newStatus)[color].bold,
 				{path: 'Presence'}
 			)
-		} //else if (cur.presence.game !== old.presence.game)
+		} else if (cur.presence.game) {
+			var activity = cur.presence.game
+			if (activity.type === 2) { // 2 = Listening
+				const track = `{state} - {details}`.format(activity)
+				console.spew(
+					`[STATUS] {0} started listening to {1}`.format(cur.user.username, track.white.bgGreen)[color].bold,
+					{path: 'Presence'}
+				)
+			}
+		}
 	},
 
 	guildMemberUpdate(old, cur) {

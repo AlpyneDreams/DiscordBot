@@ -45,13 +45,6 @@ function clampAbs(int, min, max) {
 	return Math.min(Math.max(Math.abs(int), min), max)
 }
 
-exports.events = {
-	message(e) {
-		if (e.content.startsWith('>>')) {
-			e.channel.send('The command prefix has been changed to `--` from `>>`. See `--help` for more information.')
-		}
-	}
-}
 
 exports.commands = {
 	"8ball": {

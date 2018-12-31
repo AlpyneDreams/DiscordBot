@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@discordjs/uws": "^11.149.1",
-    "colors": "^1.3.2",
+    "ansi-colors": "^3.2.3",
     "deep-assign": "^2.0.0",
     "discord.js": "^11.4.2",
     "erlpack": "github:discordapp/erlpack",
@@ -16,6 +16,7 @@
     "opusscript": "0.0.6",
     "random-seed": "^0.3.0",
     "rethinkdbdash": "^2.3.31",
+    "string-format": "^2.0.0",
     "strip-ansi": "^5.0.0"
   },
   "scripts": {

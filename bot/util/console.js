@@ -1,11 +1,13 @@
-// https://gist.github.com/DankParrot/3f5f194f073be7e96f84748dbe9e9eb7 - Version 3.2
+// https://gist.github.com/DankParrot/3f5f194f073be7e96f84748dbe9e9eb7 - Version 3.3
+
+require('./colors.js') // Overrides String.prototype
+require('./prompt.js')
+require('./format.js')
 
 const fs = require('fs')
 const stripANSI = require('strip-ansi')
 
-// Use "colors/safe" if you don't want to modify String.prototype
-const colors = require("colors")
-
+const colors = require("ansi-colors")
 
 var _log = console.log
 var _error = console.error
@@ -72,24 +74,24 @@ function spew(msg = '', {path = '', file = '', error = false, echo = true, recor
 	}
 }
 
-function log(msg = '', path = '', file = '') {
+function log(msg = '', path = '', file = '', format = null) {
 	spew(msg, {path, file, error: false})
 }
 
 function info(msg = '', path = '', file = '') {
 	msg = '[INFO] ' + msg
-	spew(msg.cyan.bold, {path, file, error: false})
+	spew(colors.cyan.bold(msg), {path, file, error: false})
 }
 
 // console.error and console.warn
 function error(msg = '', path = '', file = '') {
 	msg = '[ERROR] ' + msg
-	spew(msg.red.bold, {path, file, error: true})
+	spew(colors.red.bold(msg), {path, file, error: true})
 }
 
 function warn(msg = '', path = '', file = '') {
 	msg = '[WARN] ' + msg
-	spew(msg.yellow.bold, {path, file, error: true})
+	spew(colors.cyan.bold(msg), {path, file, error: true})
 }
 
 // Redefine functions
@@ -100,6 +102,3 @@ console.warn = warn
 
 // New functions
 console.spew = spew
-
-// insert a white bold text modifier before logging anything else
-_log(''.white.bold)

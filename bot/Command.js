@@ -1,4 +1,6 @@
 
+const Discord = require('discord.js')
+
 class Command {
 
 	constructor(command, module) {

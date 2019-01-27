@@ -31,6 +31,7 @@ class DiscordBot {
 		this.commands = {}
 		this.modules = {}
 
+		/** @type {Discord.Client} */
 		this.client = new Discord.Client(this.config.client || {})
 		this.configureClient()
 

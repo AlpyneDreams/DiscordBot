@@ -94,7 +94,6 @@ module.exports.commands = {
 		}
 	},
 
-
 	"sudo": {
 		usage: "<command>",
 		tags: 'sudoers',
@@ -143,6 +142,7 @@ module.exports.commands = {
 }
 module.exports.commands['pipe'] = {
 	args: 1,
+	requirements: 'bot',
 	execute(e) {
 		if (!e.profile[e.author.id]) {
 			e.channel.send("Not piping anywhere. Use `pipe.start`.")
@@ -155,6 +155,7 @@ module.exports.commands['pipe'] = {
 
 module.exports.commands['pipe.start'] = {
 	args: [0, 1],
+	requirements: 'bot',
 	execute(e) {
 		if (e.args.length > 0) {
 			try {
@@ -171,6 +172,7 @@ module.exports.commands['pipe.start'] = {
 }
 
 module.exports.commands['pipe.stop'] = {
+	requirements: 'bot',
 	execute(e) {
 		e.profile[e.author.id] = {}
 		e.channel.send("Removed your pipes.")

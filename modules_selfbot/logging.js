@@ -82,6 +82,14 @@ function onTypingStartStop(channel, user, stop = false) {
 	}
 }
 
+var antiDupe = {
+	presence: {
+		song: ""
+	}
+}
+
+const {GuildMember} = require('discord.js')
+
 module.exports.events = {
 	
 	/* presenceUpdate
@@ -111,10 +119,41 @@ module.exports.events = {
 			var activity = cur.presence.game
 			if (activity.type === 2) { // 2 = Listening
 				const track = `{state} - {details}`.format(activity)
-				console.spew(
-					`[STATUS] {0} started listening to {1}`.format(cur.user.username, track.white.bgGreen)[color].bold,
-					{path: 'Presence'}
-				)
+				
+				if (antiDupe.presence.song !== track) {
+					console.spew(
+						`[STATUS] {0} started listening to {1}`.format(cur.user.username, track.bgGreen.bold)[color].bold,
+						{path: 'Presence'}
+					)
+					antiDupe.presence.song = track
+				}
+			}
+		}
+	},
+
+	/* voiceState Update
+	 *  - noted users
+	 *  - or in noted guilds (no bell)
+	 */
+	voiceStateUpdate(oldMember, newMember) {
+		var noted = newMember.user.id in profile.notedUsers || newMember.guild.id in profile.notedGuilds
+		// only beep for noted users
+		var important =  newMember.user.id in profile.notedUsers
+
+		if (!noted) return
+
+		if (oldMember.voiceChannelID !== newMember.voiceChannelID) {
+			if (important) bell()
+			if (!newMember.voiceChannelID) {
+				// voice left
+				var channel = oldMember.voiceChannel || {name: '[unkown channel]'}
+				console.log(`[VOICE LEAVE] ${newMember.user.username} left channel ${channel.name}`)
+			} else  if (!oldMember.voiceChannelID) {
+				// voice joined
+				console.log(`[VOICE JOIN] ${newMember.user.username} joined channel ${newMember.voiceChannel.name}`)		
+			} else {
+				// voice moved
+				console.log(`[VOICE MOVE] ${newMember.user.username} moved from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}`)
 			}
 		}
 	},
@@ -213,7 +252,7 @@ module.exports.events = {
 	
 	},*/
 
-	/*messageDelete(msg, channel) {
+	messageDelete(msg) {
 		var name
 		if (msg.member)
 			name = msg.member.displayName
@@ -222,18 +261,10 @@ module.exports.events = {
 		else
 			name = 'null'
 
-		console.log(`[DELETED] ${name}: ${msg.cleanContent || msg.content || msg.id}`)
-	
-		try {
-			var folder = getChannelFolder(channel)
-	
-			console.log(
-				"[DELETE] " + msg.author.username + ": " + msg.content + " (#" + msg.id + ")",
-				folder
-			);
-		} catch (e) {
-			console.warn("Failed to log deletion of message. (FILE)");//" + msg.id);
-		}
-	}*/
+		var folder = getChannelFolder(msg.channel)
+		
+		var noted = (msg.guild && msg.guild.id in profile.notedGuilds) || (msg.author && msg.author.id in profile.notedUsers)
+		console.spew(`[${'DELETED'.red.bold}] ${name}: ${msg.cleanContent || msg.content || msg.id}`, {path: folder, echo: noted})
+	}
 
 }

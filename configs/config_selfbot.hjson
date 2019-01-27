@@ -8,6 +8,12 @@
 		profile: data/profiles/profile_selfbot.json
 	}
 
+	// Discord.js client options
+	client: {
+		messageCacheLifetime: 300,
+		messageSweepInterval: 600,
+	}
+
 	selfCommandsOnly: true
 
 	debug: false

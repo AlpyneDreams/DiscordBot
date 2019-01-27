@@ -1,6 +1,5 @@
 
 const fs = require('fs')
-const path = require('path')
 const deepAssign = require('deep-assign')
 
 class Profile {

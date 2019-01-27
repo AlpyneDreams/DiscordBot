@@ -1,4 +1,4 @@
-recentPresence = []
+let recentPresence = []
 
 module.exports = function(e) {
     e.bot.client.on('raw', p => {

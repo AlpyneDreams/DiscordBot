@@ -55,21 +55,21 @@ module.exports.events = {
                         url: e.attachments.first().url
                     }
                 }
-                var msg = await starboard.send('⭐', {embed})
-                var guild = profile.guilds[e.guild.id]
+                let msg = await starboard.send('⭐', {embed})
+                let guild = profile.guilds[e.guild.id]
                 guild.stars[e.id] = {id: msg.id, channel: e.channel.id}
                 bot.profile.save()
             }
 
             // update stats
-            var guild = profile.guilds[reaction.message.guild.id]
+            let guild = profile.guilds[reaction.message.guild.id]
             guild.stats.total += 1
             guild.users[reaction.message.author.id] = guild.users[reaction.message.author.id] || {stars: 0}
             guild.users[reaction.message.author.id].stars += 1
             bot.profile.save()
         }
     },
-    async messageReactionRemove(reaction, user) {
+    async messageReactionRemove(reaction) {
         if (reaction.emoji.name == '⭐') {
             var starPost = await getStarPost(reaction.message)
             if (starPost) {
@@ -112,7 +112,6 @@ function getRandomInt(min, max) {
 
 // displays a starred message
 async function showStar(channel, id) {
-    const discord = require('discord.js')
     var starboard = getStarboard(channel.guild)
     var msg = await starboard.fetchMessage(id)
     var embed = msg.embeds[0]
@@ -204,7 +203,7 @@ module.exports.commands = {
                 e.channel.send('', {
                     embed: {
                         fields: [
-                            {name: 'Messages Starred', value: numStars, inline: true, inline: true},
+                            {name: 'Messages Starred', value: numStars, inline: true},
                             {name: 'Total Stars', value: guild.stats.total, inline: true},
                             //{name: 'Most Starred', value:'0', inline: true},
                             //{name: '🥇 1st Place', value:'0', inline: true},

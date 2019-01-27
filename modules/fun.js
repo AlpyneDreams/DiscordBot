@@ -1,6 +1,4 @@
 
-const fs = require("fs")
-var http = require("http")
 const Random = require("random-seed")
 
 var magic8ball = [

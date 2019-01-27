@@ -5,4 +5,4 @@ console.log('Working Dir: ' + process.cwd())
 
 var cfg = new Config('configs/config_disquotes.hjson')
 
-//console.dir(cfg, {colors: true})
+console.dir(cfg, {colors: true})

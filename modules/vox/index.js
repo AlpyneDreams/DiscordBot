@@ -1,8 +1,8 @@
 const fs = require('fs')
-const path = require('path')
+//const path = require('path')
 const child_process = require('child_process')
 
-var killed = false
+//var killed = false
 
 async function vox(e, dir) {
     if (e.client.voiceConnections && !e.channel.isPrivate) {
@@ -55,7 +55,7 @@ async function vox(e, dir) {
             if (queue) {
                 e.channel.send(words.join(' ').toUpperCase(), {code: 'ini'})
                 child_process.execSync('ffmpeg -safe 0 -f concat -i vox.txt -c copy -y -f wav vox.wav')
-                var disp = voice.playFile('vox.wav', {volume: 0.5})
+                voice.playFile('vox.wav', {volume: 0.5})
             }
 
 
@@ -78,6 +78,7 @@ module.exports.commands = {
             if (e.args.length > 1) {
                 var dir = 'vox'
                 if (!fs.existsSync(__dirname + '/' + e.args[0])) {
+                    //
                 } else {
                     dir = e.args[0]
                     e.args = e.args.slice(1)

@@ -18,20 +18,20 @@ console.record = true
 console.logdir = 'logs'
 
 function slugify(str) {
-    return str.replace(/[^\w+!@#$%^&()_/\-\[\]{} ]/g, '-')
+    return str.replace(/[^\w+!@#$%^&()_/\-[\]{} ]/g, '-')
 }
 
 function spew(msg = '', {path = '', file = '', error = false, echo = true, record = true, timestamp = true} = {}) {
 
     var date = new Date(Date.now())
     // generate a timestamp
-    var timestamp = ("00" + date.getHours()).slice(-2)
-    timestamp += ':' + ("00" + date.getMinutes()).slice(-2)
-    timestamp += ':' + ("00" + date.getSeconds()).slice(-2)
+    var ts = ("00" + date.getHours()).slice(-2)
+    ts += ':' + ("00" + date.getMinutes()).slice(-2)
+    ts += ':' + ("00" + date.getSeconds()).slice(-2)
 
     // prepend the timestamp to the message
     if (timestamp)
-        msg = "[" + timestamp + "] " + msg
+        msg = "[" + ts + "] " + msg
 
     if (echo) {
         if (!error) {
@@ -76,7 +76,7 @@ function spew(msg = '', {path = '', file = '', error = false, echo = true, recor
     }
 }
 
-function log(msg = '', path = '', file = '', format = null) {
+function log(msg = '', path = '', file = '') {
     spew(msg, {path, file, error: false})
 }
 

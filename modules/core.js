@@ -1,4 +1,3 @@
-const util = require("util")
 
 var bot
 exports.init = function(e) {bot = e}
@@ -45,7 +44,6 @@ exports.events = {
 
 function getDefaultHelp(e, modulename = '', checkTags = true) {
     var bot = e.bot
-    var author = e.author
 
     var cmdList = []
     for (var c in bot.commands) {

@@ -1,7 +1,8 @@
-
-const util = require ('util')
-const vm = require('vm')
-const Discord = require('discord.js')
+// most of this is disabled due to insecurity
+/* eslint-disable no-unreachable */
+//const util = require ('util')
+//const vm = require('vm')
+//const Discord = require('discord.js')
 
 
 // VM Stuff

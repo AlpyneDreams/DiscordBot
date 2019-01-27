@@ -17,7 +17,7 @@ async function smartFindUser(e, input) {
             result = e.bot.client.users.find(u => u.username.toLowerCase() === input.toLowerCase())
 
         if (!result)
-            user = e.bot.client.users.find(u => u.tag.toLowerCase() === input.toLowerCase())
+            result = e.bot.client.users.find(u => u.tag.toLowerCase() === input.toLowerCase())
 
         if (!result && parseInt(result))
             result = await e.bot.client.fetchUser(input)
@@ -68,10 +68,12 @@ const commands = {
         args: 1,
         async execute(e) {
             try {
-                var user = g.user
-                var channel = g.channel
-                var res = eval(e.args[0])
+                /* eslint-disable no-unused-vars */
+                let user = g.user
+                let channel = g.channel
+                let res = eval(e.args[0])
                 console.dir(eval(e.args[0]), {depth: 3})
+                /* eslint-enable no-unused-vars */
             } catch (err) {
                 console.error(err)
             }

@@ -1,13 +1,13 @@
 const https = require("https")
 const reddit = require("./rawjs/index.js")
 
-var modules
+//var modules
 var client
 
 exports.init = function(e) {
 
     client = e.client
-    modules = e.modules
+    //modules = e.modules
     //e.config.modules.reddit = {};
     //config = e.config.modules.reddit;
 
@@ -48,7 +48,7 @@ function redditLive(id, channelId)
     })
 
     reader.on("bad-data", (err) => {
-        channel.send("```diff\Bad Data:\n- " + err + "```")
+        channel.send("```diff\nBad Data:\n- " + err + "```")
     })
 
     reader.on("connected", () => {
@@ -61,18 +61,18 @@ function redditLive(id, channelId)
 
     reader.on("closed", () => {
         channel.send("[Live] Thread Closed.")
-        delete reader
+        reader = undefined
     })
 
     reader.on("update", (data) => {
         channel.send("**/u/" + data.author + ": **\n" + data.body + "")
     })
-    reader.on("activity", (count, fuzzed) => {
+    //reader.on("activity", (count, fuzzed) => {
         //e.channel.send("```Activity:\n" + count + "```")
-    })
-    reader.on("embeds", (liveupdate_id, media_embeds) => {
+    //})
+    //reader.on("embeds", (liveupdate_id, media_embeds) => {
         //e.channel.send("```Embeds```")
-    })
+    //})
     reader.on("settings", (payload) => {
         channel.send("```Settings:\n" + payload + "```")
     })
@@ -87,8 +87,9 @@ function redditLive(id, channelId)
 }
 
 // stole this from Windsdon
+// eslint-disable-next-line no-unused-vars
 function randomPost(e) {
-    if(!e.args[0].match(/^[a-zA-Z0-9_\-]+$/)) {
+    if(!e.args[0].match(/^[a-zA-Z0-9_-]+$/)) {
         e.channel.send(`${e.args[0]} is not a valid subreddit`)
         return
     }
@@ -141,6 +142,6 @@ function randomPost(e) {
             e.channel.send(`/r/${e.args[0]}\nTitle: ${post.title}\n${post.url}`)
         })
     }).on('error', function(err) {
-        logger.error(`Error: ${err.message}`)
+        console.error(`Error: ${err.message}`)
     })
 }

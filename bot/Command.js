@@ -1,6 +1,4 @@
 
-const Discord = require('discord.js')
-
 class Command {
 
     constructor(command, module) {
@@ -124,7 +122,7 @@ class Command {
         // check if the command must (or must not) be via direct message
         if (this.requirements && this.requirements.length > 0) {
             var requirements = Array.isArray(this.requirements) ? this.requirements : [this.requirements]
-            for (var req of this.requirements) {
+            for (var req of requirements) {
                 switch (req.toLowerCase()) {
                     case 'dm':
                         if (msg.channel.type != 'dm') return

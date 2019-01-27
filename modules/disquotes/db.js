@@ -104,7 +104,7 @@ module.exports.renameQuote = async function(guild, name, rename) {
 
 module.exports.getQuotes = async function(guild) {
     return await r.table('quotes')
-        .filter(r.row('guild').eq(e.guild.id))
+        .filter(r.row('guild').eq(guild.id))
         .run()
 }
 module.exports.getQuoteNames = async function(guild) {
@@ -114,6 +114,8 @@ module.exports.getQuoteNames = async function(guild) {
         .run()
 }
 
+
+// eslint-disable-next-line no-unused-vars
 const COLORS = [
     16711680,	// RED
     16746496,	// ORANGE

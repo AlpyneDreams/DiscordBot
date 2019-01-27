@@ -10,7 +10,7 @@ exports.events = {
 
 
 function logMessage(msg) {
-    var entry = {} // db entry
+    //var entry = {} // db entry
 
     try {
         var folder = msg.channel.type == 'dm' ? 'Private Messages' : msg.guild.name + '-' + msg.guild.id
@@ -47,7 +47,7 @@ function logMessage(msg) {
 }
 
 function logEdit(prev, msg) {
-    var entry = {}
+    //var entry = {}
 
     try {
         var folder = msg.channel.type == 'dm' ? 'Private Messages' : msg.guild.name + '-' + msg.guild.id
@@ -63,8 +63,8 @@ function logEdit(prev, msg) {
 
 }
 
-function logDelete(msg, channel) {
-    var entry = {}
+function logDelete(msg) {
+    //var entry = {}
 
     try {
         var folder = msg.channel.type == 'dm' ? 'Private Messages' : msg.guild.name + '-' + msg.guild.id

@@ -22,10 +22,10 @@ function wasRemoved(id) {
 
 // have to export these the old fashioned way for now
 var channels = {}
-var webhooks = {}
-var bot, mod
+//var webhooks = {}
+var bot
 module.exports.init = function(e, m) {
-    bot = e, mod = m
+    bot = e
     channels = m.profile
 
     console.log(`[admin] Registered ${Object.keys(m.profile).length} server admin profile(s).`)

@@ -2,14 +2,11 @@
 const fs = require("fs")
 const path = require("path")
 
-const Hjson = require('hjson')
-
 const Discord = require("discord.js")
 
 const Profile = require('./Profile.js')
 const Config = require('./Config.js')
 const Module = require('./Module.js')
-const Command = require('./Command.js')
 const TagManager = require('./TagManager.js')
 
 class DiscordBot {

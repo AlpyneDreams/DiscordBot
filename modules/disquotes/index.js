@@ -1,15 +1,15 @@
 
-const http = require('http')
-const Hjson = require('hjson')
-const fs = require('fs')
-const util = require('util')
+//const http = require('http')
+//const Hjson = require('hjson')
+//const fs = require('fs')
+//const util = require('util')
 
 
 // DEV: clear caches in case of reload
 delete require.cache[require.resolve('./db.js'), require.resolve('./api.js')]
 var db = require('./db.js')
-var api = require('./api.js')
-var config = Hjson.parse(fs.readFileSync(__dirname + '/disquotes.hjson', {encoding: 'utf8'}))
+//var api = require('./api.js')
+//var config = Hjson.parse(fs.readFileSync(__dirname + '/disquotes.hjson', {encoding: 'utf8'}))
 
 global._db = db
 
@@ -103,7 +103,7 @@ module.exports.commands = {
         args: 1,
         tags: 'owner',
         async execute(e) {
-            var test = await db.deleteQuote(e.guild.id, e.args[0])
+            await db.deleteQuote(e.guild.id, e.args[0])
             e.channel.send(`Deleted Quote: \`${e.args[0]}\``)
         },
         error: 'Failed to find and delete quote: `$0`'

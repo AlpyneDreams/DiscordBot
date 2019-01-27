@@ -35,7 +35,7 @@ const styles = [
     'reset',
 ]
 
-for (var prop of colors) {
+for (const prop of colors) {
     
     var test = `${prop}:`.padEnd(12)
     test += '['
@@ -51,7 +51,7 @@ for (var prop of colors) {
 
 console.log("\n=== BRIGHT BG TEST (ansi-colors only) ===\n")
 
-for (var prop of colors.filter(c => c.startsWith('bg'))) {
+for (const prop of colors.filter(c => c.startsWith('bg'))) {
     const test = prop + 'Bright'
     console.log((test+':').padEnd(18) + " default ".black[prop] + ansiColors[test](" bright ".black))
 }

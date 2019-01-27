@@ -52,7 +52,7 @@ function starAnnotation(msg, count=1) {
     for (let t = 0; t < STAR_TIERS.length; t++)
         if (count >= STAR_TIERS[t])
             emoji = STAR_TIER_EMOJIS[t]
-    return `${STAR_EMOJI} ${count>1 ? `**${count}**` : ``} <#${msg.channel.id}> ID: ${msg.id}`
+    return `${emoji} ${count>1 ? `**${count}**` : ``} <#${msg.channel.id}> ID: ${msg.id}`
 }
 // Gradient color to vizualize number of stars
 function starColor(stars) {
@@ -89,14 +89,14 @@ function starEmbed(msg, count=1) {
 
 
     if (msg.embeds.length > 0) {
-        var file = msg.embeds[0]
+        let file = msg.embeds[0]
         if (file.type === 'image') {
             em.image = {url: file.url}
         }
     }
 
     if (msg.attachments.size > 0) {
-        var file = msg.attachments.first()
+        let file = msg.attachments.first()
         for (var ext of IMAGE_FILE_TYPES) {
             if (file.filename.toLowerCase().endsWith(ext)) {
                 em.image = {url: file.url}

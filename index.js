@@ -1,5 +1,5 @@
 require("./bot/util/console.js")
-DiscordBot = require("./bot/DiscordBot.js")
+const DiscordBot = require("./bot/DiscordBot.js")
 
 var bot = new DiscordBot(process.argv[2] || 'configs/config.hjson')
 

@@ -1,5 +1,4 @@
 
-var colors = require('ansi-colors')
 
 module.exports.defaultProfile = {
     notedUsers: [],
@@ -10,8 +9,6 @@ var profile
 module.exports.init = function(bot, mod) {
     profile = mod.profile
 }
-
-var lastPresenceUpdate = {id: null}
 
 var presenceStrings = {
     "online": "ONLINE".green,
@@ -60,10 +57,10 @@ function getChannelFolder(channel) {
 
 function onTypingStartStop(channel, user, stop = false) {
     var noted = user.id in profile.notedUsers
-				|| (channel.guild && channel.guild.id in profile.notedGuilds) 
-				|| (channel.type === 'dm' && channel.recipient.id in profile.notedUsers)
-		
-	// only log noted event to reduce clutter
+                || (channel.guild && channel.guild.id in profile.notedGuilds) 
+                || (channel.type === 'dm' && channel.recipient.id in profile.notedUsers)
+        
+    // only log noted event to reduce clutter
     if (!noted) return
 
     var color = stop ? 'grey' : 'cyan'
@@ -88,21 +85,19 @@ var antiDupe = {
     }
 }
 
-const {GuildMember} = require('discord.js')
-
 module.exports.events = {
-	
-	/* presenceUpdate
-	 * 	- noted users
-	 *	- in noted guilds (no bell)
-	 */
+    
+    /* presenceUpdate
+     * 	- noted users
+     *	- in noted guilds (no bell)
+     */
     presenceUpdate(old, cur) {
         var noted = cur.user.id in profile.notedUsers || cur.guild.id in profile.notedGuilds
-		// only beep for noted users
+        // only beep for noted users
         var important =  cur.user.id in profile.notedUsers
-		
+        
         if (!noted) return
-		
+        
         const color = important ? 'cyan' : 'reset'
 
         if (cur.presence.status !== old.presence.status) {
@@ -119,7 +114,7 @@ module.exports.events = {
             var activity = cur.presence.game
             if (activity.type === 2) { // 2 = Listening
                 const track = `{state} - {details}`.format(activity)
-				
+                
                 if (antiDupe.presence.song !== track) {
                     console.spew(
                         `[STATUS] {0} started listening to {1}`.format(cur.user.username, track.bgGreen.bold)[color].bold,
@@ -131,13 +126,13 @@ module.exports.events = {
         }
     },
 
-	/* voiceState Update
-	 *  - noted users
-	 *  - or in noted guilds (no bell)
-	 */
+    /* voiceState Update
+     *  - noted users
+     *  - or in noted guilds (no bell)
+     */
     voiceStateUpdate(oldMember, newMember) {
         var noted = newMember.user.id in profile.notedUsers || newMember.guild.id in profile.notedGuilds
-		// only beep for noted users
+        // only beep for noted users
         var important =  newMember.user.id in profile.notedUsers
 
         if (!noted) return
@@ -145,14 +140,14 @@ module.exports.events = {
         if (oldMember.voiceChannelID !== newMember.voiceChannelID) {
             if (important) bell()
             if (!newMember.voiceChannelID) {
-				// voice left
+                // voice left
                 var channel = oldMember.voiceChannel || {name: '[unkown channel]'}
                 console.log(`[VOICE LEAVE] ${newMember.user.username} left channel ${channel.name}`)
             } else  if (!oldMember.voiceChannelID) {
-				// voice joined
+                // voice joined
                 console.log(`[VOICE JOIN] ${newMember.user.username} joined channel ${newMember.voiceChannel.name}`)		
             } else {
-				// voice moved
+                // voice moved
                 console.log(`[VOICE MOVE] ${newMember.user.username} moved from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}`)
             }
         }
@@ -165,7 +160,7 @@ module.exports.events = {
     },
 
     guildBanAdd(guild, user) {
-		// echo if noted guild or noted user
+        // echo if noted guild or noted user
         var noted = guild.id in profile.notedGuilds || user.id in profile.notedUsers
 
         console.spew(
@@ -174,12 +169,12 @@ module.exports.events = {
         )
     },
 
-	// guildJoin and guildDelete are logged for all guilds due to rarity
-	 
-    guildDelete(guild) {
+    // guildJoin and guildDelete are logged for all guilds due to rarity
+     
+    guildJoin(guild) {
         console.log(`[GUILD JOINED] ${guild.name || `[${guild.id}]`}`.magenta, getGuildFolder(guild))
     },
-	
+    
     guildDelete(guild) {
         console.log(`[GUILD LEFT] ${guild.name || `[${guild.id}]`}`.magenta, getGuildFolder(guild))
     },
@@ -193,11 +188,11 @@ module.exports.events = {
     },
 
     message(msg) {
-	
+    
         try {
             var folder = getChannelFolder(msg.channel)
             var noted = Object.keys(profile.notedUsers).includes(msg.author.id)
-	
+    
             if (msg.guild) {
                 noted = noted || Object.keys(profile.notedGuilds).includes(msg.guild.id)
             }
@@ -205,7 +200,7 @@ module.exports.events = {
             if (msg.channel.type === 'dm' && msg.channel.recipient.id in profile.notedUsers) {
                 noted = true
             }
-				
+                
             console.spew(
                 msg.author.username + ": " + msg.content,
                 {path: folder, echo: noted}
@@ -214,43 +209,43 @@ module.exports.events = {
             console.warn("Failed to log message " + msg.id + " to console.")
             console.warn(e.name + ": " + e.message)
         }
-	
-		// Scrape for info.
-		// not sinister i swear
-		// TODO: Load from config
-	
-		// Emails
-		/*var emails = msg.content.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
-		if (emails) {
-			console.log('#' + msg.channel.name + ' ' + msg.author.name + ": " + msg.content);
-			console.info(('Emails: ' + emails[0]).cyan.bold);
-		}
-	
-		// Discord Instant Invites
-		var invites = msg.content.match(/https:\/\/discord\.gg\/[a-z]+/i);
-		if (invites) {
-			console.info(('Invites: ' + invites[0]).cyan.bold);
-		}*/
-	
-	
+    
+        // Scrape for info.
+        // not sinister i swear
+        // TODO: Load from config
+    
+        // Emails
+        /*var emails = msg.content.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
+        if (emails) {
+            console.log('#' + msg.channel.name + ' ' + msg.author.name + ": " + msg.content);
+            console.info(('Emails: ' + emails[0]).cyan.bold);
+        }
+    
+        // Discord Instant Invites
+        var invites = msg.content.match(/https:\/\/discord\.gg\/[a-z]+/i);
+        if (invites) {
+            console.info(('Invites: ' + invites[0]).cyan.bold);
+        }*/
+    
+    
     },
 
-	/*messageUpdate(prev, msg) {
-		var entry = {}
-	
-		try {
-			var folder = msg.channel.type == 'dm' ? 'Private Messages' : msg.guild.name + '-' + msg.guild.id;
-	
-			console.log(
-				"[EDIT] " + msg.author.username + ": " + msg.content,
-				folder,
-				'#' + msg.channel.name + '-' + msg.channel.id
-			)
-		} catch (e) {
-			console.warn("Failed to log edit of message. (FILE)" + msg.id);
-		}
-	
-	},*/
+    /*messageUpdate(prev, msg) {
+        var entry = {}
+    
+        try {
+            var folder = msg.channel.type == 'dm' ? 'Private Messages' : msg.guild.name + '-' + msg.guild.id;
+    
+            console.log(
+                "[EDIT] " + msg.author.username + ": " + msg.content,
+                folder,
+                '#' + msg.channel.name + '-' + msg.channel.id
+            )
+        } catch (e) {
+            console.warn("Failed to log edit of message. (FILE)" + msg.id);
+        }
+    
+    },*/
 
     messageDelete(msg) {
         var name
@@ -262,7 +257,7 @@ module.exports.events = {
             name = 'null'
 
         var folder = getChannelFolder(msg.channel)
-		
+        
         var noted = (msg.guild && msg.guild.id in profile.notedGuilds) || (msg.author && msg.author.id in profile.notedUsers)
         console.spew(`[${'DELETED'.red.bold}] ${name}: ${msg.cleanContent || msg.content || msg.id}`, {path: folder, echo: noted})
     }

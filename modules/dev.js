@@ -1,6 +1,8 @@
 const util = require("util")
 const child_process = require('child_process')
 
+
+// eslint-disable-next-line no-unused-vars
 function exec(cmd, options) {
     return child_process.execSync(cmd, Object.assign({encoding: 'utf8'}, options))
 }
@@ -43,7 +45,7 @@ module.exports.commands = {
         args: 1,
         execute(e) {
             try {
-                var result = eval(e.args[0])
+                eval(e.args[0])
             } catch (err) {
                 e.channel.send("```js\nError: " + err.message + "```")
             }
@@ -131,7 +133,7 @@ module.exports.commands = {
             var https = require('https')
             e.guild.emojis.forEach((m) => {
                 var stream = fs.createWriteStream('dump/' + m.name + '.png')
-                var request = https.get(m.url, function(response) {
+                https.get(m.url, function(response) {
                     response.pipe(stream)
                 })
 

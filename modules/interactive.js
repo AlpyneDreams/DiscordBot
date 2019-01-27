@@ -1,8 +1,8 @@
 require('../bot/util/prompt.js')
 
-const DiscordBot = require('../bot/DiscordBot.js')
+//const DiscordBot = require('../bot/DiscordBot.js')
 const Command = require('../bot/Command.js')
-const getPrettyStatus = require('../modules_selfbot/logging.js').getPrettyStatus
+//const getPrettyStatus = require('../modules_selfbot/logging.js').getPrettyStatus
 
 /** @type {DiscordBot} */
 var _bot
@@ -13,7 +13,7 @@ var commands = cmdModule.interactiveCommands
 module.exports.init = (theBot, theModule) => {
     _bot = theBot
 
-    for (name in commands) {
+    for (const name in commands) {
         //console.log("[Commands] Registering Command: " + name)
         commands[name] = new Command(commands[name], theModule)
     }

@@ -9,8 +9,9 @@ const stripANSI = require('strip-ansi')
 
 const colors = require("ansi-colors")
 
-var _log = console.log
-var _error = console.error
+const _log = console.log
+const _error = console.error
+const _table = console.table
 
 console.muted = false
 console.record = true
@@ -20,7 +21,7 @@ function slugify(str) {
 	return str.replace(/[^\w+!@#$%^&()_/\-\[\]{} ]/g, '-')
 }
 
-function spew(msg = '', {path = '', file = '', error = false, echo = true, record = true} = {}) {
+function spew(msg = '', {path = '', file = '', error = false, echo = true, record = true, timestamp = true} = {}) {
 
 	var date = new Date(Date.now())
 	// generate a timestamp
@@ -29,7 +30,8 @@ function spew(msg = '', {path = '', file = '', error = false, echo = true, recor
 	timestamp += ':' + ("00" + date.getSeconds()).slice(-2)
 
 	// prepend the timestamp to the message
-	msg = "[" + timestamp + "] " + msg
+	if (timestamp)
+		msg = "[" + timestamp + "] " + msg
 
 	if (echo) {
 		if (!error) {
@@ -94,11 +96,18 @@ function warn(msg = '', path = '', file = '') {
 	spew(colors.cyan.bold(msg), {path, file, error: true})
 }
 
+
+function table(tabularData, properties) {
+	return _table.call(Object.assign(console, {log: _log}), tabularData, properties)
+}
+
 // Redefine functions
 console.log = log
 console.info = info
 console.error = error
 console.warn = warn
+
+console.table = table
 
 // New functions
 console.spew = spew

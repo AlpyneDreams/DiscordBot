@@ -1,7 +1,7 @@
 
-const fs = require("fs");
-var http = require("http");
-const Random = require("random-seed");
+const fs = require("fs")
+var http = require("http")
+const Random = require("random-seed")
 
 var magic8ball = [
     // yes - 0
@@ -27,18 +27,18 @@ var magic8ball = [
     "My sources say no",
     "Outlook not so good",
     "Very doubtful"
-];
+]
 
-var min = null;
+var min = null
 var max = null
 
-var yes = 0;
-var maybe = 10;
-var no = 15;
+var yes = 0
+var maybe = 10
+var no = 15
 
 // inclusive range
 function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 function clampAbs(int, min, max) {
@@ -50,12 +50,12 @@ exports.commands = {
     "8ball": {
         args: [0, 1],
         execute(e) {
-            var rmin = min || 0;
-            var rmax = max || magic8ball.length - 1;
+            var rmin = min || 0
+            var rmax = max || magic8ball.length - 1
 
-            var rand = randomInt(rmin, rmax);
+            var rand = randomInt(rmin, rmax)
 
-            e.channel.send("🎱" + magic8ball[rand] + "🎱");
+            e.channel.send("🎱" + magic8ball[rand] + "🎱")
 
         }
     },
@@ -97,29 +97,29 @@ exports.commands = {
         args: [0, 1],
         execute(e) {
             if (e.args[0] === "yes") {
-                min = yes;
-                max = maybe;
+                min = yes
+                max = maybe
             } else if (e.args[0] === "maybe") {
-                min = maybe;
-                max = no;
+                min = maybe
+                max = no
             } else if (e.args[0] === "no") {
-                min = no;
+                min = no
             } else {
-                min = null;
-                max = null;
-                e.channel.send("Unrigged");
+                min = null
+                max = null
+                e.channel.send("Unrigged")
             }
         }
     },
     "size": {
         usage: "[user]",
         execute(e) {
-            var user = e.mentions.users[0] || e.author;
+            var user = e.mentions.users[0] || e.author
 
-            var subject = user.id;
-            var rand = new Random("9_" + subject); // a little bit rigged
-            var size = rand.floatBetween(4, 9);
-            e.channel.send(user.username + " is " + size.toFixed(1) + "in (" + (size * 2.54).toFixed(1) + "cm)");
+            var subject = user.id
+            var rand = new Random("9_" + subject) // a little bit rigged
+            var size = rand.floatBetween(4, 9)
+            e.channel.send(user.username + " is " + size.toFixed(1) + "in (" + (size * 2.54).toFixed(1) + "cm)")
 
         }
     }

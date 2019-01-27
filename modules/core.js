@@ -26,19 +26,19 @@ exports.events = {
     },
 
     warn(msg) {
-        console.warn(`[Discord] ${msg}`);
+        console.warn(`[Discord] ${msg}`)
     },
 
     error(err) {
-        console.error(`[Discord] ${err.name}: ${err.message}`);
+        console.error(`[Discord] ${err.name}: ${err.message}`)
     },
 
     guildCreate(guild) {
-        console.info('Joined guild "' + guild.name + '" #' + guild.id);
+        console.info('Joined guild "' + guild.name + '" #' + guild.id)
     },
 
     guildDelete(guild) {
-        console.info('Left guild "' + guild.name + '" #' + guild.id);
+        console.info('Left guild "' + guild.name + '" #' + guild.id)
     },
 
 }
@@ -75,7 +75,7 @@ exports.commands = {
         help: "Pong!",
         async execute(e) {
             var msg = await e.channel.send("Pong!")
-            var delay = new Date(msg.createdTimestamp).getTime() - new Date(e.createdTimestamp).getTime();
+            var delay = new Date(msg.createdTimestamp).getTime() - new Date(e.createdTimestamp).getTime()
             msg.edit(`Pong! Delay: ${delay} ms`)
         }
     },
@@ -97,14 +97,14 @@ exports.commands = {
 
             if (e.args.length <= 0) {
                 // same as 'commands'
-                e.channel.send(getDefaultHelp(e));
+                e.channel.send(getDefaultHelp(e))
             } else if (e.args[0] === '--min') {
                 e.channel.send(getDefaultHelp(e, '', false))
             } else {
                 if (bot.commands[e.args[0]]) {
 
-                    var cmd = bot.commands [e.args[0]];
-                    var usage = cmd.usage || "";
+                    var cmd = bot.commands [e.args[0]]
+                    var usage = cmd.usage || ""
 
                     e.channel.send(
                         "```css\n"
@@ -112,7 +112,7 @@ exports.commands = {
                             + "Purpose: " + cmd.help
                             + "\n\tUsage:   " + bot.config.commandPrefix + e.args[0] + " " + usage
                             + "```"
-                    );
+                    )
 
                 } else {
                     e.channel.send('"' + e.args[0] + '" is not a recognized command.')
@@ -125,16 +125,16 @@ exports.commands = {
         help: "Provides detailed information on commands and features.",
         execute(e) {
             var bot = e.bot
-            var str = '';
+            var str = ''
             for (var i in bot.commands) {
                 // skip commands the user can't use
                 if (bot.commands[i].tags && !bot.tagManager.hasTags(e, bot.commands[i].tags))
                     continue
                 // Add a newline and a tab only if the command has a help text
                 var description = bot.commands[i].help ? "\n\t" + bot.commands[i].help : ""
-                str += "```css\n" + bot.config.commandPrefix + i + description + "```";
+                str += "```css\n" + bot.config.commandPrefix + i + description + "```"
             }
-            e.author.send(str);
+            e.author.send(str)
 
             if (e.channel.type != 'dm') {
                 e.channel.send("<@" + e.author.id + ">: Check your private messages.")

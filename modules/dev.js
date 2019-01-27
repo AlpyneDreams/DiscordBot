@@ -132,8 +132,8 @@ module.exports.commands = {
             e.guild.emojis.forEach((m) => {
                 var stream = fs.createWriteStream('dump/' + m.name + '.png')
                 var request = https.get(m.url, function(response) {
-                    response.pipe(stream);
-                });
+                    response.pipe(stream)
+                })
 
             })
         }

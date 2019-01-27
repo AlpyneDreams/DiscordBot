@@ -211,7 +211,7 @@ module.exports.events = {
                 {path: folder, echo: noted}
             )
         } catch (e) {
-            console.warn("Failed to log message " + msg.id + " to console.");
+            console.warn("Failed to log message " + msg.id + " to console.")
             console.warn(e.name + ": " + e.message)
         }
 	

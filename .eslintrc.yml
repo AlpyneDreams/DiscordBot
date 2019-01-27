@@ -13,5 +13,5 @@ rules:
   linebreak-style: [error, windows]
   # currently not consistent
   quotes: off
-  #semi: [error, never]
+  semi: [error, never]
   no-console: off

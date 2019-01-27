@@ -104,10 +104,10 @@ module.exports.events = {
 }
 
 function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
+    min = Math.ceil(min)
+    max = Math.floor(max)
     //The maximum is exclusive and the minimum is inclusive
-    return Math.floor(Math.random() * (max - min)) + min;
+    return Math.floor(Math.random() * (max - min)) + min
 }
 
 // displays a starred message
@@ -172,7 +172,7 @@ module.exports.commands = {
         usage: '<message id>',
         execute(e) {
             if (profile.guilds[e.guild.id]) {
-                var stars = profile.guilds[e.guild.id].stars;
+                var stars = profile.guilds[e.guild.id].stars
                 if (Object.keys(stars).length <= 0) return e.channel.send('There are no stars!')
 
                 var star = stars[e.args[0]]
@@ -188,7 +188,7 @@ module.exports.commands = {
         description: "Shows a random starred message from the cache.",
         execute(e) {
             if (profile.guilds[e.guild.id]) {
-                var stars = Object.values(profile.guilds[e.guild.id].stars);
+                var stars = Object.values(profile.guilds[e.guild.id].stars)
                 if (stars.length <= 0) return e.channel.send('There are no stars!')
 
                 var star = stars[getRandomInt(0, stars.length)]

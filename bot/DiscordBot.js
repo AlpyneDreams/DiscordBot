@@ -129,7 +129,7 @@ class DiscordBot {
         var dir = this.config.paths.modules
         fs.readdirSync(dir).forEach(file => {
             this.loadModule(path.join(dir, file), init)
-        });
+        })
 
         if (this.config.extraModules) {
             for (var module of this.config.extraModules) {
@@ -213,4 +213,4 @@ class DiscordBot {
     }
 }
 
-module.exports = DiscordBot;
+module.exports = DiscordBot

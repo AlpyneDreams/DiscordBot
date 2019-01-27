@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("fs")
+const path = require("path")
 
 function listCopypasta() {
     var names = fs.readdirSync(__dirname + "/copypastas")

@@ -1,8 +1,8 @@
-const https = require("https");
-const reddit = require("./rawjs/index.js");
+const https = require("https")
+const reddit = require("./rawjs/index.js")
 
-var modules;
-var client;
+var modules
+var client
 
 exports.init = function(e) {
 
@@ -13,7 +13,7 @@ exports.init = function(e) {
 
 
 
-    client = e.client;
+    client = e.client
 }
 
 
@@ -40,9 +40,9 @@ exports.commands = {
  */
 function redditLive(id, channelId)
 {
-    var channel = client.channels.get(channelId);
+    var channel = client.channels.get(channelId)
 
-    var reader = new reddit.LiveThreadReader(id);
+    var reader = new reddit.LiveThreadReader(id)
     reader.on("error", (err) => {
         channel.send("```diff\nError:\n- " + err + "```")
     })
@@ -89,8 +89,8 @@ function redditLive(id, channelId)
 // stole this from Windsdon
 function randomPost(e) {
     if(!e.args[0].match(/^[a-zA-Z0-9_\-]+$/)) {
-        e.channel.send(`${e.args[0]} is not a valid subreddit`);
-        return;
+        e.channel.send(`${e.args[0]} is not a valid subreddit`)
+        return
     }
 
     https.get({
@@ -100,47 +100,47 @@ function randomPost(e) {
             "User-Agent": "node:discord-reddit-mod:v0.1.0"
         }
     }, function(res) {
-        var body = '';
+        var body = ''
         res.on('data', function(chunk) {
-            body += chunk;
-        });
+            body += chunk
+        })
         res.on('end', function() {
             if(res.statusCode != 200) {
-                e.channel.send(`/r/${e.args[0]} is not an existing subreddit`);
-                return;
+                e.channel.send(`/r/${e.args[0]} is not an existing subreddit`)
+                return
             }
 
             try {
-                var response = JSON.parse(body);
+                var response = JSON.parse(body)
             } catch(e) {
-                e.channel.send("An internal error has occured.");
-                return;
+                e.channel.send("An internal error has occured.")
+                return
             }
 
-            var posts = [];
+            var posts = []
             response.data.children.forEach(function(v) {
-                v.data.url = v.data.url.replace(/\?.*$/i, ''); // stole this from Zephy
+                v.data.url = v.data.url.replace(/\?.*$/i, '') // stole this from Zephy
                 if(!v.data) { // skip invalid
-                    return;
+                    return
                 }
                 if(/(\.png|\.jpg)$/.test(v.data.url)) {
                     posts.push({
                         url: v.data.url,
                         title: v.data.title
-                    });
+                    })
                 }
-            });
+            })
 
             if(posts.length == 0) {
-                e.channel.send(`No suitable posts on /r/${e.args[0]}`);
-                return;
+                e.channel.send(`No suitable posts on /r/${e.args[0]}`)
+                return
             }
 
-            var post = posts[Math.floor(Math.random() * posts.length)];
+            var post = posts[Math.floor(Math.random() * posts.length)]
 
-            e.channel.send(`/r/${e.args[0]}\nTitle: ${post.title}\n${post.url}`);
-        });
+            e.channel.send(`/r/${e.args[0]}\nTitle: ${post.title}\n${post.url}`)
+        })
     }).on('error', function(err) {
-        logger.error(`Error: ${err.message}`);
-    });
+        logger.error(`Error: ${err.message}`)
+    })
 }

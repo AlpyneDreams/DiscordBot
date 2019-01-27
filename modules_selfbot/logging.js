@@ -2,13 +2,13 @@
 var colors = require('ansi-colors')
 
 module.exports.defaultProfile = {
-	notedUsers: [],
-	notedGuilds: [],
+    notedUsers: [],
+    notedGuilds: [],
 }
 
 var profile
 module.exports.init = function(bot, mod) {
-	profile = mod.profile
+    profile = mod.profile
 }
 
 var lastPresenceUpdate = {id: null}
@@ -28,28 +28,28 @@ function getPrettyStatus(status) {
 module.exports.getPrettyStatus = getPrettyStatus
 
 function bell() {
-	process.stdout.write('\u0007')
+    process.stdout.write('\u0007')
 }
 
 
 function getGuildFolder(guild) {
-	if (guild && guild.name)
-		return `Guilds/${guild.name}-${guild.id}`
-	else if (guild.id)
-		return `Guilds/${guild.id}`
-	else
-		return `Guilds/[undefined]`
+    if (guild && guild.name)
+        return `Guilds/${guild.name}-${guild.id}`
+    else if (guild.id)
+        return `Guilds/${guild.id}`
+    else
+        return `Guilds/[undefined]`
 }
 
 function getChannelFolder(channel) {
-	switch (channel.type) {
-		case 'dm':
-			return `Private Messages/${channel.recipient.username}-${channel.recipient.id}`
-		case 'group':
-			return `Group Chats/${channel.name}-${channel.id}`
-		default: // text, voice, category
-			return getGuildFolder(channel.guild) + `/#${channel.name}-${channel.id}`
-	}
+    switch (channel.type) {
+        case 'dm':
+            return `Private Messages/${channel.recipient.username}-${channel.recipient.id}`
+        case 'group':
+            return `Group Chats/${channel.name}-${channel.id}`
+        default: // text, voice, category
+            return getGuildFolder(channel.guild) + `/#${channel.name}-${channel.id}`
+    }
 }
 
 /* typingStart + typingStop
@@ -59,33 +59,33 @@ function getChannelFolder(channel) {
  */
 
 function onTypingStartStop(channel, user, stop = false) {
-	var noted = user.id in profile.notedUsers
+    var noted = user.id in profile.notedUsers
 				|| (channel.guild && channel.guild.id in profile.notedGuilds) 
 				|| (channel.type === 'dm' && channel.recipient.id in profile.notedUsers)
 		
 	// only log noted event to reduce clutter
-	if (!noted) return
+    if (!noted) return
 
-	var color = stop ? 'grey' : 'cyan'
-	var event = stop ? 'STOP' : 'START'
+    var color = stop ? 'grey' : 'cyan'
+    var event = stop ? 'STOP' : 'START'
 
-	if (channel.type === 'dm') {
-		console.spew(
-			`[TYPING ${event}] ${user.username} in a DM channel`[color],
-			{path: getChannelFolder(channel), echo: noted}
-		)
-	} else if (channel.guild && channel.guild.id in profile.notedGuilds) {
-		console.spew(
-			`[TYPING ${event}] ${user.username} in #${channel.name}`[color],
-			{path: getChannelFolder(channel), echo: noted}
-		)
-	}
+    if (channel.type === 'dm') {
+        console.spew(
+            `[TYPING ${event}] ${user.username} in a DM channel`[color],
+            {path: getChannelFolder(channel), echo: noted}
+        )
+    } else if (channel.guild && channel.guild.id in profile.notedGuilds) {
+        console.spew(
+            `[TYPING ${event}] ${user.username} in #${channel.name}`[color],
+            {path: getChannelFolder(channel), echo: noted}
+        )
+    }
 }
 
 var antiDupe = {
-	presence: {
-		song: ""
-	}
+    presence: {
+        song: ""
+    }
 }
 
 const {GuildMember} = require('discord.js')
@@ -96,124 +96,124 @@ module.exports.events = {
 	 * 	- noted users
 	 *	- in noted guilds (no bell)
 	 */
-	presenceUpdate(old, cur) {
-		var noted = cur.user.id in profile.notedUsers || cur.guild.id in profile.notedGuilds
+    presenceUpdate(old, cur) {
+        var noted = cur.user.id in profile.notedUsers || cur.guild.id in profile.notedGuilds
 		// only beep for noted users
-		var important =  cur.user.id in profile.notedUsers
+        var important =  cur.user.id in profile.notedUsers
 		
-		if (!noted) return
+        if (!noted) return
 		
-		const color = important ? 'cyan' : 'reset'
+        const color = important ? 'cyan' : 'reset'
 
-		if (cur.presence.status !== old.presence.status) {
-			if (important) bell()
+        if (cur.presence.status !== old.presence.status) {
+            if (important) bell()
 
-			const oldStatus = getPrettyStatus(old.presence.status)
-			const newStatus = getPrettyStatus(cur.presence.status)
+            const oldStatus = getPrettyStatus(old.presence.status)
+            const newStatus = getPrettyStatus(cur.presence.status)
 
-			console.spew(
-				`[STATUS] {0} [{1}] -> [{2}]`.format(cur.user.username, oldStatus, newStatus)[color].bold,
-				{path: 'Presence'}
-			)
-		} else if (cur.presence.game) {
-			var activity = cur.presence.game
-			if (activity.type === 2) { // 2 = Listening
-				const track = `{state} - {details}`.format(activity)
+            console.spew(
+                `[STATUS] {0} [{1}] -> [{2}]`.format(cur.user.username, oldStatus, newStatus)[color].bold,
+                {path: 'Presence'}
+            )
+        } else if (cur.presence.game) {
+            var activity = cur.presence.game
+            if (activity.type === 2) { // 2 = Listening
+                const track = `{state} - {details}`.format(activity)
 				
-				if (antiDupe.presence.song !== track) {
-					console.spew(
-						`[STATUS] {0} started listening to {1}`.format(cur.user.username, track.bgGreen.bold)[color].bold,
-						{path: 'Presence'}
-					)
-					antiDupe.presence.song = track
-				}
-			}
-		}
-	},
+                if (antiDupe.presence.song !== track) {
+                    console.spew(
+                        `[STATUS] {0} started listening to {1}`.format(cur.user.username, track.bgGreen.bold)[color].bold,
+                        {path: 'Presence'}
+                    )
+                    antiDupe.presence.song = track
+                }
+            }
+        }
+    },
 
 	/* voiceState Update
 	 *  - noted users
 	 *  - or in noted guilds (no bell)
 	 */
-	voiceStateUpdate(oldMember, newMember) {
-		var noted = newMember.user.id in profile.notedUsers || newMember.guild.id in profile.notedGuilds
+    voiceStateUpdate(oldMember, newMember) {
+        var noted = newMember.user.id in profile.notedUsers || newMember.guild.id in profile.notedGuilds
 		// only beep for noted users
-		var important =  newMember.user.id in profile.notedUsers
+        var important =  newMember.user.id in profile.notedUsers
 
-		if (!noted) return
+        if (!noted) return
 
-		if (oldMember.voiceChannelID !== newMember.voiceChannelID) {
-			if (important) bell()
-			if (!newMember.voiceChannelID) {
+        if (oldMember.voiceChannelID !== newMember.voiceChannelID) {
+            if (important) bell()
+            if (!newMember.voiceChannelID) {
 				// voice left
-				var channel = oldMember.voiceChannel || {name: '[unkown channel]'}
-				console.log(`[VOICE LEAVE] ${newMember.user.username} left channel ${channel.name}`)
-			} else  if (!oldMember.voiceChannelID) {
+                var channel = oldMember.voiceChannel || {name: '[unkown channel]'}
+                console.log(`[VOICE LEAVE] ${newMember.user.username} left channel ${channel.name}`)
+            } else  if (!oldMember.voiceChannelID) {
 				// voice joined
-				console.log(`[VOICE JOIN] ${newMember.user.username} joined channel ${newMember.voiceChannel.name}`)		
-			} else {
+                console.log(`[VOICE JOIN] ${newMember.user.username} joined channel ${newMember.voiceChannel.name}`)		
+            } else {
 				// voice moved
-				console.log(`[VOICE MOVE] ${newMember.user.username} moved from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}`)
-			}
-		}
-	},
+                console.log(`[VOICE MOVE] ${newMember.user.username} moved from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}`)
+            }
+        }
+    },
 
-	guildMemberUpdate(old, cur) {
-		if (cur.user.id === cur.client.user.id && old.nickname !== cur.nickname) {
-			console.log(`[NICKNAME CHANGE] ${cur.user.username}: ${old.nickname || null} -> ${cur.nickname || null}`, getGuildFolder())
-		}
-	},
+    guildMemberUpdate(old, cur) {
+        if (cur.user.id === cur.client.user.id && old.nickname !== cur.nickname) {
+            console.log(`[NICKNAME CHANGE] ${cur.user.username}: ${old.nickname || null} -> ${cur.nickname || null}`, getGuildFolder())
+        }
+    },
 
-	guildBanAdd(guild, user) {
+    guildBanAdd(guild, user) {
 		// echo if noted guild or noted user
-		var noted = guild.id in profile.notedGuilds || user.id in profile.notedUsers
+        var noted = guild.id in profile.notedGuilds || user.id in profile.notedUsers
 
-		console.spew(
-			`[BAN ADD] ${guild.name} banned ${user.tag}`.magenta,
-			{path: getGuildFolder(guild), echo: noted}
-		)
-	},
+        console.spew(
+            `[BAN ADD] ${guild.name} banned ${user.tag}`.magenta,
+            {path: getGuildFolder(guild), echo: noted}
+        )
+    },
 
 	// guildJoin and guildDelete are logged for all guilds due to rarity
 	 
-	guildDelete(guild) {
-		console.log(`[GUILD JOINED] ${guild.name || `[${guild.id}]`}`.magenta, getGuildFolder(guild))
-	},
+    guildDelete(guild) {
+        console.log(`[GUILD JOINED] ${guild.name || `[${guild.id}]`}`.magenta, getGuildFolder(guild))
+    },
 	
-	guildDelete(guild) {
-		console.log(`[GUILD LEFT] ${guild.name || `[${guild.id}]`}`.magenta, getGuildFolder(guild))
-	},
+    guildDelete(guild) {
+        console.log(`[GUILD LEFT] ${guild.name || `[${guild.id}]`}`.magenta, getGuildFolder(guild))
+    },
 
-	typingStart(channel, user) {
-		onTypingStartStop(channel, user, false)		
-	},
+    typingStart(channel, user) {
+        onTypingStartStop(channel, user, false)		
+    },
 
-	typingStop(channel, user) {
-		onTypingStartStop(channel, user, true)
-	},
+    typingStop(channel, user) {
+        onTypingStartStop(channel, user, true)
+    },
 
-	message(msg) {
+    message(msg) {
 	
-		try {
-			var folder = getChannelFolder(msg.channel)
-			var noted = Object.keys(profile.notedUsers).includes(msg.author.id)
+        try {
+            var folder = getChannelFolder(msg.channel)
+            var noted = Object.keys(profile.notedUsers).includes(msg.author.id)
 	
-			if (msg.guild) {
-				noted = noted || Object.keys(profile.notedGuilds).includes(msg.guild.id)
-			}
+            if (msg.guild) {
+                noted = noted || Object.keys(profile.notedGuilds).includes(msg.guild.id)
+            }
 
-			if (msg.channel.type === 'dm' && msg.channel.recipient.id in profile.notedUsers) {
-				noted = true
-			}
+            if (msg.channel.type === 'dm' && msg.channel.recipient.id in profile.notedUsers) {
+                noted = true
+            }
 				
-			console.spew(
-				msg.author.username + ": " + msg.content,
-				{path: folder, echo: noted}
-			)
-		} catch (e) {
-			console.warn("Failed to log message " + msg.id + " to console.");
-			console.warn(e.name + ": " + e.message)
-		}
+            console.spew(
+                msg.author.username + ": " + msg.content,
+                {path: folder, echo: noted}
+            )
+        } catch (e) {
+            console.warn("Failed to log message " + msg.id + " to console.");
+            console.warn(e.name + ": " + e.message)
+        }
 	
 		// Scrape for info.
 		// not sinister i swear
@@ -233,7 +233,7 @@ module.exports.events = {
 		}*/
 	
 	
-	},
+    },
 
 	/*messageUpdate(prev, msg) {
 		var entry = {}
@@ -252,19 +252,19 @@ module.exports.events = {
 	
 	},*/
 
-	messageDelete(msg) {
-		var name
-		if (msg.member)
-			name = msg.member.displayName
-		else if (msg.author)
-			name = msg.author.displayName || msg.author.id
-		else
-			name = 'null'
+    messageDelete(msg) {
+        var name
+        if (msg.member)
+            name = msg.member.displayName
+        else if (msg.author)
+            name = msg.author.displayName || msg.author.id
+        else
+            name = 'null'
 
-		var folder = getChannelFolder(msg.channel)
+        var folder = getChannelFolder(msg.channel)
 		
-		var noted = (msg.guild && msg.guild.id in profile.notedGuilds) || (msg.author && msg.author.id in profile.notedUsers)
-		console.spew(`[${'DELETED'.red.bold}] ${name}: ${msg.cleanContent || msg.content || msg.id}`, {path: folder, echo: noted})
-	}
+        var noted = (msg.guild && msg.guild.id in profile.notedGuilds) || (msg.author && msg.author.id in profile.notedUsers)
+        console.spew(`[${'DELETED'.red.bold}] ${name}: ${msg.cleanContent || msg.content || msg.id}`, {path: folder, echo: noted})
+    }
 
 }

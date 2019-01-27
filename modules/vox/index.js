@@ -27,7 +27,7 @@ async function vox(e, dir) {
                 .replace(/,/g, ' _comma')
                 .replace(/\./g, ' _period')
                 .replace(/[']+/gi, '')
-            .toLowerCase()
+                .toLowerCase()
 
             var words = msg.split(' ')
 

@@ -107,7 +107,7 @@ exports.commands = {
                     var usage = cmd.usage || "";
 
                     e.channel.send(
-                            "```css\n"
+                        "```css\n"
                             + bot.config.commandPrefix + e.args[0] + "\n\t"
                             + "Purpose: " + cmd.help
                             + "\n\tUsage:   " + bot.config.commandPrefix + e.args[0] + " " + usage

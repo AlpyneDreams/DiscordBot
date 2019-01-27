@@ -33,7 +33,8 @@ const COLOR_GOLD = 0xf1c40f
 
 var bot, moduleProfile
 module.exports.init = function(e, m) {
-    bot = e; moduleProfile = m.profile;
+    bot = e
+    moduleProfile = m.profile
 }
 
 function getProfile(guild) {
@@ -64,15 +65,15 @@ function starColor(stars) {
      * To create the gradient, we use a linear interpolation formula
      * Which for reference is X = X_1 * p + X_2 * (1 - p)
      **/
-     let p = stars / 7
-     if (p > 1.0) p = 1.0
+    let p = stars / 7
+    if (p > 1.0) p = 1.0
 
 
-     let red = 255
-     let green = Math.round( (194 * p) + (253 * (1-p)) )
-     let blue  = Math.round( (12  * p) + (247 * (1-p)) )
+    let red = 255
+    let green = Math.round( (194 * p) + (253 * (1-p)) )
+    let blue  = Math.round( (12  * p) + (247 * (1-p)) )
 
-     return (red << 16) + (green << 8) + blue
+    return (red << 16) + (green << 8) + blue
 }
 // Generates an embed quote for a starred message
 function starEmbed(msg, count=1) {
@@ -308,7 +309,7 @@ module.exports.commands = {
                 var embed = {
                     fields: [
                         {name: 'Server Statistics',
-                        value: `${profile.stats.messages} messages starred, with a total of ${profile.stats.totalStars} stars.`},
+                            value: `${profile.stats.messages} messages starred, with a total of ${profile.stats.totalStars} stars.`},
                         {name: 'Top Starred Posts', value:''},
                         {name: 'Top Star Givers', value:''},
                         {name: 'Top Star Receivers', value:''}
@@ -375,8 +376,8 @@ module.exports.commands = {
                     .filterArray(r => r.emoji.name === STAR_EMOJI)[0]
                     .users
                         // filter out selfstars
-                        .filter(u => u.id !== msg.author.id)
-                        .map(u => u.username)
+                    .filter(u => u.id !== msg.author.id)
+                    .map(u => u.username)
                     .join(', ')
                 )
             }

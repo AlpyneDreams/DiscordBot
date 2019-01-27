@@ -72,11 +72,11 @@ module.exports.commands = {
         reload: true,
         async execute(e) {
             //if (e.args.length === 1) {
-                var q = await db.getQuote(e.client, e.guild.id, e.args[0])
-                for (var m of q.messages) {
-                    var author = await e.client.fetchUser(m.author)
-                    sendQuote(e.channel, m, author)
-                }
+            var q = await db.getQuote(e.client, e.guild.id, e.args[0])
+            for (var m of q.messages) {
+                var author = await e.client.fetchUser(m.author)
+                sendQuote(e.channel, m, author)
+            }
             //} else {
                 // !quote with no args means the user wants a new quote
                 //api.newQuote(e, config)

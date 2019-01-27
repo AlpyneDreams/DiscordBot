@@ -47,7 +47,7 @@ async function smartFindChannels(e, input) {
     } else {
         if (!result)
             result = e.bot.client.channels.filter(u => u && u.name && u.name.toLowerCase() === input.toLowerCase())
-        }
+    }
 
     if (!result) return null
 

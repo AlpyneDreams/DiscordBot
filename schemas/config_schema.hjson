@@ -1,42 +1,42 @@
 {
-	$schema: "http://json-schema.org/draft-04/schema"
-	properties: {
-		base: {type: "string"}
-		commandPrefix: {type: "string"}
-		token: {type: "string"}
-		selfCommandsOnly: {type: "boolean"}
-		selfCommands: {type: "boolean"}
-		paths: {
-			type: "object"
-			properties: {
-				modules: {type: "string"}
-				profile: {type: "string"}
-				logs: {type: "string"}
-			}
-		}
-		moduleWhitelist: {type: "boolean"}
-		modules: {
-			type: "object"
-			additionalProperties: {
-				type: "object"
-				properties: {
-					disabled: {type: "boolean"}
-				}
-			}
-		}
-		extraModules: {
-			type: "array"
-			items: {
-				type: "string"
-			}
-		}
-		profile: {
-			type: "object"
-		}
-		client: {
-			type: "object"
-		}
-		debug: {type: "boolean"}
-	}
-	required: ["commandPrefix", "token", "selfCommands", "paths"]
+    $schema: "http://json-schema.org/draft-04/schema"
+    properties: {
+        base: {type: "string"}
+        commandPrefix: {type: "string"}
+        token: {type: "string"}
+        selfCommandsOnly: {type: "boolean"}
+        selfCommands: {type: "boolean"}
+        paths: {
+            type: "object"
+            properties: {
+                modules: {type: "string"}
+                profile: {type: "string"}
+                logs: {type: "string"}
+            }
+        }
+        moduleWhitelist: {type: "boolean"}
+        modules: {
+            type: "object"
+            additionalProperties: {
+                type: "object"
+                properties: {
+                    disabled: {type: "boolean"}
+                }
+            }
+        }
+        extraModules: {
+            type: "array"
+            items: {
+                type: "string"
+            }
+        }
+        profile: {
+            type: "object"
+        }
+        client: {
+            type: "object"
+        }
+        debug: {type: "boolean"}
+    }
+    required: ["commandPrefix", "token", "selfCommands", "paths"]
 }

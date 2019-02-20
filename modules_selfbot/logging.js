@@ -49,12 +49,31 @@ function getChannelFolder(channel) {
     }
 }
 
+// users that have sent or recieved a DM w/ the local user in the past minute
+let interactingUsers = new Set()
+
+function userInteract(id) {
+    interactingUsers.add(id)
+    setTimeout(() => {
+        interactingUsers.delete(id)
+    }, 60000) // 60,000 ms = 1 minute
+    
+}
+
+module.exports.interactingUsers = interactingUsers
+
+function checkForDiscard(user, channel) {
+    if (!interactingUsers.has(user.id) && user.id !== user.client.user.id) {
+        bell()
+        console.spew(`[DM DISCARDED] ${user.username}`.green.bold, {path: getChannelFolder(channel)})
+    }
+}
+
 /* typingStart + typingStop
  *	- by noted users
  * 	- DMs to noted users
  *	- in noted guilds
  */
-
 function onTypingStartStop(channel, user, stop = false) {
     var noted = user.id in profile.notedUsers
                 || (channel.guild && channel.guild.id in profile.notedGuilds) 
@@ -71,6 +90,12 @@ function onTypingStartStop(channel, user, stop = false) {
             `[TYPING ${event}] ${user.username} in a DM channel`[color],
             {path: getChannelFolder(channel), echo: noted}
         )
+
+        // discarded message detection
+        if (stop) {
+            // grace period of 2 seconds in case the message event is late
+            setTimeout(checkForDiscard, 2000, user, channel)
+        }
     } else if (channel.guild && channel.guild.id in profile.notedGuilds) {
         console.spew(
             `[TYPING ${event}] ${user.username} in #${channel.name}`[color],
@@ -196,8 +221,15 @@ module.exports.events = {
                 noted = noted || Object.keys(profile.notedGuilds).includes(msg.guild.id)
             }
 
-            if (msg.channel.type === 'dm' && msg.channel.recipient.id in profile.notedUsers) {
-                noted = true
+            if (msg.channel.type === 'dm') {
+                if (msg.channel.recipient.id in profile.notedUsers) {
+                    // DM is TO  a noted user
+                    noted = true
+                    userInteract(msg.channel.recipient.id)
+                } else if (noted) {
+                    // DM is FROM a noted user
+                    userInteract(msg.channel.author.id)
+                }
             }
                 
             console.spew(

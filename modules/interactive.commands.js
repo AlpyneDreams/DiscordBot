@@ -114,6 +114,7 @@ const commands = {
             if (channel) {
                 g.channel = channel
                 if (channel instanceof Map) {
+                    g.channel = null
                     e.send(`Found ${channel.size} channels: `)
                     g.foundChannels = []
                     for (var c of channel.values()) {

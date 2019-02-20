@@ -5,10 +5,16 @@ module.exports.events = {
         if (e.author.id === e.client.user.id) {
             var i = e.content.indexOf('/shrug')
             if (i < 0) return
-            // double slash escape
-            if (e.content[i-1] === '/') return
 
-            var text = e.content
+            let text = e.content
+
+            // double slash escape
+            if (e.content[i-1] === '/') {
+                e.edit(text.replace('//shrug', '/shrug'))
+                return
+            }
+
+            
             if (e.content.startsWith('/shrug ')) {
                 // normal /shrug - prepends at end
                 text = text.replace(/^\/shrug +/i, '') + ` ${SHRUG}`

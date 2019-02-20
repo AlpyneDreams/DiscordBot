@@ -32,7 +32,7 @@ function bell() {
 function getGuildFolder(guild) {
     if (guild && guild.name)
         return `Guilds/${guild.name}-${guild.id}`
-    else if (guild.id)
+    else if (guild && guild.id)
         return `Guilds/${guild.id}`
     else
         return `Guilds/[undefined]`
@@ -89,11 +89,11 @@ module.exports.events = {
     
     /* presenceUpdate
      * 	- noted users
-     *	- in noted guilds (no bell)
+     *	- in noted guilds
      */
     presenceUpdate(old, cur) {
         var noted = cur.user.id in profile.notedUsers || cur.guild.id in profile.notedGuilds
-        // only beep for noted users
+        // highlight noted users
         var important =  cur.user.id in profile.notedUsers
         
         if (!noted) return
@@ -101,7 +101,6 @@ module.exports.events = {
         const color = important ? 'cyan' : 'reset'
 
         if (cur.presence.status !== old.presence.status) {
-            if (important) bell()
 
             const oldStatus = getPrettyStatus(old.presence.status)
             const newStatus = getPrettyStatus(cur.presence.status)
@@ -142,20 +141,20 @@ module.exports.events = {
             if (!newMember.voiceChannelID) {
                 // voice left
                 var channel = oldMember.voiceChannel || {name: '[unkown channel]'}
-                console.log(`[VOICE LEAVE] ${newMember.user.username} left channel ${channel.name}`)
+                console.log(`[VOICE LEAVE] ${newMember.user.username} left channel ${channel.name}`, getGuildFolder(newMember.guild))
             } else  if (!oldMember.voiceChannelID) {
                 // voice joined
-                console.log(`[VOICE JOIN] ${newMember.user.username} joined channel ${newMember.voiceChannel.name}`)		
+                console.log(`[VOICE JOIN] ${newMember.user.username} joined channel ${newMember.voiceChannel.name}`, getGuildFolder(newMember.guild))		
             } else {
                 // voice moved
-                console.log(`[VOICE MOVE] ${newMember.user.username} moved from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}`)
+                console.log(`[VOICE MOVE] ${newMember.user.username} moved from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}`, getGuildFolder(newMember.guild))
             }
         }
     },
 
     guildMemberUpdate(old, cur) {
         if (cur.user.id === cur.client.user.id && old.nickname !== cur.nickname) {
-            console.log(`[NICKNAME CHANGE] ${cur.user.username}: ${old.nickname || null} -> ${cur.nickname || null}`, getGuildFolder())
+            console.log(`[NICKNAME CHANGE] ${cur.user.username}: ${old.nickname || null} -> ${cur.nickname || null}`, getGuildFolder(cur.guild))
         }
     },
 

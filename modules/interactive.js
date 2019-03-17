@@ -1,4 +1,6 @@
 require('../bot/util/prompt.js')
+const streamBuffers = require('stream-buffers')
+const stripANSI = require('strip-ansi')
 
 //const DiscordBot = require('../bot/DiscordBot.js')
 const Command = require('../bot/Command.js')
@@ -22,7 +24,7 @@ module.exports.init = (theBot, theModule) => {
 module.exports._commands = commands
 
 // analogous to DiscordBot.executeCommand
-console.readline.on('line', async (rawCommand) => {
+async function executeCommand(rawCommand, msgEvent = null) {
     var fullCommand = rawCommand.split(' ')
     var name = fullCommand[0]
     
@@ -44,21 +46,58 @@ console.readline.on('line', async (rawCommand) => {
             }
         }
 
-        var send = mg => console.log(`[${name}] ${mg}`.magenta.bold)
-        var msg = {
+        let send = mg => console.log(`[${name}] ${mg}`.magenta.bold)
+        let msg = {
             content: rawCommand,
             client: _bot.client,
+            plainText: false, // supports ANSI by default
             send,
-            channel: {send}
+            con: console
         }
+        if (msgEvent) {
+            // if invoked from discord we need a more complicated logging system
+            msg = Object.assign(msg, msgEvent)
+            let outStream = new streamBuffers.WritableStreamBuffer({
+                initialSize: 4096,
+                incrementAmount: 4096
+            })
+            msg.con = new console.Console({stdout: outStream, colorMode: false})
+            msg.send = mg => msg.con.log(mg)
+            msg.plainText = true // ANSI codes will be ignored
 
-        await cmd.invoke(_bot, fullCommand, msg, false)
+            await cmd.invoke(_bot, fullCommand, msg, false)
+            
+            if (outStream.size() > 0) {
+                let out = outStream.getContentsAsString('utf8')
+                msg.channel.send(stripANSI(out), {code: true, split: true})
+            }
+        } else {
+            // invoke normally
+            await cmd.invoke(_bot, fullCommand, msg, false)
+        }
     } else if (rawCommand.trim() !== '') {
-        console.log(`[Commands] Invalid Command: ${name}`)
+        if (msgEvent) {
+            msgEvent.channel.send(`\`⚠️[Commands] Invalid Command: ${name}\``)
+        } else {
+            console.log(`[Commands] Invalid Command: ${name}`)
+        }
     }
 
     console.readline.prompt()
-})
+}
+
+module.exports.commands = {
+    "c": {
+        tags: 'owner',
+        args: 1,
+        execute(e) {
+            executeCommand(e.args[0], e)
+        }
+    }
+}
+
+// analogous to DiscordBot.executeCommand
+console.readline.on('line', executeCommand)
 
 
 process.stdin.resume()

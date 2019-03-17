@@ -26,6 +26,22 @@ async function smartFindUser(e, input) {
     else return await e.bot.client.fetchUser(result.id)
 }
 
+async function smartFindGuild(e, input) {
+    input = input.toLowerCase()
+
+    var result
+
+    if (e.bot.client.guilds.has(input)) {
+        result = e.bot.client.guilds[input]
+    } else {
+        result = e.bot.client.guilds.find(g => g.name.toLowerCase().startsWith(input))
+
+        if (!result && Number.isInteger(parseInt(input)))
+            result = e.bot.client.guilds.find(g => g.position === parseInt(input))
+    }
+    return result || null
+}
+
 async function smartFindChannels(e, input) {
     
     var index = parseInt(input)
@@ -64,29 +80,47 @@ function channelString(c) {
 }
 
 const commands = {
+    'help': {
+        async execute(e) {
+            e.con.group('Commands:')
+            for (const cmd in commands) {
+                let usage = commands[cmd].usage
+                if (usage) {
+                    e.con.log(`${cmd} ${usage}`)
+                } else {
+                    e.con.log(cmd)
+                }
+                
+            }
+            e.con.groupEnd()
+        }
+    },
     'eval': {
         args: 1,
+        usage: '<expr>',
         async execute(e) {
             try {
                 /* eslint-disable no-unused-vars */
                 let user = g.user
                 let channel = g.channel
                 let res = eval(e.args[0])
-                console.dir(eval(e.args[0]), {depth: 3})
+                e.con.dir(eval(e.args[0]), {depth: 3})
                 /* eslint-enable no-unused-vars */
             } catch (err) {
-                console.error(err)
+                e.con.error(err)
             }
         }
     },
     'echo': {
         args: 1,
+        usage: '<text>',
         async execute(e) {
-            console.log(e.args[0])
+            e.con.log(e.args[0])
         }
     },
     'user': {
         args: 1,
+        usage: '<name|id>',
         async execute(e) {
             var user = await smartFindUser(e, e.args[0])
             if (user) {
@@ -97,8 +131,60 @@ const commands = {
             }
         }
     },
+    'guild': {
+        args: 1,
+        usage: '<name|id>',
+        async execute(e) {
+            var guild = await smartFindGuild(e, e.args[0])
+            if (guild) {
+                g.guild = guild
+                e.send(`Found ${guild.name} <${guild.id}>`)
+            } else {
+                e.send(`No guild found: '${e.args[0]}'`)
+            }
+        }
+    },
+    'list': {
+        async execute(e) {
+            if (!g.guild) return e.send('No guild selected.')
+            let channels = []
+            for (const [, cat] of g.guild.channels.sort((a, b) => a.position - b.position).filter(ch => ch.type === 'category' || !ch.parent)) {
+                channels.push(cat)
+                if (cat.children) for (const [, c] of cat.children.sort((a, b) => a.position - b.position)) {
+                    channels.push(c)
+                }
+            }
+            // Assert: correct # of channels
+            e.con.assert(
+                channels.length === g.guild.channels.size,
+                'Channels command missed %d channels',
+                g.guild.channels.size - channels.length
+            )
+            for (const c of channels) {
+                if (c.type === 'category') {
+                    e.con.groupEnd()
+                    e.con.group(`=== ${c.name} ===`)
+                } else if (c.type === 'text') {
+                    e.con.log(`#${c.name}`)
+                } else  if (c.type === 'voice') {
+                    e.con.group(`🔊${c.name}`)
+                    for (const [, m] of c.members) {
+                        let symbols = ''
+                        symbols += m.deaf ? e.plainText ? ' [🎧❌]' : ' 🎧'.red : ' 🎧'.green
+                        symbols += m.mute ? e.plainText ? ' [🎤❌]' : ' 🎤'.red : ' 🎤'.green
+                        e.con.log(` @${m.user.username}`.cyan + symbols)
+                    }
+                    e.con.groupEnd()
+                } else {
+                    e.con.log(c.name)
+                }
+            }
+            e.con.groupEnd()
+        }
+    },
     'channel': {
         args: [0, 1],
+        usage: '[name|id]',
         async execute(e) {
 
             if (e.args.length === 0) {
@@ -126,6 +212,7 @@ const commands = {
                 } else {
                     var name = channel.type === 'text' ? '#' + channel.name : channel.name
                     e.send(`Selected channel ${name} ${channel}`)
+                    if (g.channel.guild) g.guild = g.channel.guild
                 }
             } else {
                 e.send(`No channel found: '${e.args[0]}'`)
@@ -134,6 +221,7 @@ const commands = {
     },
     'send': {
         args: 1,
+        usage: '<message>',
         execute(e) {
             if (!g.channel) return e.send('No channel selected.')
             var msg = e.args[0]
@@ -142,12 +230,6 @@ const commands = {
             resolve('$channel', g.channel)
             resolve('$user', g.user)
             g.channel.send(msg)
-        }
-    },
-    'list': {
-        execute(e) {
-            if (!g.channel) return e.send('No channel selected.')
-            e.send(g.channel.members.map(x => x.user ? x.user.username : null).join(', '))
         }
     },
     'report': {
@@ -162,7 +244,7 @@ const commands = {
                 {name: "Voice Broadcasts", count: e.client.broadcasts.length},
                 {name: "Voice Connections", count: e.client.voiceConnections .size}
             ]
-            console.table(report)
+            e.con.table(report)
 
             var guildReport = []
             for (var guild of e.client.guilds.values()) {
@@ -173,7 +255,7 @@ const commands = {
                 })
             }
             guildReport = guildReport.sort((a, b) => b.members - a.members)
-            console.table(guildReport)
+            e.con.table(guildReport)
 
             var channelReport = []
             for (var channel of e.client.channels.values()) {
@@ -184,7 +266,7 @@ const commands = {
                 })
             }
             channelReport = channelReport.sort((a, b) => b.messages - a.messages).slice(0, 16)
-            console.table(channelReport)
+            e.con.table(channelReport)
         }
     },
 

@@ -16,6 +16,7 @@ const _table = console.table
 console.muted = false
 console.record = true
 console.logdir = 'logs'
+console.groupIndent = 0
 
 function slugify(str) {
     return str.replace(/[^\w+!@#$%^&()_/\-[\]{} ]/g, '-')
@@ -31,7 +32,7 @@ function spew(msg = '', {path = '', file = '', error = false, echo = true, recor
 
     // prepend the timestamp to the message
     if (timestamp)
-        msg = "[" + ts + "] " + msg
+        msg = "[" + ts + "] " + '  '.repeat(console.groupIndent) + msg
 
     if (echo) {
         if (!error) {
@@ -93,9 +94,18 @@ function error(msg = '', path = '', file = '') {
 
 function warn(msg = '', path = '', file = '') {
     msg = '[WARN] ' + msg
-    spew(colors.cyan.bold(msg), {path, file, error: true})
+    spew(colors.yellow.bold(msg), {path, file, error: true})
 }
 
+function group(...label) {
+    if (label) log(...label)
+    console.groupIndent++
+}
+
+function groupEnd() {
+    if (console.groupIndent > 0)
+        console.groupIndent--
+}
 
 function table(tabularData, properties) {
     return _table.call(Object.assign(console, {log: _log}), tabularData, properties)
@@ -106,6 +116,10 @@ console.log = log
 console.info = info
 console.error = error
 console.warn = warn
+
+console.group = group
+console.groupCollapsed = group
+console.groupEnd = groupEnd
 
 console.table = table
 

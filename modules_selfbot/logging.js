@@ -106,9 +106,31 @@ function onTypingStartStop(channel, user, stop = false) {
 
 var antiDupe = {
     presence: {
+        status: "",
         song: ""
     }
 }
+
+/**
+ * Types of Logged Event:
+ *  - Status Change
+ *  - Spotify Listen
+ *  - Voice Join
+ *  - Voice Leave
+ *  - Voice Move
+ *  - Voice Server Mute
+ *  - Voice Server Unmute
+ *  - Voice Server Deafen
+ *  - Voice Server Undeafen
+ *  - Nickname Change
+ *  - Ban Add
+ *  - Guild Joined
+ *  - Guild Left
+ *  - Typing Start
+ *  - Typing Stop
+ *  - Message
+ *  - Message Delete
+ */
 
 module.exports.events = {
     
@@ -129,11 +151,14 @@ module.exports.events = {
 
             const oldStatus = getPrettyStatus(old.presence.status)
             const newStatus = getPrettyStatus(cur.presence.status)
-
-            console.spew(
-                `[STATUS] {0} [{1}] -> [{2}]`.format(cur.user.username, oldStatus, newStatus)[color].bold,
-                {path: 'Presence'}
-            )
+            let msg = `[STATUS] {0} [{1}] -> [{2}]`.format(cur.user.username, oldStatus, newStatus)
+            if (antiDupe.presence.status !== msg) {
+                console.spew(
+                    msg[color].bold,
+                    {path: 'Presence'}
+                )
+                antiDupe.presence.status = msg
+            }
         } else if (cur.presence.game) {
             var activity = cur.presence.game
             if (activity.type === 2) { // 2 = Listening
@@ -173,6 +198,22 @@ module.exports.events = {
             } else {
                 // voice moved
                 console.log(`[VOICE MOVE] ${newMember.user.username} moved from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}`, getGuildFolder(newMember.guild))
+            }
+        }
+
+        if (oldMember.serverMute !== newMember.serverMute) {
+            if (newMember.serverMute) {
+                console.log(`[VOICE SERVER MUTE] ${newMember.user.username}`.red, getGuildFolder(newMember.guild))
+            } else {
+                console.log(`[VOICE SERVER UNMUTE] ${newMember.user.username}`.green, getGuildFolder(newMember.guild))
+            }
+        }
+
+        if (oldMember.serverDeaf !== newMember.serverDeaf) {
+            if (newMember.serverDeaf) {
+                console.log(`[VOICE SERVER DEAFEN] ${newMember.user.username}`.red, getGuildFolder(newMember.guild))
+            } else {
+                console.log(`[VOICE SERVER UNDEAFEN] ${newMember.user.username}`.green, getGuildFolder(newMember.guild))
             }
         }
     },

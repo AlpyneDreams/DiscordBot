@@ -11,7 +11,7 @@ const TagManager = require('./TagManager.js')
 
 class DiscordBot {
 
-    constructor(cfg) {
+    constructor(cfg, loadModules = true) {
         // disable flatfile logging until config is loaded
         // and log path is specified
         console.record = false
@@ -32,7 +32,8 @@ class DiscordBot {
         this.client = new Discord.Client(this.config.client || {})
         this.configureClient()
 
-        this.loadAllModules()
+        if (loadModules)
+            this.loadAllModules()
     }
 
     get allowSelfCommands() {
@@ -104,6 +105,8 @@ class DiscordBot {
         } catch (e) {
             if (e instanceof Error)
                 console.error(e.stack)
+            else
+                return e // will be true if module skipped, false if not a module
         }
     }
 
@@ -123,9 +126,13 @@ class DiscordBot {
 
     // loads all modules
     loadAllModules(init = true) {
-        var dir = this.config.paths.modules
+        let dir = this.config.paths.modules
+        let skippedModules = []
         fs.readdirSync(dir).forEach(file => {
-            this.loadModule(path.join(dir, file), init)
+            let mod = this.loadModule(path.join(dir, file), init)
+            if (mod === true) {
+                skippedModules.push(file)
+            }
         })
 
         if (this.config.extraModules) {
@@ -133,6 +140,9 @@ class DiscordBot {
                 this.loadModule(module, init, true)
             }
         }
+
+        if (skippedModules.length > 0)
+            console.info(`Skipped ${skippedModules.length} Modules`)
 
         this.profile.save()
 

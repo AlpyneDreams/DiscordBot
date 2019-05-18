@@ -21,15 +21,15 @@ class Module {
         var isHjson = (!isDirectory) && ext.match(/h?json$/gi)
 
         // skip disabled modules
-        if (bot.config.modules && bot.config.modules[name]) {
-            if (bot.config.modules[name].disabled) {
+        if (bot.config.modules && bot.config.modules[name] || Array.isArray(bot.config.modules) && bot.config.modules.includes(name)) {
+            if (!Array.isArray(bot.config.modules) && bot.config.modules[name].disabled) {
                 console.info(`Skipped Module: ${name.yellow.bold}`)
                 throw true
             }
         } else {
             // skip if there's no config entry and the whitelist is on
             if (bot.config.moduleWhitelist && !force) {
-                console.info(`Skipped Unwhitelisted Module: ${name.yellow.bold}`)
+                //console.info(`Skipped Unwhitelisted Module: ${name.yellow.bold}`)
                 throw true
             }
         }
@@ -62,6 +62,8 @@ class Module {
 
     // integrates the module into the bot
     build(imports, name, file, bot, addEvents) {
+
+        Object.assign(this, imports)
 
         Object.assign(this, {
             init: imports.init,

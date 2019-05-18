@@ -4,4 +4,7 @@ data/profiles/*
 data/tokens/*
 node_modules/*
 
+!data/profiles/.empty
+!data/tokens/.empty
+
 ffmpeg

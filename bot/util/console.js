@@ -3,7 +3,6 @@
 require('./colors.js') // Overrides String.prototype
 require('./prompt.js')
 require('./format.js')
-require('./signals.js')
 
 const fs = require('fs')
 const stripANSI = require('strip-ansi')

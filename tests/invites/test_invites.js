@@ -2,6 +2,8 @@ require("../../bot/util/console.js")
 const fs = require('fs')
 const DiscordBot = require("../../bot/DiscordBot.js")
 const Command = require("../../bot/Command.js")
+require('../../bot/util/signals.js')(bot)
+
 
 const log = msg => console.log(`[INVITES] ${msg}`.magenta)
 

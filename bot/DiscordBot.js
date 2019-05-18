@@ -195,7 +195,7 @@ class DiscordBot {
         // "token" is either a file name or an acutal token string
         // tokens can be laoded from external files for security
         if (fs.existsSync(this.config.token)) {
-            token = fs.readFileSync(this.config.token).toString()
+            token = fs.readFileSync(this.config.token).toString().trim()
         } else {
             token = this.config.token
         }

@@ -77,7 +77,7 @@ class DiscordBot {
             // development and debugging purposes
             if (cmd.reload) {
                 try {
-                    this.reloadModule(cmd.module.name, cmd.module.file)
+                    this.reloadModule(cmd.module.name, cmd.module.path)
                     cmd = this.commands[fullCommand[0]]
 
                     if (!cmd) return

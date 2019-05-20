@@ -1,5 +1,5 @@
 const https = require("https")
-const reddit = require("./rawjs/index.js")
+const reddit = require("raw.js")
 
 //var modules
 var client

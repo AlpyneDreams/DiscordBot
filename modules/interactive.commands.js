@@ -223,6 +223,7 @@ const commands = {
         args: 1,
         usage: '<message>',
         execute(e) {
+            if (g.user && !g.channel) g.channel = g.user.dmChannel
             if (!g.channel) return e.send('No channel selected.')
             var msg = e.args[0]
             // contrived way to allow $$ to escape

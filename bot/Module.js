@@ -6,6 +6,11 @@ const Hjson = require('hjson')
 
 const Command = require('./Command.js')
 
+/**
+ * @throws Throws false if module does not exist. Throws true if module was skipped.
+ * Otherwise will throw any other error that occurs while loading module.
+ * 
+ */
 class Module {
     constructor(file, bot, addEvents = false, force = false) {
         file = (path.resolve(file))

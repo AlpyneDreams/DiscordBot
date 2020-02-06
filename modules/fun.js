@@ -14,7 +14,7 @@ var magic8ball = [
     "Yes",
     "Signs point to yes",
     // maybe - 10
-    "Reply hazy try again",
+    "Reply hazy, try again",
     "Ask again later",
     "Better not tell you now",
     "Cannot predict now",

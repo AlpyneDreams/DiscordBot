@@ -95,8 +95,7 @@ class DiscordBot {
 
     /**
      * loads module by file and name
-     * init specifies whether to
-     * call the module's init function
+     * @param init - Call the module's init function?
      */
     loadModule(file, init = true, force = false) {
         try {
@@ -150,8 +149,8 @@ class DiscordBot {
     }
 
     /**
-     * reloads a module by name
-     * does not call init() again
+     * reloads a module by name.
+     * does not call init() again,
      * use reloadAllModules() if
      * you want to upadate events
      */

@@ -16,7 +16,7 @@
         }
         moduleWhitelist: {type: "boolean"}
         modules: {
-            type: "object"
+            type: ["object", "array"]
             additionalProperties: {
                 type: "object"
                 properties: {

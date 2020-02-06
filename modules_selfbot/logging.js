@@ -52,11 +52,12 @@ function getChannelFolder(channel) {
 // users that have sent or recieved a DM w/ the local user in the past minute
 let interactingUsers = new Set()
 
-function userInteract(id) {
+// default: 60,000 ms = 1 minute
+function userInteract(id, time = 60000) {
     interactingUsers.add(id)
     setTimeout(() => {
         interactingUsers.delete(id)
-    }, 60000) // 60,000 ms = 1 minute
+    }, time) 
     
 }
 
@@ -94,9 +95,11 @@ function onTypingStartStop(channel, user, stop = false) {
         // discarded message detection
         if (stop) {
             // grace period of 2 seconds in case the message event is late
-            setTimeout(checkForDiscard, 2000, user, channel)
+            //setTimeout(checkForDiscard, 2000, user, channel)
+        } else {
+            userInteract(user.id, 2000)
         }
-    } else if (channel.guild && channel.guild.id in profile.notedGuilds) {
+    } else { //if (channel.guild && channel.guild.id in profile.notedGuilds) {
         console.spew(
             `[TYPING ${event}] ${user.username} in #${channel.name}`[color],
             {path: getChannelFolder(channel), echo: noted}
@@ -139,7 +142,7 @@ module.exports.events = {
      *	- in noted guilds
      */
     presenceUpdate(old, cur) {
-        var noted = cur.user.id in profile.notedUsers || cur.guild.id in profile.notedGuilds
+        var noted = cur.user.id in profile.notedUsers // || cur.guild.id in profile.notedGuilds
         // highlight noted users
         var important =  cur.user.id in profile.notedUsers
         
@@ -151,6 +154,7 @@ module.exports.events = {
 
             const oldStatus = getPrettyStatus(old.presence.status)
             const newStatus = getPrettyStatus(cur.presence.status)
+            
             let msg = `[STATUS] {0} [{1}] -> [{2}]`.format(cur.user.username, oldStatus, newStatus)
             if (antiDupe.presence.status !== msg) {
                 console.spew(
@@ -161,7 +165,17 @@ module.exports.events = {
             }
         } else if (cur.presence.game) {
             var activity = cur.presence.game
-            if (activity.type === 2) { // 2 = Listening
+            if (activity.type === 0) { // 0 = Playing
+                const game = activity.name
+
+                if (antiDupe.presence.game !== game) {
+                    console.spew(
+                        `[STATUS] {0} started playing {1}`.format(cur.user.username, game.bgGreen.bold)[color].bold,
+                        { path: 'Presence' }
+                    )
+                    antiDupe.presence.game = game
+                }
+            } else if (activity.type === 2) { // 2 = Listening
                 const track = `{state} - {details}`.format(activity)
                 
                 if (antiDupe.presence.song !== track) {
@@ -261,8 +275,11 @@ module.exports.events = {
             if (msg.guild) {
                 noted = noted || Object.keys(profile.notedGuilds).includes(msg.guild.id)
             }
+            
+            info = msg.author.username + ": " + msg.content
 
             if (msg.channel.type === 'dm') {
+
                 if (msg.channel.recipient.id in profile.notedUsers) {
                     // DM is TO  a noted user
                     noted = true
@@ -271,10 +288,12 @@ module.exports.events = {
                     // DM is FROM a noted user
                     userInteract(msg.channel.author.id)
                 }
+            } else {
+                info = info.bold // brighten non-DMs
             }
                 
             console.spew(
-                msg.author.username + ": " + msg.content,
+                info,
                 {path: folder, echo: noted}
             )
         } catch (e) {

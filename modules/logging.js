@@ -14,7 +14,7 @@ function logMessage(msg) {
 
     try {
         var folder = msg.channel.type == 'dm' ? 'Private Messages' : msg.guild.name + '-' + msg.guild.id
-        var file = msg.channel.type == 'dm' ? '@' + msg.author.name + '-' + msg.author.id : '#' + msg.channel.name + '-' + msg.channel.id
+        var file = msg.channel.type == 'dm' ? '@' + msg.author.username + '-' + msg.author.id : '#' + msg.channel.name + '-' + msg.channel.id
 
         console.log(
             msg.author.username + ": " + msg.content,
@@ -33,7 +33,7 @@ function logMessage(msg) {
     // Emails
     var emails = msg.content.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i)
     if (emails) {
-        console.log('#' + msg.channel.name + ' ' + msg.author.name + ": " + msg.content)
+        console.log('#' + msg.channel.name + ' ' + msg.author.user + ": " + msg.content)
         console.info(('Emails: ' + emails[0]).cyan.bold)
     }
 

@@ -12,8 +12,9 @@ function dateTimeString(date) {
 }
 
 module.exports.commands = {
-    "invite": {
+    "invite.inspect": {
         args: 1, usage: "<invite>",
+        tags: 'owner',
         reload: true,
         async execute(e) {
             

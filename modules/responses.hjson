@@ -3,9 +3,5 @@
     commands: {
         lenny: ( ͡° ͜ʖ ͡°)
         wtf: ಠ_ಠ
-        walk: {
-            args: [1]
-            response: ( ͡° ͜ʖ ͡°) ╯╲___卐卐卐卐 Don't mind me just taking $& for a walk
-        }
     }
 }

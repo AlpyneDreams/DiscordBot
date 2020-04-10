@@ -90,7 +90,7 @@ module.exports.commands = {
 
                 e.bot.reloadModule(e.args[0], module.path)
 
-                e.channel.send(`Reloaded Module: ${e.args[0]}`)
+                e.channel.send(`Reloaded Module: \`${e.args[0]}\``)
 
             }
         }

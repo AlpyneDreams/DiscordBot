@@ -190,7 +190,7 @@ exports.commands = {
         }
     },
 
-    "install": {
+    "invite": {
         description: "Sends a link to add this bot to your server.",
         requirements: 'bot',
         async execute(e) {

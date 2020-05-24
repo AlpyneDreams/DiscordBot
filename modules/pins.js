@@ -6,35 +6,6 @@ module.exports.defaultProfile = {
 let bot
 module.exports.init = function (e) { bot = e }
 
-function checkChannelPins(channel) {
-
-    if (!channel || !channel.fetchPinnedMessages) return
-
-    channel.fetchPinnedMessages().then(pins => {
-
-        if (pins.size > generalChannelNumPins) {
-
-            let numNewPins = pins.size - generalChannelNumPins
-
-            console.info(`[PINS] Got ${numNewPins} new pins in ${channel}`)
-
-            generalChannelNumPins = pins.size
-
-            for (let i = 0; i < numNewPins; i++) {
-
-                let embed = generateEmbed(pins.array()[i])
-                bot.client.channels.get(CHANNEL_GENERAL_PINS).send('', { embed })
-
-            }
-
-
-
-        }
-
-    }) //.error(console.warn)
-}
-
-
 module.exports.commands = {
 
     "pins.count": {

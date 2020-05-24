@@ -68,6 +68,7 @@ module.exports.commands = {
             e.profile.channels[src.id] = e.profile.channels[src.id] || {
                 count: 0,
                 cache: [],
+                lastPinAt: 0,
                 boards: []
             }
             let channelProf = e.profile.channels[src.id]
@@ -78,6 +79,7 @@ module.exports.commands = {
                 channelProf.boards.push(dest.id)
                 e.bot.profile.save()
                 await e.channel.send(`Watching for pinned messages from ${src}, will post them in ${dest}.`)
+                channelProf.lastPinAt = channel.lastPinAt
                 src.fetchPinnedMessages().then(pins => {
                     channelProf.count = pins.size
                     channelProf.cache = pins.map(msg => msg.id)
@@ -243,6 +245,7 @@ module.exports.events = {
                     continue
                 }
 
+                channelProf.lastPinAt = channel.lastPinAt
                 channel.fetchPinnedMessages().then(pins => {
                     channelProf.count = pins.size
                     channelProf.cache = pins.map(msg => msg.id)
@@ -266,18 +269,12 @@ module.exports.events = {
         // only watched channels
         if (!(channel.id in profile.channels)) return
 
-        console.info(`[PINS] Pins update in #${channel.name}`)
-        //if (!channel.lastPinAt || channel.lastPinAt < time) {
-            //console.info(`[PINS] News pins in #${channel.name}`)
-        //}
-
         let channelProf = profile.channels[channel.id]
 
+        console.info(`[PINS] Pins update in #${channel.name}.`)
+        
         channel.fetchPinnedMessages().then(pins => {
-            if (pins.size > channelProf.count) {
-
-                let newPins = pins.size - channelProf.count
-                console.info(`[PINS] Got ${newPins} new pins in #${channel.name} [Total: ${pins.size}]`)
+            if (!channelProf.lastPinAt || channelProf.lastPinAt < time) {
 
                 let foundNewPins = 0
 
@@ -288,10 +285,6 @@ module.exports.events = {
                     if (!channelProf.cache.includes(pin.id)) {
 
                         foundNewPins++
-                        if (foundNewPins > newPins) {
-                            // Ignore extra new pins (will warn later)
-                            continue;
-                        }
 
                         channelProf.cache.push(pin.id)
                         let embed = generateEmbed(pin)
@@ -306,10 +299,7 @@ module.exports.events = {
                     }
                 }
 
-                if (foundNewPins != newPins) {
-                    console.warn(`[PINS] Got ${newPins} new pins but found ${foundNewPins}`)
-                }
-
+                console.info(`[PINS] Got ${foundNewPins} new pins in #${channel.name} [Total: ${pins.size}]`)
             } else if (pins.size < channelProf.count) {
                 channelProf.cache = pins.map(msg => msg.id)
 
@@ -317,6 +307,7 @@ module.exports.events = {
                 console.info(`[PINS] Unpinned ${removedPins} messages in #${channel.name} [Total: ${pins.size}]`)
             }
             
+            channelProf.lastPinAt = time
             channelProf.count = pins.size
         })
 

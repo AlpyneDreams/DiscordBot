@@ -77,7 +77,7 @@ module.exports.commands = {
                 channelProf.boards.push(dest.id)
                 e.bot.profile.save()
                 await e.channel.send(`Watching for pinned messages from ${src}, will post them in ${dest}.`)
-                e.channel.fetchPinnedMessages().then(pins => {
+                src.fetchPinnedMessages().then(pins => {
                     channelProf.count = pins.size
                     console.info(`[PINS] Initial count ${channelProf.count} pins in #${src.name}`)
                 })

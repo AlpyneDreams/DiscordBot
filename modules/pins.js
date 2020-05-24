@@ -67,6 +67,7 @@ module.exports.commands = {
             
             e.profile.channels[src.id] = e.profile.channels[src.id] || {
                 count: 0,
+                cache: [],
                 boards: []
             }
             let channelProf = e.profile.channels[src.id]
@@ -79,8 +80,43 @@ module.exports.commands = {
                 await e.channel.send(`Watching for pinned messages from ${src}, will post them in ${dest}.`)
                 src.fetchPinnedMessages().then(pins => {
                     channelProf.count = pins.size
-                    console.info(`[PINS] Initial count ${channelProf.count} pins in #${src.name}`)
+                    channelProf.cache = pins.map(msg => msg.id)
+                    console.info(`[PINS] Initial count ${pins.size} pins in #${src.name}`)
                 })
+            }
+
+        }
+    },
+
+    "pins.info": {
+        desciption: 'Info about pin monitoring on this server',
+        tags: 'admin',
+        reload: true,
+        async execute(e) {
+
+            let showAll = false
+            if (e.args[0] == 'global') {
+                showAll = true
+            }
+
+            if (e.guild) {
+                // filter our watched channels to ones that are in this guild
+                let guildChannels = Object.keys(e.profile.channels).filter(id => e.guild.channels.has(id) || showAll)
+
+                if (guildChannels.length > 0) {
+
+                    let msg = showAll ? 'Global Watch List:\n' : 'Currently watching pins in the following channels:\n'
+
+                    for (let id of guildChannels) {
+                        let prof = e.profile.channels[id]
+                        let boards = prof.boards.map(b => `<#${b}>`)
+                        msg += `- From <#${id}> to ${boards.join(', ')}.\n`
+                    }
+
+                    await e.channel.send(msg)
+                } else {
+                    await e.channel.send(`No channel's pins are being watched in this server.`)
+                }
             }
 
         }
@@ -108,9 +144,9 @@ module.exports.commands = {
             if (index != -1) {
                 // remove this channel.
                 channelProf.boards.splice(index, 1)
-                await e.channel.send(`No longer watching pins from ${src} to ${dest}.`)
+                await e.channel.send(`No longer watching pins from ${src} in ${dest}`)
                 if (channelProf.boards.length > 0) {
-                    await e.channel.send(`Still recording pins from ${src} to: ${channelProf.boards.map(c => c.name)}`)
+                    await e.channel.send(`Still recording pins from ${src} to ${channelProf.boards.map(id => `<#${id}>`)}`)
                 } else {
                     // stop tracking this channel
                     delete e.profile.channels[src.id]
@@ -189,21 +225,105 @@ module.exports.commands = {
 }
 
 module.exports.events = {
-    channelPinsUpdate(channel, time) {
-        let p = bot.profile.modules.pins
+    ready() {
+        let profile = bot.profile.modules.pins
+        if (Object.keys(profile.channels).length > 0) {
+            console.info(`[PINS] Querying pins in ${Object.keys(profile.channels).length} channels`)
+        }
+        let missedChannels = []
 
-        if (!(channel.id in p.channels)) return 
+        // For each channel we're watching
+        for (let id in profile.channels) {
+            if (bot.client.channels.has(id)) {
+                let channel = bot.client.channels.get(id)
+                let channelProf = profile.channels[id]
 
-        let channelProf = p.channels[channel.id]
+                if (!channel) {
+                    missedChannels.push(id)
+                    continue
+                }
+
+                channel.fetchPinnedMessages().then(pins => {
+                    channelProf.count = pins.size
+                    channelProf.cache = pins.map(msg => msg.id)
+                    console.info(`[PINS] #${channel.name}: ${pins.size} pins`)
+                })
+            } else {
+                missedChannels.push(id)
+            }
+        }
+
+        bot.profile.save()
+
+        if (missedChannels.length > 0) {
+            console.warn(`[PINS] Couldn't find channels: ${missedChannels.join(', ')}`)
+        }
+    },
+
+    channelPinsUpdate(channel, time) {        
+        let profile = bot.profile.modules.pins
+
+        // only watched channels
+        if (!(channel.id in profile.channels)) return
+
+        console.info(`[PINS] Pins update in #${channel.name}`)
+        //if (!channel.lastPinAt || channel.lastPinAt < time) {
+            //console.info(`[PINS] News pins in #${channel.name}`)
+        //}
+
+        let channelProf = profile.channels[channel.id]
 
         channel.fetchPinnedMessages().then(pins => {
+            if (pins.size > channelProf.count) {
 
+                let newPins = pins.size - channelProf.count
+                console.info(`[PINS] Got ${newPins} new pins in #${channel.name} [Total: ${pins.size}]`)
+
+                let foundNewPins = 0
+
+                for (let pinId of pins.keys()) {
+                    let pin = pins.get(pinId)
+                    if (!pin) continue
+                    // if pin isn't cached it must be new
+                    if (!channelProf.cache.includes(pin.id)) {
+
+                        foundNewPins++
+                        if (foundNewPins > newPins) {
+                            // Ignore extra new pins (will warn later)
+                            continue;
+                        }
+
+                        channelProf.cache.push(pin.id)
+                        let embed = generateEmbed(pin)
+                        for (let id of channelProf.boards) {
+                            if (!bot.client.channels.has(id)) {
+                                console.warn(`[PINS] Cannot find board channel ${id} for #${channel.name}`)
+                                continue
+                            }
+
+                            bot.client.channels.get(id).send('', { embed })
+                        }
+                    }
+                }
+
+                if (foundNewPins != newPins) {
+                    console.warn(`[PINS] Got ${newPins} new pins but found ${foundNewPins}`)
+                }
+
+            } else if (pins.size < channelProf.count) {
+                channelProf.cache = pins.map(msg => msg.id)
+
+                let removedPins = channelProf.count - pins.size
+                console.info(`[PINS] Unpinned ${removedPins} messages in #${channel.name} [Total: ${pins.size}]`)
+            }
+            
+            channelProf.count = pins.size
         })
 
     }
 }
 
-let generateEmbed = function(msg) {
+function generateEmbed(msg) {
     let embed = {
         timestamp: msg.createdAt.toString(),
         author: {

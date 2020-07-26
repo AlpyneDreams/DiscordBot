@@ -13,6 +13,9 @@ module.exports.commands = {
             if (!botMember.hasPermission('MANAGE_MESSAGES'))
                 return e.channel.send("Error: This bot does not have the `Manage Messages` permission in this guild.")
 
+            if (!e.member.hasPermission('MANAGE_MESSAGES'))
+                return e.channel.send("Error: You do not have the `Manage Messages` permission in this guild.")
+
             var statusMessage = await e.channel.send("Purging messages... 0")
 
             var filter = function (m) {

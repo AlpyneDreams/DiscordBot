@@ -4,7 +4,6 @@
   "description": "module: \tevents \tcommands",
   "main": "index.js",
   "dependencies": {
-    "@discordjs/uws": "^11.149.1",
     "ansi-colors": "^3.2.3",
     "deep-assign": "^2.0.0",
     "discord.js": "^11.4.2",

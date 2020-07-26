@@ -1,6 +1,6 @@
 module.exports.defaultCommand = {requirements: 'guild'}
 
-var MESSAGE_LIMIT = 2
+var MESSAGE_LIMIT = 100
 
 module.exports.commands = {
     "purge": {

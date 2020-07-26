@@ -84,11 +84,9 @@ module.exports.commands = {
                 oldestMessage = messages.array().sort((a, b) => a.createdTimestamp - b.createdTimestamp)
                 oldestMessage = oldestMessage[0].id
 
-                var deletes = Promise.all(messages.array().filter(filter).map(function (m) {
-                    m.delete()
-                }))
+                var deletes = e.channel.bulkDelete(messages.array().filter(filter))
                 deletes = await deletes
-                messageCount += deletes.length
+                messageCount += deletes.size
                 await statusMessage.edit("Purging messages... " + messageCount)
             }
             return statusMessage.edit("Purged " + messageCount + " messages.")

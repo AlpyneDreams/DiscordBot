@@ -1,5 +1,7 @@
 # Modular Discord Bot
 This documentation is very work in progress.
+
+Disclaimer: Some of the memes in this bot are from like 2015 so don't expect much
 ### Folders
 
 ```

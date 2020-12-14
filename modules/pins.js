@@ -50,7 +50,7 @@ module.exports.commands = {
                 channelProf.boards.push(dest.id)
                 e.bot.profile.save()
                 await e.channel.send(`Watching for pinned messages from ${src}, will post them in ${dest}.`)
-                channelProf.lastPinAt = channel.lastPinAt
+                channelProf.lastPinAt = e.channel.lastPinAt
                 src.fetchPinnedMessages().then(pins => {
                     channelProf.count = pins.size
                     channelProf.cache = pins.map(msg => msg.id)
@@ -271,6 +271,13 @@ module.exports.events = {
                 }
 
                 console.info(`[PINS] Got ${foundNewPins} new pins in #${channel.name} [Total: ${pins.size}]`)
+
+                if (pins.size == 50) {
+                    let lastPinnedMessage = pins.last()
+                    console.info(`[PINS] Maxed out 50 pins. Unpinning message ${lastPinnedMessage.id}`)
+                    lastPinnedMessage.unpin()
+                }
+
             } else if (pins.size < channelProf.count) {
                 channelProf.cache = pins.map(msg => msg.id)
 
@@ -330,7 +337,7 @@ function generateEmbed(msg) {
         if (emb.type != 'image') {
 
             // title will be either title or author
-            let title = `[${emb.title}](${emb.url})`
+            let title = `[${emb.title||"Link"}](${emb.url})`
 
             // author instead of title with optional url
             if (emb.author && !emb.title)

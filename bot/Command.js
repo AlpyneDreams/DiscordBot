@@ -174,7 +174,7 @@ class Command {
                 await this.execute(e)
             } catch (e) {
                 console.error(e.stack)
-                if (!this.channel) return
+                if (!msg.channel) return
                 if (!this.error) {
                     msg.channel.send(`An internal error has occured.\n- ${e.name}: ${e.message}`, {code: 'diff'})
                 } else {

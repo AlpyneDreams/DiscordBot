@@ -28,6 +28,8 @@ console.error = function(msg) {
         rl.prompt(true)
 }
 
+delete console.readline
+
 /* eslint-enable no-unused-vars */
 
 console.readline = rl

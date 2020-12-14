@@ -96,6 +96,13 @@ module.exports.commands = {
     }
 }
 
+// prevent duplicate event listener registration
+console.readline.listeners('line').forEach(fn => {
+	if (fn.name === 'executeCommand') {
+		console.readline.off('line', fn)
+	}
+})
+
 // analogous to DiscordBot.executeCommand
 console.readline.on('line', executeCommand)
 

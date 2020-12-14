@@ -3,6 +3,9 @@ const CHANNEL_GENERAL = '615407840747716609' //'615407840747716609'
 const CHANNEL_GENERAL_PINS = '704467171081977856'
 const CHANNEL_COUNTING = '706032875044208680'
 
+const ROLE_PENDING_USER = '774817475136585768'		// "skills wallets"
+const ROLE_APPROVED_USER = '774813850108166144'		// "HM's Most Loyal"
+
 const generateEmbed = require('./pins').generateEmbed
 
 let generalChannelNumPins = 0
@@ -41,13 +44,21 @@ function checkChannelPins(channel) {
 }
 
 // hourly check for new pins since discord doesn't always send the events
-setInterval(() => {
+/*setInterval(() => {
     let channel = bot.client.channels.get(CHANNEL_GENERAL)
 
     console.info(`[DOGZONE] Scheduled pin update check.`)
 
     checkChannelPins(channel)
-}, 3600000 )
+}, 3600000 )*/
+
+module.exports.defaultProfile = {
+	rejections: []
+}
+
+function lookupUser(userRef, e) {
+	
+}
 
 module.exports.commands = {
 
@@ -81,21 +92,165 @@ module.exports.commands = {
                 console.warn(err)
             })
         }
-    }
+    },
+	
+	pending: {
+        async execute(e) {
+            if (e.guild.id != DOGZONE_GUILD) return
+			if (!e.member.hasPermission('MANAGE_ROLES')) return
+			
+			
+			if (e.guild.members.size < e.guild.memberCount) {
+				e.channel.send('Fetching members...')
+				
+				let handler = (members, guild) => {
+					console.log(`${guild.name}: ${members.length} member chunk`)
+				}
+				
+				e.client.on('guildMembersChunk', handler)
+				
+				await e.guild.fetchMembers().catch((err) => {
+					console.error(err)
+					console.warn('Ensure client.options.ws.intents has flag GUILD_MEMBERS (1 << 1) set.')
+				})
+				
+				e.client.off('guildMembersChunk', handler)
+			}
+			
+			let pending = e.guild.members.filter(m => m.roles.has(ROLE_PENDING_USER) && !m.roles.has(ROLE_APPROVED_USER))
+			let numRejections = pending.sweep(m => m.id in e.profile.rejections)
+			let totalRejections = Object.keys(e.profile.rejections).length
+			
+			e.channel.send('', {
+				embed: {
+					title: 'Pending Approvals',
+					description: pending.map(m => `<@${m.id}> (${m.user.tag})`).join('\n'),
+					footer: {
+						text: numRejections > 0 ? `${numRejections} users are hidden from this list because they have been rejected (use '--rejections' to see all ${totalRejections} rejections)` : undefined
+					}
+				}
+			})
+			
+		}
+	},
+	
+	reject: {
+		usage: '<user> <reason>',
+		args: [0, 2],
+		//reload: true,
+		async execute(e) {
+			if (e.guild.id != DOGZONE_GUILD) return
+			if (!e.member.hasPermission('MANAGE_ROLES')) return
+			
+			if (e.args.length < 2) return e.channel.send('You must specify a user and a reason. (Usage: `reject <user> <reason>`)')
+			
+			let userRef = e.args[0]
+			let reason = e.args[1]
+			
+			let user
+			if (e.mentions.users.size > 0) {
+				if (e.mentions.users.size > 1) return e.channel.send("Too many users mentioned, don't know who to reject.")
+				user = e.mentions.users.first()
+			} else {
+				// user id
+				if (!Number.isNaN(parseInt(userRef))) {
+					console.log(parseInt(userRef))
+					try {
+						user = await e.client.fetchUser(userRef)
+					} catch (err) {
+						return e.channel.send(`Unknown user ID \`${userRef}\`.`)
+					}
+				} else {
+					// search for a user
+					if (e.guild.members.size < e.guild.memberCount) await e.guild.fetchMembers()
+					
+					let tag = userRef.trim().toLowerCase()
+					if (tag.startsWith('@')) tag = tag.slice(1)
+					if (tag.match(/#\d{4}$/)) {
+						// search by tag (username#0000)
+						user = e.guild.members.find(m => m.user.tag.toLowerCase() === tag)
+					}
+					if (!user) {
+						// search by username
+						user = e.guild.members.find(m => m.user.username.toLowerCase() === tag)
+						if (!user) return e.channel.send(`Unknown user \`@${userRef}\``)
+					}
+				
+					user = user.user
+				}
+			}
+			
+			if (reason === '--unreject') {
+				
+				if (!(user.id in e.profile.rejections)) return e.channel.send(`This user has not been rejected.`)
+				
+				delete e.profile.rejections[user.id]
+				
+				bot.profile.save()
+				
+				return e.channel.send('', {embed: {
+					description: `Removed rejection status for user <@${user.id}> (${user.username}#${user.discriminator}).`
+				}})
+			}
+			
+			let updated = null
+			if (user.id in e.profile.rejections) {
+				updated = e.profile.rejections[user.id].reason
+			}
+			
+			e.profile.rejections[user.id] = {
+				reason,
+				tag: user.tag,
+				time: Date.now()
+			}
+			
+			bot.profile.save()
+			
+			e.channel.send('', {
+				embed: {
+					description: !updated ? `Rejected user <@${user.id}> (${user.username}#${user.discriminator}) with reason: \`${reason}\`.`
+										  : `Changed user <@${user.id}> (${user.username}#${user.discriminator}) rejection reason from \`${updated}\` to \`${reason}\`.`
+				}
+			})
 
+		}
+	},
+	
+	unreject: {
+		usage: '<user>',
+		args: 1,
+		async execute(e) {
+			return bot.executeCommand(`reject ${e.args[0]} --unreject`, e)
+		}
+	},
+	
+	rejections: {
+		async execute(e) {
+			if (e.guild.id != DOGZONE_GUILD) return
+			if (!e.member.hasPermission('MANAGE_ROLES')) return
+			
+			e.channel.send('', {
+				embed: {
+					title: 'Rejections',
+					description: Object.entries(e.profile.rejections).map(m => `<@${m[0]}> (${m[1].tag}) - \`${m[1].reason}\``).join('\n')
+				}
+			})
+
+		}
+	}
 }
 
 module.exports.events = {
 
     ready() {
 
-        bot.client.channels.get(CHANNEL_GENERAL).fetchPinnedMessages().then(pins => {
+        /*bot.client.channels.get(CHANNEL_GENERAL).fetchPinnedMessages().then(pins => {
 
             generalChannelNumPins = pins.size
 
             console.info(`[DOGZONE] Found ${generalChannelNumPins} pinned messages in general.`)
 
-        })
+        })*/
 
     },
 
@@ -112,10 +267,10 @@ module.exports.events = {
 			if (msg.author.id == lastUserInCounting) {
 				msg.delete().catch(console.warn)
 
-				msg.author.send('You are not allowed to double-post in <#706032875044208680>.').catch(console.error)
-			}
-			
-			lastUserInCounting = msg.author.id
+				msg.author.send('Everyone must take turns in <#706032875044208680>.').catch(console.error)
+			} else {
+                lastUserInCounting = msg.author.id
+            }	
 		}
 		
         /*if (msg.content.match(/terro\b/gi)) {
@@ -140,8 +295,11 @@ module.exports.events = {
         }
 
     },
-
+	
+	// TODO: remove this path altogether
     channelPinsUpdate(channel, time) {
+
+        return
 
         if (channel.id != CHANNEL_GENERAL) return
 
@@ -161,8 +319,11 @@ module.exports.events = {
         if (newChannel.parentID == oldChannel.parentID && newChannel.position == oldChannel.position) return
 
         let info = `${newChannel}\n`
+		let report = false
 
         if (newChannel.parentID != oldChannel.parentID) {
+			
+			report = true // should be logged to server
             
             if (!newChannel.parent || !oldChannel.parent) {
 
@@ -180,13 +341,14 @@ module.exports.events = {
             info += `Position: \`${oldChannel.position} -> ${newChannel.position}\`\n`
         }
 
-        console.info(`Channel ${newChannel.name} has been moved.`)
-
-        loggerChannel.send('', { embed: { 
-            title: 'Channel Moved',
-            description: info,
-            color: 16755200
-        } })
+        console.info(`Channel ${newChannel.name} has been moved.\n` + info)
+		
+		if (report)
+			loggerChannel.send('', { embed: { 
+				title: 'Channel Moved',
+				description: info,
+				color: 16755200
+			} })
 
     }
 

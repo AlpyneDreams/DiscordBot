@@ -163,8 +163,9 @@ module.exports.events = {
                 )
                 antiDupe.presence.status = msg
             }
-        } else if (cur.presence.game) {
-            var activity = cur.presence.game
+        } else if (cur.presence.activities[0]) {
+            
+            var activity = cur.presence.activities[0]
             if (activity.type === 0) { // 0 = Playing
                 const game = activity.name
 
@@ -267,7 +268,7 @@ module.exports.events = {
     },
 
     message(msg) {
-    
+            
         try {
             var folder = getChannelFolder(msg.channel)
             var noted = Object.keys(profile.notedUsers).includes(msg.author.id)
@@ -278,18 +279,17 @@ module.exports.events = {
             
             info = msg.author.username + ": " + msg.content
 
-            if (msg.channel.type === 'dm') {
-
+            if (msg.channel.type === 'dm' && msg.channel.recipient != undefined) {
                 if (msg.channel.recipient.id in profile.notedUsers) {
                     // DM is TO  a noted user
                     noted = true
                     userInteract(msg.channel.recipient.id)
                 } else if (noted) {
                     // DM is FROM a noted user
-                    userInteract(msg.channel.author.id)
+                    userInteract(msg.author.id)
                 }
             } else {
-                info = info.bold // brighten non-DMs
+                info = info.blue.bold // brighten non-DMs
             }
                 
             console.spew(
@@ -298,7 +298,7 @@ module.exports.events = {
             )
         } catch (e) {
             console.warn("Failed to log message " + msg.id + " to console.")
-            console.warn(e.name + ": " + e.message)
+            console.warn(e.name + ": " + e.stack)
         }
     
         // Scrape for info.

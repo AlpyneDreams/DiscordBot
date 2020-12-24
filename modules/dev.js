@@ -180,3 +180,6 @@ module.exports.commands['pipe.stop'] = {
         e.channel.send("Removed your pipes.")
     }
 }
+
+// aliases
+module.exports.commands['module.reload'] = module.exports.commands['modules.reload']

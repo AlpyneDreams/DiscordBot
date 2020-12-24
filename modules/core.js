@@ -63,9 +63,9 @@ function getDefaultHelp(e, modulename = '', checkTags = true) {
     return	(modulename == '' ? "Commands: ```" : 'Commands from module: `' + modulename + '` ```')
             + (cmdList.length > 0 ? cmdList.sort().join(', ') : "[no commands]")
             + "```\nUse `"
-            + bot.config.commandPrefix + "help <command>` for information on a specific command,\n"
+            + e.commandPrefix + "help <command>` for information on a specific command,\n"
             + "Use `"
-            + bot.config.commandPrefix + "help.all` for a detailed list of all commands."
+            + e.commandPrefix + "help.all` for a detailed list of all commands."
 }
 
 exports.commands = {
@@ -106,9 +106,9 @@ exports.commands = {
 
                     e.channel.send(
                         "```css\n"
-                            + bot.config.commandPrefix + e.args[0] + "\n\t"
+                            + e.commandPrefix + e.args[0] + "\n\t"
                             + "Purpose: " + cmd.help
-                            + "\n\tUsage:   " + bot.config.commandPrefix + e.args[0] + " " + usage
+                            + "\n\tUsage:   " + e.commandPrefix + e.args[0] + " " + usage
                             + "```"
                     )
 
@@ -130,7 +130,7 @@ exports.commands = {
                     continue
                 // Add a newline and a tab only if the command has a help text
                 var description = bot.commands[i].help ? "\n\t" + bot.commands[i].help : ""
-                str += "```css\n" + bot.config.commandPrefix + i + description + "```"
+                str += "```css\n" + e.commandPrefix + i + description + "```"
             }
             e.author.send(str)
 

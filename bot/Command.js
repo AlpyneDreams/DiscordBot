@@ -117,7 +117,7 @@ class Command {
         }
     }
 
-    async invoke(bot, fullCommand, msg, checkTags = true) {
+    async invoke(bot, fullCommand, msg, checkTags = true, interaction = false) {
 
         // check if the command must (or must not) be via direct message
         if (this.requirements && this.requirements.length > 0) {
@@ -170,6 +170,8 @@ class Command {
                 e.args = args
                 e.bot = bot
                 e.profile = bot.profile.modules[this.module.name]
+                e.interaction = interaction
+                e.commandPrefix = interaction ? '/' : bot.config.commandPrefix
 
                 await this.execute(e)
             } catch (e) {

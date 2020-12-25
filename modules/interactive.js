@@ -1,4 +1,3 @@
-require('../bot/util/prompt.js')
 const streamBuffers = require('stream-buffers')
 const stripANSI = require('strip-ansi')
 
@@ -95,6 +94,7 @@ module.exports.commands = {
         }
     }
 }
+
 
 // prevent duplicate event listener registration
 console.readline.listeners('line').forEach(fn => {

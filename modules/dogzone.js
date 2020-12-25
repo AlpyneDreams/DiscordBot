@@ -53,7 +53,7 @@ function checkChannelPins(channel) {
 }, 3600000 )*/
 
 module.exports.defaultProfile = {
-	rejections: []
+	rejections: {}
 }
 
 function lookupUser(userRef, e) {

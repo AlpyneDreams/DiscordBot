@@ -1,7 +1,7 @@
 
 class Command {
 
-    constructor(command, module) {
+    constructor(command, module, name) {
 
         if (!command) return
 
@@ -19,6 +19,7 @@ class Command {
 
             usage: '',
             help: '',
+            name: '',
 
             error: null
         })
@@ -45,6 +46,7 @@ class Command {
         }
 
         this.module = module
+        this.name = name
     }
 
     get description() {

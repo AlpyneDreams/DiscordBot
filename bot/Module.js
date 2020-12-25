@@ -89,7 +89,7 @@ class Module {
 
         for (var cmd in this.commands) {
             // TODO Handle command name conflicts
-            bot.commands[cmd] = new Command(this.commands[cmd], this)
+            bot.commands[cmd] = new Command(this.commands[cmd], this, cmd)
         }
 
         if (addEvents) {

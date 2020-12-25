@@ -17,7 +17,7 @@ module.exports.init = (theBot, theModule) => {
 
     for (const name in commands) {
         //console.log("[Commands] Registering Command: " + name)
-        commands[name] = new Command(commands[name], theModule)
+        commands[name] = new Command(commands[name], theModule, name)
     }
 }
 

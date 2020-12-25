@@ -42,30 +42,80 @@ exports.events = {
 
 }
 
-function getDefaultHelp(e, modulename = '', checkTags = true) {
-    var bot = e.bot
+function getDefaultHelp(e, modulename = '', minTags = false) {
+    let bot = e.bot
 
-    var cmdList = []
-    for (var c in bot.commands) {
-        var cmd = bot.commands[c]
+    let checkGuilds = minTags || !e.bot.tagManager.hasTags(e, ['owner'])
 
-        if (modulename != '' && cmd.module.name != modulename)
+    let embed = {
+        title: 'Commands:',
+        description: 'The command prefix is `' + e.bot.config.commandPrefix + '`',
+        fields: []
+    }
+
+    let footnote = false
+
+    for (let m of Object.values(bot.modules)) {
+        if (modulename !== '' && m.name !== modulename)
             continue
 
-        // exclude commands the the user can't use.
-        // we check tags and guilds but not requirements.
-        // second part of this condition means exclude showing any commands with tags if !checkTags
-        if (cmd.canInvoke(e.bot, e, checkTags, false, true) && !(!checkTags && cmd.tags.length > 0)) {
-            cmdList.push(c)
+        let cmdList = []
+        let restrictedCmdList = []
+
+        for (let c in m.commands) {
+
+            let cmd = bot.commands[c]
+
+            // exclude commands the the user can't use. don't check requirements.
+            // second part of this condition means exclude showing any commands with tags if minTags
+            if (cmd.canInvoke(e.bot, e, !minTags, false, checkGuilds) && !(minTags && cmd.tags.length > 0)) {
+                
+                if (cmd.guild !== null && !cmd.module.defaultCommand?.guild) {
+                    c += '*'
+                    footnote = true
+                }
+
+                if (cmd.tags.length === 0) {
+                    cmdList.push(c)
+                } else {
+                    restrictedCmdList.push(c)
+                }
+            }
+        }
+
+        if (cmdList.length === 0) continue
+
+        let value = '```\n' + cmdList.sort().join('\n') + '```'
+
+        if (restrictedCmdList.length > 0) value += '```\n' + restrictedCmdList.sort().join('\n') + '```'
+
+        let name = m.name
+
+        if (m.defaultCommand?.guild) {
+            name += '*'
+            footnote = true
+        }
+
+        embed.fields.push({
+            name,
+            value,
+            inline: true
+        })
+    }
+
+    embed.fields.push({
+        name: 'Help',
+        value:    'Use `' + e.commandPrefix + 'help <command>` for information on a specific command,\n'
+                + 'Use `' + e.commandPrefix + 'help.all` for a detailed list of all commands.'
+    })
+
+    if (footnote) {
+        embed.footer = {
+            text: '*Restricted by server.'
         }
     }
 
-    return	(modulename == '' ? "Commands: ```" : 'Commands from module: `' + modulename + '` ```')
-            + (cmdList.length > 0 ? cmdList.sort().join(', ') : "[no commands]")
-            + "```\nUse `"
-            + e.commandPrefix + "help <command>` for information on a specific command,\n"
-            + "Use `"
-            + e.commandPrefix + "help.all` for a detailed list of all commands."
+    return {embed}
 }
 
 exports.commands = {
@@ -95,9 +145,9 @@ exports.commands = {
 
             if (e.args.length <= 0) {
                 // same as 'commands'
-                e.channel.send(getDefaultHelp(e))
+                e.channel.send('',getDefaultHelp(e))
             } else if (e.args[0] === '--min') {
-                e.channel.send(getDefaultHelp(e, '', false))
+                e.channel.send('', getDefaultHelp(e, '', true))
             } else {
                 if (bot.commands[e.args[0]]) {
 
@@ -145,9 +195,9 @@ exports.commands = {
         execute(e) {
             if (e.args[0]) {
                 // Show commands for only one specific module
-                e.channel.send(getDefaultHelp(e, e.args[0]))
+                e.channel.send('', getDefaultHelp(e, e.args[0]))
             } else {
-                e.channel.send(getDefaultHelp(e))
+                e.channel.send('', getDefaultHelp(e))
             }
         }
     },

@@ -1,7 +1,7 @@
 
 const Random = require("random-seed")
 
-var magic8ball = [
+const magic8ball = [
     // yes - 0
     "It is certain",
     "It is decidedly so",
@@ -27,12 +27,12 @@ var magic8ball = [
     "Very doubtful"
 ]
 
-var min = null
-var max = null
+let gmin = null
+let gmax = null
 
-var yes = 0
-var maybe = 10
-var no = 15
+const yes = 0
+const maybe = 10
+const no = 15
 
 // inclusive range
 function randomInt(min, max) {
@@ -46,10 +46,11 @@ function clampAbs(int, min, max) {
 
 exports.commands = {
     "8ball": {
+        help: 'Ask the magic 8-ball a question',
         args: [0, 1],
         execute(e) {
-            var rmin = min || 0
-            var rmax = max || magic8ball.length - 1
+            var rmin = gmin || 0
+            var rmax = gmax || magic8ball.length - 1
 
             var rand = randomInt(rmin, rmax)
 
@@ -59,6 +60,7 @@ exports.commands = {
     },
 
     "roll": {
+        help: 'Role a die or dice.',
         args: [0, 1],
         reload: true,
         execute(e) {
@@ -95,24 +97,25 @@ exports.commands = {
         args: [0, 1],
         execute(e) {
             if (e.args[0] === "yes") {
-                min = yes
-                max = maybe
+                gmin = yes
+                gmax = maybe
             } else if (e.args[0] === "maybe") {
-                min = maybe
-                max = no
+                gmin = maybe
+                gmax = no
             } else if (e.args[0] === "no") {
-                min = no
+                gmin = no
             } else {
-                min = null
-                max = null
+                gmin = null
+                gmax = null
                 e.channel.send("Unrigged")
             }
         }
     },
     "size": {
+        help: ";)",
         usage: "[user]",
         execute(e) {
-            var user = e.mentions.users[0] || e.author
+            var user = e.mentions.users.first() || e.author
 
             var subject = user.id
             var rand = new Random("9_" + subject) // a little bit rigged

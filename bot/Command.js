@@ -46,6 +46,11 @@ class Command {
             this.description = undefined
         }
 
+        // transform some strings into length 1 arrays 
+        if (this.requirements !== null && !Array.isArray(this.requirements)) this.requirements = [this.requirements]
+        if (this.guild !== null && !Array.isArray(this.guild)) this.guild = [this.guild]
+        if (this.tags !== null && !Array.isArray(this.tags)) this.tags = [this.tags]
+
         this.module = module
         this.name = name
     }
@@ -135,8 +140,8 @@ class Command {
         let isGuild = msg?.guild !== undefined
 
         // check if the command must (or must not) be via direct message
-        if (checkRequirements && this.requirements && this.requirements.length > 0) {
-            var requirements = Array.isArray(this.requirements) ? this.requirements : [this.requirements]
+        if (checkRequirements && this.requirements !== null && this.requirements.length > 0) {
+            let requirements = this.requirements
             for (var req of requirements) {
                 switch (req.toLowerCase()) {
                     case 'dm':
@@ -157,7 +162,7 @@ class Command {
         }
 
         if (checkGuilds && this.guild) {
-            let guilds = Array.isArray(this.guild) ? this.guild : [this.guild]
+            let guilds = this.guild
             if (!isGuild || !(msg.guild.id in guilds)) {
                 if (sendErrors) msg.channel.send("Sorry, this command is not enabled for this guild.")
                 return false
@@ -165,7 +170,7 @@ class Command {
         }
 
         if (checkTags && this.tags) {
-            var tags = (Array.isArray(this.tags)) ? this.tags : [this.tags]
+            let tags = this.tags
 
             if (!bot.tagManager.hasTags(msg, tags)) {
                 if (sendErrors) msg.channel.send("Sorry, but you need the following tags to use this command: `" + tags.join(', ') + "`")

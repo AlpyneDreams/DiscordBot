@@ -221,21 +221,16 @@ exports.commands = {
                 e.channel.send("You have no tags.")
             }
 
-            // get a list of all existing tags
-            var tags = []
+            // get the set of all existing tags
+            let tags = new Set()
             for (var c in e.bot.commands) {
-                var cmd = e.bot.commands[c]
+                let cmd = e.bot.commands[c]
                 if (cmd.tags) {
-                    if (Array.isArray(cmd.tags)) {
-                        for (var tag of tags) {
-                            if (!tags.includes(tag)) tags.push(tag)
-                        }
-                    } else {
-                        if (!tags.includes(cmd.tags)) tags.push(cmd.tags)
-                    }
+                    for (let tag of cmd.tags)
+                        tags.add(tag)
                 }
             }
-            e.channel.send("Existing Tags: `" + tags.sort().join(', ') + "`")
+            e.channel.send("Existing Tags: `" + Array.from(tags).sort().join(', ') + "`")
 
         }
     },

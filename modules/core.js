@@ -52,12 +52,12 @@ function getDefaultHelp(e, modulename = '', checkTags = true) {
         if (modulename != '' && cmd.module.name != modulename)
             continue
 
-        // exclude commands the the user can't use
-        if ((cmd.tags.length <= 0) || (bot.tagManager.hasTags(e, cmd.tags) && checkTags)) {
+        // exclude commands the the user can't use.
+        // we check tags and guilds but not requirements.
+        // second part of this condition means exclude showing any commands with tags if !checkTags
+        if (cmd.canInvoke(e.bot, e, checkTags, false, true) && !(!checkTags && cmd.tags.length > 0)) {
             cmdList.push(c)
         }
-
-
     }
 
     return	(modulename == '' ? "Commands: ```" : 'Commands from module: `' + modulename + '` ```')
@@ -126,7 +126,7 @@ exports.commands = {
             var str = ''
             for (var i in bot.commands) {
                 // skip commands the user can't use
-                if (bot.commands[i].tags && !bot.tagManager.hasTags(e, bot.commands[i].tags))
+                if (!bot.commands[i].canInvoke(e.bot, e, true, false, true))
                     continue
                 // Add a newline and a tab only if the command has a help text
                 var description = bot.commands[i].help ? "\n\t" + bot.commands[i].help : ""

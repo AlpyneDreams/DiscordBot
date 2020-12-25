@@ -71,6 +71,7 @@ Command {
         or
     requirements: array of requirement strings
 
+    guild: string or array of strings - ids of guilds to restrict this command to 
 
     tags: required tag
         or

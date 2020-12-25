@@ -8,6 +8,7 @@ class Command {
         Object.assign(this, {
             reload: false,
 
+            guild: null,
             requirements: null,
             tags: [],
             args: null,
@@ -129,37 +130,56 @@ class Command {
     }
 
     async invoke(bot, fullCommand, msg, checkTags = true, interaction = false) {
+    canInvoke(bot, msg, checkTags = true, checkRequirements = true, checkGuilds = true, sendErrors = false) {
+
+        let isGuild = msg?.guild !== undefined
 
         // check if the command must (or must not) be via direct message
-        if (this.requirements && this.requirements.length > 0) {
+        if (checkRequirements && this.requirements && this.requirements.length > 0) {
             var requirements = Array.isArray(this.requirements) ? this.requirements : [this.requirements]
             for (var req of requirements) {
                 switch (req.toLowerCase()) {
                     case 'dm':
-                        if (msg.channel.type != 'dm') return
+                        if (msg.channel.type != 'dm') return false
                         break
                     case 'guild':
-                        if (msg.channel.type == 'dm') return
+                        if (!isGuild) return false
                         break
                     case 'bot':
-                        if (!bot.client.user.bot) return
+                        if (!bot.client.user.bot) return false
                         break
                     case 'userbot':
-                        if (bot.client.user.bot) return
+                        if (bot.client.user.bot) return false
                         break
 
                 }
             }
         }
 
-        if (this.tags && checkTags) {
+        if (checkGuilds && this.guild) {
+            let guilds = Array.isArray(this.guild) ? this.guild : [this.guild]
+            if (!isGuild || !(msg.guild.id in guilds)) {
+                if (sendErrors) msg.channel.send("Sorry, this command is not enabled for this guild.")
+                return false
+            }
+        }
+
+        if (checkTags && this.tags) {
             var tags = (Array.isArray(this.tags)) ? this.tags : [this.tags]
 
             if (!bot.tagManager.hasTags(msg, tags)) {
-                msg.channel.send("Sorry, but you need the following tags to use this command: `" + tags.join(', ') + "`")
-                return
+                if (sendErrors) msg.channel.send("Sorry, but you need the following tags to use this command: `" + tags.join(', ') + "`")
+                return false
             }
         }
+
+        return true
+    }
+
+
+    async invoke(bot, fullCommand, msg, checkTags = true, interaction = false, options = undefined) {
+
+        if (!this.canInvoke(bot, msg, checkTags, true, true, true)) return
 
         var args = fullCommand.slice(1)
         // TODO: args cut off \n somewhere

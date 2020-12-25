@@ -191,7 +191,7 @@ exports.commands = {
     },
 
     "invite": {
-        description: "Sends a link to add this bot to your server.",
+        help: "Sends a link to add this bot to your server.",
         requirements: 'bot',
         async execute(e) {
             var app = await e.client.fetchApplication()

@@ -82,7 +82,7 @@ function starEmbed(msg, count=1) {
             name: msg.member.nickname || msg.author.username,
             icon_url: msg.author.avatarURL
         },
-        description: msg.content,
+        help: msg.content,
         timestamp: msg.createdAt,
         color: starColor(count)
     }
@@ -266,7 +266,7 @@ module.exports.commands = {
     },
 
     "star.show": {
-        description: 'Shows a starred message.',
+        help: 'Shows a starred message.',
         args: 1, usage: '<message>',
         async execute(e) {
             var profile = getProfile(e.guild)
@@ -281,7 +281,7 @@ module.exports.commands = {
         }
     },
     "star.random": {
-        description: 'Shows a random starred message.',
+        help: 'Shows a random starred message.',
         async execute(e) {
             var profile = getProfile(e.guild)
             if (!profile) return
@@ -363,7 +363,7 @@ module.exports.commands = {
     },
 
     "star.who": {
-        description: 'Shows who starred a message.',
+        help: 'Shows who starred a message.',
         args: 1, usage: '<message ID>',
         async execute(e) {
             var profile = getProfile(e.guild)

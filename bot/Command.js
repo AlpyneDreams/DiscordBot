@@ -38,8 +38,17 @@ class Command {
                 Object.assign(this, {response: command, help: command})
         }
 
+        // common mistake, intent is obvious
+        if (!this.help && this.description) {
+            this.help = this.description
+            this.description = undefined
+        }
 
         this.module = module
+    }
+
+    get description() {
+        return this.help
     }
 
     static splitArgs(fullCommand, maxArgs) {

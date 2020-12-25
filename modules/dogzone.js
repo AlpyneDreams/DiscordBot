@@ -60,13 +60,15 @@ function lookupUser(userRef, e) {
 	
 }
 
+module.exports.defaultCommand = {
+	guild: DOGZONE_GUILD
+}
+
 module.exports.commands = {
 
     checkpins: {
         tags: "owner",
         execute(e) {
-            if (e.guild.id != DOGZONE_GUILD) return
-			
 			if (e.args[0] && parseInt(e.args[0]) != NaN) {
 				generalChannelNumPins -= parseInt(e.args[0])
 			}
@@ -81,8 +83,6 @@ module.exports.commands = {
         tags: "owner",
         args: 1,
         async execute(e) {
-            if (e.guild.id != DOGZONE_GUILD) return
-
             let channel = bot.client.channels.get(CHANNEL_GENERAL)
             let msg = channel.fetchMessage(e.args[0]).then(msg => {
                 let embed = generateEmbed(msg)
@@ -96,7 +96,6 @@ module.exports.commands = {
 	
 	pending: {
         async execute(e) {
-            if (e.guild.id != DOGZONE_GUILD) return
 			if (!e.member.hasPermission('MANAGE_ROLES')) return
 			
 			
@@ -139,7 +138,6 @@ module.exports.commands = {
 		args: [0, 2],
 		//reload: true,
 		async execute(e) {
-			if (e.guild.id != DOGZONE_GUILD) return
 			if (!e.member.hasPermission('MANAGE_ROLES')) return
 			
 			if (e.args.length < 2) return e.channel.send('You must specify a user and a reason. (Usage: `reject <user> <reason>`)')
@@ -226,7 +224,6 @@ module.exports.commands = {
 	
 	rejections: {
 		async execute(e) {
-			if (e.guild.id != DOGZONE_GUILD) return
 			if (!e.member.hasPermission('MANAGE_ROLES')) return
 			
 			e.channel.send('', {

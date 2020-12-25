@@ -1,3 +1,4 @@
+const Discord = require('discord.js')
 
 class Command {
 
@@ -6,6 +7,11 @@ class Command {
         if (!command) return
 
         Object.assign(this, {
+            interaction: false,
+            options: [],
+
+            guildIDs: [], // used by guild-specific slash commands
+
             reload: false,
 
             guild: null,
@@ -57,6 +63,81 @@ class Command {
 
     get description() {
         return this.help
+    }
+
+    id(guild) {
+        if (this._id) return this._id
+        else return this.guildIDs[guild.id]
+    }
+
+    registerSlashCommand(bot) {
+        let options = []
+
+        if (Array.isArray(this.options)) {
+            // copy all option objects
+            options.concat((this.options || []).map(o => Object.assign({}, o)))
+
+        } else if (typeof this.options === 'object') {
+            // if options is an object, not an array, use the keys as the option names
+            for (let [key, value] of Object.entries(this.options)) {
+                let opt = Object.assign({}, value)
+
+                if (opt.name && opt.name !== key)
+                    console.warn(`Command '${this.name}' has option with key '${key}' but conflicting name property '${opt.name}'`)
+                
+                opt.name = key
+                value.name = key // update original object property too
+                options.push(opt)
+            }
+        }
+
+        // map to ApplicationCommandOptionType integers
+        for (let opt of options) {
+            if (Number.isInteger(opt.type)) continue
+            opt.type = [
+                null,
+                'subcommand',
+                'subcommandgroup',
+                'string',
+                'int',
+                'bool',
+                'user',
+                'channel',
+                'role'
+            ].indexOf(opt.type.toLowerCase())
+        }
+
+        let data = {
+            name: this.name,
+            description: this.help || this.usage || 'No description.',
+            options
+        }
+
+        // global commands
+        if (this.guild === null || this.guild?.length === 0) {
+            bot.client.rest.makeRequest(
+                'post',
+                `/applications/${bot.client.id}/commands`,
+                bot.client.token,
+                data
+            ).then(res => {
+                this._id = res.id
+            }).catch(err => {
+                console.error(`Error occured registering slash command '${this.name}'`)
+                console.error(err)
+            })
+    
+        // guild-specific commands
+        } else {
+            for (let g of this.guild) {
+                bot.client.rest.makeRequest(
+                    'post',
+                    `/applications/${bot.client.id}/guilds/${g.id}/commands`,
+                    bot.client.token,
+                    data
+                )
+            }
+        }
     }
 
     static splitArgs(fullCommand, maxArgs) {
@@ -134,7 +215,69 @@ class Command {
         }
     }
 
-    async invoke(bot, fullCommand, msg, checkTags = true, interaction = false) {
+    async invokeSlashCommand(bot, i9n, checkTags = true) {
+
+        // message-like object for command context
+        let msg = {
+            client: bot.client,
+            channel: bot.client.channels.get(i9n.channel_id),
+            guild: bot.client.guilds.get(i9n.guild_id),
+            author: await bot.client.fetchUser(i9n.member.user.id),
+            createdTimestamp: Date.now(),
+            mentions: {
+                channels: new Discord.Collection(),
+                crosspostedChannels: new Discord.Collection(),
+                everyone: false,
+                members: new Discord.Collection(),
+                roles: new Discord.Collection(),
+                users: new Discord.Collection()
+            }
+        }
+
+        msg.member = await msg.guild.fetchMember(i9n.member.user.id)
+
+        msg.channel = Object.assign({
+
+            send: (...args) => bot.interactionResponse(i9n, msg, ...args)
+
+        }, msg.channel)
+
+        let fullCommand = [
+            i9n.data.name,
+            ...(i9n.data.options || []).map(o => String(o.value))
+        ]
+
+        msg.content = '/' + fullCommand.join(' ')
+
+        // collect {name, value} options into object key values
+        let options = {}
+        for (let opt of (i9n.data.options || [])) options[opt.name] = opt.value
+
+        // pass option values as mentions
+        if (this.options)
+            for (let opt of Object.values(this.options)) {
+
+                if (!(opt.name in options)) continue
+                let id = options[opt.name]
+
+                switch (opt.type?.toLowerCase()) {
+                    case 'user':
+                        msg.mentions.users.set(id, await bot.client.fetchUser(id))
+                        msg.mentions.members.set(id, await msg.guild.fetchMember(id))    
+                        break
+                    case 'channel':
+                        msg.mentions.channels.set(id, bot.client.channels.get(id))
+                        break
+                    case 'role':
+                        msg.mentions.roles.set(id, await msg.guild.roles.get(id))
+                        break
+                    default: break
+                }
+            }
+
+        this.invoke(bot, fullCommand, msg, true, true, options)
+    }
+
     canInvoke(bot, msg, checkTags = true, checkRequirements = true, checkGuilds = true, sendErrors = false) {
 
         let isGuild = msg?.guild !== undefined
@@ -207,6 +350,7 @@ class Command {
                 e.bot = bot
                 e.profile = bot.profile.modules[this.module.name]
                 e.interaction = interaction
+                e.options = options
                 e.commandPrefix = interaction ? '/' : bot.config.commandPrefix
 
                 await this.execute(e)

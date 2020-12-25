@@ -9,12 +9,14 @@ class Profile {
             files: []
         }
 
-        // TODO: Profile schema
-        if (!this.users) this.users = {}
-        if (!this.guilds) this.guilds = {}
-        if (!this.tags) this.tags = {}
-        if (!this.modules) this.modules = {}
-        
+        // TODO: Profile schema?
+        Object.assign(this, {
+            users: {},
+            guilds: {},
+            tags: {},
+            commands: {},
+            modules: {}
+        })
 
         try {
             this.load(file)

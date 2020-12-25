@@ -121,6 +121,7 @@ function getDefaultHelp(e, modulename = '', minTags = false) {
 exports.commands = {
     "ping": {
         help: "Pong!",
+        interaction: true,
         async execute(e) {
             var msg = await e.channel.send("Pong!")
             var delay = new Date(msg.createdTimestamp).getTime() - new Date(e.createdTimestamp).getTime()
@@ -129,6 +130,10 @@ exports.commands = {
     },
     "echo": {
         args: 1,
+        interaction: true,
+        options: {
+            message: {type: 'string', description: 'Message to repeat.', required: true}
+        },
         help: "Repeat a message.",
         usage: "<message>",
         tags: 'admin',
@@ -139,6 +144,10 @@ exports.commands = {
     "help": {
         help: "Provides information on commands and features.",
         usage: "[command]",
+        interaction: false,
+        options: {
+            command: {type: 'string', description: 'Get help about a specific command.', required: false}
+        },
         execute(e) {
 
             var bot = e.bot
@@ -243,10 +252,11 @@ exports.commands = {
 
     "invite": {
         help: "Sends a link to add this bot to your server.",
+        interaction: true,
         requirements: 'bot',
         async execute(e) {
             var app = await e.client.fetchApplication()
-            e.channel.send(`https://discordapp.com/api/oauth2/authorize?client_id=${app.id}&scope=bot&permissions=0`)
+            e.channel.send(`https://discordapp.com/api/oauth2/authorize?client_id=${app.id}&scope=bot%20applications.commands&permissions=0`)
         }
     }
 }

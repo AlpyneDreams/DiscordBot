@@ -64,8 +64,10 @@ Typical command structure:
 
 ```
 Command {
-    reload: bool - reload the module when this command is executed?
+    interaction: bool - whether this command should be registered as a Discord slash command
+    options: object or array of ApplicationCommandOptions. if this is an object, the key is used as 'name'. type can be a string.
 
+    reload: bool - reload the module when this command is executed?
 
     requirements: requirement string (either 'dm' or 'guild')
         or

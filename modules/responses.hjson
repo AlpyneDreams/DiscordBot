@@ -1,4 +1,8 @@
 {
+    defaultCommand: {
+        interaction: true
+    }
+    
     // Really simple response commands
     commands: {
         lenny: ( ͡° ͜ʖ ͡°)

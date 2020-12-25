@@ -48,6 +48,10 @@ exports.commands = {
     "8ball": {
         help: 'Ask the magic 8-ball a question',
         args: [0, 1],
+        interaction: true,
+        options: {
+            inquiry: {type: 'string', description: 'Question to ask the magic 8-ball'}
+        },
         execute(e) {
             var rmin = gmin || 0
             var rmax = gmax || magic8ball.length - 1
@@ -62,13 +66,17 @@ exports.commands = {
     "roll": {
         help: 'Role a die or dice.',
         args: [0, 1],
+        interaction: true,
+        options: {
+            dice: {type: 'string', description: 'Dice notation `NdX` to roll N dice with X faces each (e.g. d20, 2d6)'}
+        },
         reload: true,
         execute(e) {
             if (e.args.length === 0) {
                 e.channel.send(`Rolled 1d20: 🎲 **${randomInt(1, 20)}**`)
             } else {
                 var match = e.args[0].match(/(\d+)?d(\d+)/i)
-                if (!match) return
+                if (!match) return e.channel.send(`Error: \`${e.args[0]}\` is not recognized \`NdX\` dice notation (e.g. \`1d20\`, \`2d6\`)`)
 
                 var count = clampAbs(parseInt(match[1]), 1, 20) || 1
                 var max = clampAbs(parseInt(match[2]), 2, 1000)
@@ -114,6 +122,10 @@ exports.commands = {
     "size": {
         help: ";)",
         usage: "[user]",
+        interaction: true,
+        options: {
+            user: {type: 'user', description: 'User to size-up. Defaults to whoever executes the command.'}
+        },
         execute(e) {
             var user = e.mentions.users.first() || e.author
 

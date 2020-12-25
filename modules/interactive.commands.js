@@ -271,6 +271,11 @@ const commands = {
         }
     },
 
+    async restart(e) {
+        await e.bot.destroy()
+        process.exit(64) // indicates to launch script we want to restart
+    },
+
     async exit(e) {
         await e.bot.destroy()
         process.exit(0)

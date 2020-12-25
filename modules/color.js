@@ -7,6 +7,12 @@
 
 var RichEmbed = require('discord.js').RichEmbed
 
+let enabledGuilds = []
+
+module.exports.init = (bot, m) => {
+    enabledGuilds = m.profile.guilds
+}
+
 module.exports.defaultProfile = {guilds: []}
 
 function hexToRgb(hex) {
@@ -47,7 +53,10 @@ function bestCosmeticRole(member, botMember) {
 }
 
 
-module.exports.defaultCommand = {requirements: 'guild'}
+module.exports.defaultCommand = {
+    requirements: 'guild',
+    guild: enabledGuilds
+}
 
 module.exports.commands = {
     "color": {

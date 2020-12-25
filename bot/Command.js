@@ -163,8 +163,8 @@ class Command {
 
         if (checkGuilds && this.guild) {
             let guilds = this.guild
-            if (!isGuild || !(msg.guild.id in guilds)) {
-                if (sendErrors) msg.channel.send("Sorry, this command is not enabled for this guild.")
+            if (!isGuild || !guilds.includes(msg.guild.id)) {
+                if (sendErrors) msg.channel.send("Sorry, this command is not enabled for this guild")
                 return false
             }
         }

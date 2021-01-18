@@ -193,6 +193,17 @@ module.exports.commands = {
 
 
         }
+    },
+
+    "message.embed": {
+        tags: 'owner',
+        args: 2,
+        async execute(e) {
+            let channelID = e.args[0], msgID = e.args[1]
+            let msg = await e.client.channels.get(channelID).fetchMessage(msgID)
+            
+            e.channel.send('', {embed: generateEmbed(msg)})
+        }
     }
 
 }
@@ -300,13 +311,26 @@ function generateEmbed(msg) {
             //url: msg.url,
             icon_url: msg.author.displayAvatarURL
         },
-        description: msg.content + `\n[📌\uFE0E](${msg.url})`
+        // Unicode FE0E makes the emoji render as text if possible
+        description: msg.content + `\n[📌\uFE0E](${msg.url})`,
+        fields: []
     }
 
     if (msg.attachments.size > 0 && msg.attachments.first().height) {
+        
+        let attachment = msg.attachments.first()
 
-        embed.image = {
-            url: msg.attachments.first().proxyURL
+        if (['mp4', 'webm', 'mov'].some(extension => attachment.filename.endsWith(extension))) {
+            // can't add videos to embeds, must attach separately
+            embed.file = attachment.proxyURL
+            
+            embed.description = msg.content + `\n[[Video]](${attachment.proxyURL})` + embed.description.slice(msg.content.length)
+        } else {
+            embed.image = {
+                url: attachment.proxyURL,
+                width: attachment.width,
+                height: attachment.height
+            }
         }
 
     } else if (msg.embeds.length > 0) {
@@ -344,17 +368,15 @@ function generateEmbed(msg) {
                 title = emb.author.url ? `**[${emb.author.name}](${emb.author.url})**` : `**${emb.author.name}**`
 
             // use fields to represent embeds
-            embed.fields = [
-                {
-                    // field name is providor name, footer text, or 'Embed'
-                    name: emb.provider ? emb.provider.name :
-                        emb.footer && emb.footer.text ? emb.footer.text :
-                            'Embed',
+            embed.fields.push({
+                // field name is providor name, footer text, or 'Embed'
+                name: emb.provider ? emb.provider.name :
+                    emb.footer && emb.footer.text ? emb.footer.text :
+                        'Embed',
 
-                    // field value is embed title and description
-                    value: title + '\n\n' + description
-                }
-            ]
+                // field value is embed title and description
+                value: title + '\n\n' + description
+            })
         }
 
     }

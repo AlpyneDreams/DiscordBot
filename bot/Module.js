@@ -17,7 +17,7 @@ class Module {
         
         // check for omitted .js extension
         if (!fs.existsSync(file)) file = file + ".js"
-        // ensure that file's existance is definate
+        // ensure that file's existance is definite
         if (!fs.existsSync(file)) throw new Error(`Cannot find module: ${path.dirname(file)}${path.sep}${path.basename(file)}`)
 
         var ext = path.extname(file)

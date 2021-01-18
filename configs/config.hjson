@@ -49,23 +49,7 @@
 		},
 
 		guilds: {
-			// VCC
-			"186525910625681408": {
-				"roles": {
-					// Consul
-					"186526501615828992": {
-						"tags": ["admin", "mod"]
-					},
-					// monster_metropolice
-					"186526644058456066": {
-						"tags": ["admin", "mod"]
-					},
-					// monster_combot
-					"221172531233685504": {
-						"tags": ["mod"]
-					}
-				}
-			}
+			
 		}
 	}
 }

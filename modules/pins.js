@@ -25,7 +25,7 @@ module.exports.commands = {
 
     "pins.watch": {
         args: [1, 2],
-        desciption: 'Watches pinned messages from <#source> and posts them in [#destination]',
+        help: 'Watches pinned messages from <#source> and posts them in [#destination]',
         usage: '<#source> [#destination]',
         tags: 'admin',
         reload: true,
@@ -62,7 +62,7 @@ module.exports.commands = {
     },
 
     "pins.info": {
-        desciption: 'Info about pin monitoring on this server',
+        help: 'Info about pin monitoring on this server',
         tags: 'admin',
         reload: true,
         async execute(e) {
@@ -97,7 +97,7 @@ module.exports.commands = {
 
     "pins.unwatch": {
         args: [1, 2],
-        desciption: 'Stop posting pinned messages from <#source> in [#destination]',
+        help: 'Stop posting pinned messages from <#source> in [#destination]',
         usage: '<#source> [#destination]',
         tags: 'admin',
         reload: true,
@@ -135,7 +135,7 @@ module.exports.commands = {
 
     "pins.clear": {
         args: [0, 1],
-        desciption: 'Removes all pinned messages from <#channel>',
+        help: 'Removes all pinned messages from <#channel>',
         usage: '<#channel>',
         tags: 'admin',
         reload: true,
@@ -162,7 +162,7 @@ module.exports.commands = {
 
     "pins.archive": {
         args: [1, 2],
-        desciption: 'Posts all the pinned messages from <#source> in [#destination]',
+        help: 'Posts all the pinned messages from <#source> in [#destination]',
         usage: '<#source> [#destination]',
         tags: 'admin',
         reload: true,
@@ -316,7 +316,7 @@ function generateEmbed(msg) {
         let description = emb.description || ''
 
         // videos don't show description
-        if (emb.type == 'video') desciption = ''
+        //if (emb.type == 'video') description = ''
 
         if (emb.type == 'article' || emb.type == 'video' || emb.type == 'image') {
 

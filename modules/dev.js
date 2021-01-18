@@ -52,7 +52,7 @@ module.exports.commands = {
         }
     },
     "modules.unload": {
-        help: "Unstable but effective way to kill a module.",
+        help: "Kill a module.",
         usage: "<module>",
         args: 1,
         execute(e) {
@@ -86,6 +86,7 @@ module.exports.commands = {
                 var module = e.bot.modules[e.args[0]]
                 if (!module) {
                     e.channel.send("Module `" + e.args[0] + "` cannot be found.")
+                    return
                 }
 
                 e.bot.reloadModule(e.args[0], module.path)

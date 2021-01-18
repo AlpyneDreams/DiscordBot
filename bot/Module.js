@@ -63,6 +63,11 @@ class Module {
         }
 
         this.build(imports, name, file, bot, addEvents)
+
+        // Report Number of Events
+        //let numEvents = imports.events !== undefined ? Object.keys(imports.events).length : 0
+        //if (numEvents > 0) 
+        //    console.info("Loaded Module: " + name + `, with ${numEvents} events.`)
     }
 
     // integrates the module into the bot

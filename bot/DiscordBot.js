@@ -163,12 +163,12 @@ class DiscordBot {
 
     /**
      * loads module by file and name
-     * @param init - Call the module's init function?
+     * @param addEvents - Attach module's event listeners?
      */
-    loadModule(file, init = true, force = false) {
+    loadModule(file, addEvents = true, force = false) {
         try {
             this.modules[path.basename(file, path.extname(file))]
-             = new Module(file, this, init, force)
+             = new Module(file, this, addEvents, force)
         } catch (e) {
             if (e instanceof Error)
                 console.error(e.stack)
@@ -177,21 +177,38 @@ class DiscordBot {
         }
     }
 
-    // removes a modules, doesn't detach event listeners
-    // reloadAllModules() to remove straggling listeners
-    unloadModule(name) {
+    /**
+     * removes a module, its commands, and optionally its events
+     */
+    unloadModule(name, removeEvents = true) {
         if (!this.modules[name]) return
 
-        delete this.modules[name]
-
-        for (var cmd in this.commands) {
-            if (this.commands[cmd].module.name == name) {
+        for (let cmd in this.commands) {
+            if (this.commands[cmd].module.name === name) {
                 delete this.commands[cmd]
             }
         }
+
+        if (removeEvents) {
+            let mod = this.modules[name]
+            let removed = 0
+            for (let event in mod.events) {
+                let listener = mod.events[event]
+
+                let before = this.client.listenerCount(event)
+
+                this.client.off(event, listener)
+
+                removed += before - this.client.listenerCount(event)
+            }
+            if (removed > 0)
+                console.log(`Removed ${removed} event listeners`)
+        }
+
+        delete this.modules[name]
+
     }
 
-    // loads all modules
     loadAllModules(init = true) {
         let dir = this.config.paths.modules
         let skippedModules = []
@@ -217,33 +234,22 @@ class DiscordBot {
     }
 
     /**
-     * reloads a module by name.
-     * does not call init() again,
-     * use reloadAllModules() if
-     * you want to upadate events
+     * reloads a module by name
      */
     reloadModule(name, path) {
+        if (!this.modules[name]) return
+        
         for (var m in require.cache) {
             delete require.cache[m]
         }
-        console.info("Reloading Module: " + name)
-        if (this.modules[name]) {
-            for (var c in this.commands) {
-                var cmd = this.commands[c]
-                if (cmd.module.name == name) {
-                    delete this.commands[c]
-                }
-            }
-            delete this.modules[name]
-        }
 
-        this.loadModule(path, false, true)
+        console.info("Reloading Module: " + name)
+        this.unloadModule(name)
+        this.loadModule(path, true, true)
     }
 
     /**
-     * more effective than reloadModule
-     * as it allows init() to be re-called,
-     * however this will take loads of time
+     * reloads all modules
      */
     reloadAllModules() {
         console.info("Reloading all modules.")

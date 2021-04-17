@@ -115,11 +115,11 @@ class Command {
 
         // global commands
         if (this.guild === null || this.guild?.length === 0) {
-            bot.client.rest.makeRequest(
+            bot.client.rest.request(
                 'post',
                 `/applications/${bot.client.id}/commands`,
-                bot.client.token,
-                data
+                //bot.client.token,
+                {data}
             ).then(res => {
                 this._id = res.id
             }).catch(err => {

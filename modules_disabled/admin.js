@@ -46,13 +46,13 @@ async function sendEmbed(channel, embed, repeat = true) {
     }, embed)
 
     if (!repeat) {
-        channel.sendEmbed(embed).catch(err => console.error(err.stack))
+        channel.send({embed}).catch(err => console.error(err.stack))
         return
     }
 
 
     for (var chan of channels[channel.guild.id].channels) {
-        bot.client.channels.cache.get(chan).sendEmbed(embed).catch(err => console.error(err.stack))
+        bot.client.channels.cache.get(chan).send({embed}).catch(err => console.error(err.stack))
     }
 }
 
@@ -367,7 +367,7 @@ module.exports.commands = {
 
     'log.debug': {
         execute(e) {
-            e.channel.sendCode('js', util.inspect(e.profile[e.guild.id]))
+            e.channel.sendCode(util.inspect(e.profile[e.guild.id]), {code: 'js'})
         }
     },
 

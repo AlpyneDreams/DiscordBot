@@ -24,7 +24,7 @@ module.exports.commands = {
                 invite = await e.client.fetchInvite(e.args[0])
             } catch (ex) {
                 if(ex.name == 'DiscordAPIError')
-                    return e.channel.sendMessage(`Error: \`${e.args[0]}\` does not resolve as a valid invite code.`)
+                    return e.channel.send(`Error: \`${e.args[0]}\` does not resolve as a valid invite code.`)
             }
             var guild = invite.guild
             

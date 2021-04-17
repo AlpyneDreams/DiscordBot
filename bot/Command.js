@@ -118,23 +118,24 @@ class Command {
             bot.client.rest.request(
                 'post',
                 `/applications/${bot.client.id}/commands`,
-                //bot.client.token,
-                {data}
+                {
+                    route: `/applications/${bot.client.id}/commands`,
+                    data,
+                }
             ).then(res => {
                 this._id = res.id
             }).catch(err => {
                 console.error(`Error occured registering slash command '${this.name}'`)
-                console.error(err)
+                console.error(err.stack)
             })
     
         // guild-specific commands
         } else {
             for (let g of this.guild) {
-                bot.client.rest.makeRequest(
+                bot.client.rest.request(
                     'post',
                     `/applications/${bot.client.id}/guilds/${g.id}/commands`,
-                    bot.client.token,
-                    data
+                    {route: `/applications/${bot.client.id}/guilds/${g.id}/commands`, data}
                 )
             }
         }

@@ -38,13 +38,15 @@ class Response extends Discord.Message {
     }
 
     async edit(content, options = {}) {
-        await this.client.rest.makeRequest(
+        await this.client.rest.request(
             'patch',
             `/webhooks/${this.client.id}/${this.interaction.token}/messages/@original`,
-            this.client.token,
             {
-                content: content,
-                embeds: options.embed ? [option.embed] : undefined
+                route: `/webhooks/${this.client.id}/${this.interaction.token}/messages/@original`,
+                data: {
+                    content: content,
+                    embeds: options.embed ? [option.embed] : undefined
+                }
             }
         ) 
 
@@ -52,10 +54,10 @@ class Response extends Discord.Message {
     }
 
     async delete(timeout = 0) {
-        await this.client.rest.makeRequest(
+        await this.client.rest.request(
             'delete',
             `/webhooks/${this.client.id}/${this.interaction.token}/messages/@original`,
-            this.client.token
+            {route: `/webhooks/${this.client.id}/${this.interaction.token}/messages/@original`}
         )
 
         return this

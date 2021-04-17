@@ -61,11 +61,10 @@ class DiscordBot {
             }
         }
         
-        await this.client.rest.makeRequest(
+        await this.client.rest.request(
             'post',
             `/interactions/${i9n.id}/${i9n.token}/callback`,
-            this.client.token,
-            body
+            {route: `/interactions/${i9n.id}/${i9n.token}/callback`, data: body}
         )
                 
         return new Response(i9n, msg.channel, body, this.client)

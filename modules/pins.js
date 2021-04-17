@@ -320,7 +320,7 @@ function generateEmbed(msg) {
         
         let attachment = msg.attachments.first()
 
-        if (['mp4', 'webm', 'mov'].some(extension => attachment.filename.endsWith(extension))) {
+        if (['mp4', 'webm', 'mov'].some(extension => attachment.name.endsWith(extension))) {
             // can't add videos to embeds, must attach separately
             embed.file = attachment.proxyURL
             

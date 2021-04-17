@@ -308,7 +308,7 @@ class Command {
         if (checkGuilds && this.guild) {
             let guilds = this.guild
             if (!isGuild || !guilds.includes(msg.guild.id)) {
-                if (sendErrors) msg.channel.send("Sorry, this command is not enabled for this guild")
+                if (sendErrors) msg.channel.send("Sorry, this command is not enabled for this server.")
                 return false
             }
         }
@@ -317,7 +317,7 @@ class Command {
             let tags = this.tags
 
             if (!bot.tagManager.hasTags(msg, tags)) {
-                if (sendErrors) msg.channel.send("Sorry, but you need the following tags to use this command: `" + tags.join(', ') + "`")
+                if (sendErrors) msg.channel.send("Sorry, but you need the following permission tags to use this command: `" + tags.join(', ') + "`")
                 return false
             }
         }

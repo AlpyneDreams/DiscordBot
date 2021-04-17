@@ -4,7 +4,7 @@ exports.init = function(e) {bot = e}
 
 exports.events = {
     ready() {
-        console.log(`Ready. Handling ${bot.client.guilds.size} guilds.`)
+        console.log(`Ready. Handling ${bot.client.guilds.cache.size} guilds.`)
 
         if (bot.client.user.bot) {
             bot.client.user.setActivity(bot.config.commandPrefix + "help", {type: "LISTENING"})

@@ -39,7 +39,7 @@ function removeRoleTags(guild, role, profile, tags) {
 
 function findRole(guild, name) {
     name = name.toLowerCase()
-    var role = guild.roles.filterArray(r => r.name.toLowerCase() == name)[0]
+    var role = guild.roles.cache.array().filter(r => r.name.toLowerCase() == name)[0]
 
     return role
 }
@@ -67,7 +67,7 @@ module.exports.commands = {
         reload: true,
         execute(e) {
             var text = '```yaml'
-            for (var role of e.guild.roles.array()) {
+            for (var role of e.guild.roles.cache.array()) {
                 text += getRoleInfo(e.guild.id, role, e.bot.profile)
             }
 

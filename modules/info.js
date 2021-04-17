@@ -28,8 +28,8 @@ module.exports.commands = {
             }
             var guild = invite.guild
             
-            if (e.client.guilds.has(guild.id)) {
-                var invites = await e.client.guilds.get(guild.id).fetchInvites()
+            if (e.client.guilds.cache.has(guild.id)) {
+                var invites = await e.client.guilds.cache.get(guild.id).fetchInvites()
                 invite = invites.get(invite.code)
             }
 

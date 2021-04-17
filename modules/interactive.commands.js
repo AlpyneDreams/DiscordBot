@@ -10,14 +10,14 @@ async function smartFindUser(e, input) {
     
     var result
 
-    if (e.bot.client.users.has(input)) {
-        result = e.bot.client.users[input]
+    if (e.bot.client.users.cache.has(input)) {
+        result = e.bot.client.users.cache[input]
     } else { 
         if (!result)
-            result = e.bot.client.users.find(u => u.username.toLowerCase() === input.toLowerCase())
+            result = e.bot.client.users.cache.find(u => u.username.toLowerCase() === input.toLowerCase())
 
         if (!result)
-            result = e.bot.client.users.find(u => u.tag.toLowerCase() === input.toLowerCase())
+            result = e.bot.client.users.cache.find(u => u.tag.toLowerCase() === input.toLowerCase())
 
         if (!result && parseInt(result))
             result = await e.bot.client.fetchUser(input)
@@ -31,13 +31,13 @@ async function smartFindGuild(e, input) {
 
     var result
 
-    if (e.bot.client.guilds.has(input)) {
-        result = e.bot.client.guilds[input]
+    if (e.bot.client.guilds.cache.has(input)) {
+        result = e.bot.client.guilds.cache[input]
     } else {
-        result = e.bot.client.guilds.find(g => g.name.toLowerCase().startsWith(input))
+        result = e.bot.client.guilds.cache.find(g => g.name.toLowerCase().startsWith(input))
 
         if (!result && Number.isInteger(parseInt(input)))
-            result = e.bot.client.guilds.find(g => g.position === parseInt(input))
+            result = e.bot.client.guilds.cache.find(g => g.position === parseInt(input))
     }
     return result || null
 }
@@ -58,11 +58,11 @@ async function smartFindChannels(e, input) {
         if (user) return user
     }
 
-    if (e.bot.client.channels.has(input)) {
-        return e.bot.client.channels.get(input)
+    if (e.bot.client.channels.cache.has(input)) {
+        return e.bot.client.channels.cache.get(input)
     } else {
         if (!result)
-            result = e.bot.client.channels.filter(u => u && u.name && u.name.toLowerCase() === input.toLowerCase())
+            result = e.bot.client.channels.cache.filter(u => u && u.name && u.name.toLowerCase() === input.toLowerCase())
     }
 
     if (!result) return null
@@ -237,21 +237,21 @@ const commands = {
         reload: true,
         execute(e) {
             const report = [
-                {name: "Channels", count: e.client.channels.size},
+                {name: "Channels", count: e.client.channels.cache.size},
                 {name: "Emojis", count: e.client.emojis.size},
-                {name: "Guilds", count: e.client.guilds.size},
+                {name: "Guilds", count: e.client.guilds.cache.size},
                 {name: "Presences", count: e.client.presences.size},
-                {name: "Users", count: e.client.users.size},
+                {name: "Users", count: e.client.users.cache.size},
                 {name: "Voice Broadcasts", count: e.client.broadcasts.length},
                 {name: "Voice Connections", count: e.client.voiceConnections .size}
             ]
             e.con.table(report)
 
             var guildReport = []
-            for (var guild of e.client.guilds.values()) {
+            for (var guild of e.client.guilds.cache.values()) {
                 guildReport.push({
                     name: guild.name,
-                    members: guild.members.size,
+                    members: guild.members.cache.size,
                     presences: guild.presences.size
                 })
             }
@@ -259,11 +259,11 @@ const commands = {
             e.con.table(guildReport)
 
             var channelReport = []
-            for (var channel of e.client.channels.values()) {
-                if (!channel.messages) continue
+            for (var channel of e.client.channels.cache.values()) {
+                if (!channel.messages.cache) continue
                 channelReport.push({
                     name: channel.name,
-                    messages: channel.messages.size
+                    messages: channel.messages.cache.size
                 })
             }
             channelReport = channelReport.sort((a, b) => b.messages - a.messages).slice(0, 16)

@@ -40,7 +40,7 @@ exports.commands = {
  */
 function redditLive(id, channelId)
 {
-    var channel = client.channels.get(channelId)
+    var channel = client.channels.cache.get(channelId)
 
     var reader = new reddit.LiveThreadReader(id)
     reader.on("error", (err) => {

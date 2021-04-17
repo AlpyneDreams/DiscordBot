@@ -27,7 +27,7 @@ function hexToRgb(hex) {
 // when user has no color role, find the best cosmetic role
 function bestCosmeticRole(member, botMember) {
 
-    var possibleRoles = member.roles.filter(x => x.name.startsWith('#'))
+    var possibleRoles = member.roles.cache.filter(x => x.name.startsWith('#'))
 
     // filter out roles we that outrank the bot
     possibleRoles = possibleRoles.filter(

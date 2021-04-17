@@ -23,7 +23,7 @@ class TagManager {
 
                 var guildRoles = guildProfile.roles || []
 
-                for (var role of msg.member.roles.array()) {
+                for (var role of msg.member.roles.cache.array()) {
 
                     if (guildRoles[role.id] && guildRoles[role.id].tags) {
                         userTags = userTags.concat(guildRoles[role.id].tags)

@@ -200,7 +200,7 @@ module.exports.commands = {
         args: 2,
         async execute(e) {
             let channelID = e.args[0], msgID = e.args[1]
-            let msg = await e.client.channels.get(channelID).fetchMessage(msgID)
+            let msg = await e.client.channels.cache.get(channelID).fetchMessage(msgID)
             
             e.channel.send('', {embed: generateEmbed(msg)})
         }
@@ -218,8 +218,8 @@ module.exports.events = {
 
         // For each channel we're watching
         for (let id in profile.channels) {
-            if (bot.client.channels.has(id)) {
-                let channel = bot.client.channels.get(id)
+            if (bot.client.channels.cache.has(id)) {
+                let channel = bot.client.channels.cache.get(id)
                 let channelProf = profile.channels[id]
 
                 if (!channel) {
@@ -271,12 +271,12 @@ module.exports.events = {
                         channelProf.cache.push(pin.id)
                         let embed = generateEmbed(pin)
                         for (let id of channelProf.boards) {
-                            if (!bot.client.channels.has(id)) {
+                            if (!bot.client.channels.cache.has(id)) {
                                 console.warn(`[PINS] Cannot find board channel ${id} for #${channel.name}`)
                                 continue
                             }
 
-                            bot.client.channels.get(id).send('', { embed })
+                            bot.client.channels.cache.get(id).send('', { embed })
                         }
                     }
                 }

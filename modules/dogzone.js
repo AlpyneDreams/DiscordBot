@@ -32,7 +32,7 @@ function checkChannelPins(channel) {
             for (let i = 0; i < numNewPins; i++) {
 
                 let embed = generateEmbed(pins.array()[i])
-                bot.client.channels.get(CHANNEL_GENERAL_PINS).send('', { embed })
+                bot.client.channels.cache.get(CHANNEL_GENERAL_PINS).send('', { embed })
 
             }
 
@@ -45,7 +45,7 @@ function checkChannelPins(channel) {
 
 // hourly check for new pins since discord doesn't always send the events
 /*setInterval(() => {
-    let channel = bot.client.channels.get(CHANNEL_GENERAL)
+    let channel = bot.client.channels.cache.get(CHANNEL_GENERAL)
 
     console.info(`[DOGZONE] Scheduled pin update check.`)
 
@@ -73,7 +73,7 @@ module.exports.commands = {
 				generalChannelNumPins -= parseInt(e.args[0])
 			}
 			
-            let channel = bot.client.channels.get(CHANNEL_GENERAL)
+            let channel = bot.client.channels.cache.get(CHANNEL_GENERAL)
             console.info(`[DOGZONE] Manual pin update check.`)
             checkChannelPins(channel)
         }
@@ -83,10 +83,10 @@ module.exports.commands = {
         tags: "owner",
         args: 1,
         async execute(e) {
-            let channel = bot.client.channels.get(CHANNEL_GENERAL)
+            let channel = bot.client.channels.cache.get(CHANNEL_GENERAL)
             let msg = channel.fetchMessage(e.args[0]).then(msg => {
                 let embed = generateEmbed(msg)
-                bot.client.channels.get(CHANNEL_GENERAL_PINS).send('', { embed })
+                bot.client.channels.cache.get(CHANNEL_GENERAL_PINS).send('', { embed })
             }).catch(err => {
                 e.channel.send(`Could not find message ${e.args[0]}`)
                 console.warn(err)
@@ -99,7 +99,7 @@ module.exports.commands = {
 			if (!e.member.hasPermission('MANAGE_ROLES')) return
 			
 			
-			if (e.guild.members.size < e.guild.memberCount) {
+			if (e.guild.members.cache.size < e.guild.memberCount) {
 				e.channel.send('Fetching members...')
 				
 				let handler = (members, guild) => {
@@ -116,7 +116,7 @@ module.exports.commands = {
 				e.client.off('guildMembersChunk', handler)
 			}
 			
-			let pending = e.guild.members.filter(m => m.roles.has(ROLE_PENDING_USER) && !m.roles.has(ROLE_APPROVED_USER))
+			let pending = e.guild.members.cache.filter(m => m.roles.has(ROLE_PENDING_USER) && !m.roles.has(ROLE_APPROVED_USER))
 			let numRejections = pending.sweep(m => m.id in e.profile.rejections)
 			let totalRejections = Object.keys(e.profile.rejections).length
 			
@@ -160,17 +160,17 @@ module.exports.commands = {
 					}
 				} else {
 					// search for a user
-					if (e.guild.members.size < e.guild.memberCount) await e.guild.fetchMembers()
+					if (e.guild.members.cache.size < e.guild.memberCount) await e.guild.fetchMembers()
 					
 					let tag = userRef.trim().toLowerCase()
 					if (tag.startsWith('@')) tag = tag.slice(1)
 					if (tag.match(/#\d{4}$/)) {
 						// search by tag (username#0000)
-						user = e.guild.members.find(m => m.user.tag.toLowerCase() === tag)
+						user = e.guild.members.cache.find(m => m.user.tag.toLowerCase() === tag)
 					}
 					if (!user) {
 						// search by username
-						user = e.guild.members.find(m => m.user.username.toLowerCase() === tag)
+						user = e.guild.members.cache.find(m => m.user.username.toLowerCase() === tag)
 						if (!user) return e.channel.send(`Unknown user \`@${userRef}\``)
 					}
 				
@@ -241,7 +241,7 @@ module.exports.events = {
 
     ready() {
 
-        /*bot.client.channels.get(CHANNEL_GENERAL).fetchPinnedMessages().then(pins => {
+        /*bot.client.channels.cache.get(CHANNEL_GENERAL).fetchPinnedMessages().then(pins => {
 
             generalChannelNumPins = pins.size
 

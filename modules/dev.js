@@ -152,7 +152,7 @@ module.exports.commands['pipe'] = {
             return
         }
 
-        e.client.channels.get(e.profile[e.author.id].channel).send(e.content.slice(e.content.indexOf(e.args[0])))
+        e.client.channels.cache.get(e.profile[e.author.id].channel).send(e.content.slice(e.content.indexOf(e.args[0])))
     }
 }
 
@@ -162,7 +162,7 @@ module.exports.commands['pipe.start'] = {
     execute(e) {
         if (e.args.length > 0) {
             try {
-                var chan = e.client.channels.get(e.args[0])
+                var chan = e.client.channels.cache.get(e.args[0])
                 e.profile[e.author.id] = {channel: chan.id}
                 e.channel.send(	`Piped messages from you in this channel to \`#${chan.name}\` in \`${chan.guild.name}\`.\n`
                                         + 'Use `pipe.stop` to cancel.')

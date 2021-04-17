@@ -36,7 +36,7 @@ function getLog(guild) {
     if (!(guild.id in channels)) return null
     if (!('channels' in channels[guild.id])) return null
 
-    return bot.client.channels.get(channels[guild.id].channels[0])
+    return bot.client.channels.cache.get(channels[guild.id].channels[0])
 }
 
 async function sendEmbed(channel, embed, repeat = true) {
@@ -52,7 +52,7 @@ async function sendEmbed(channel, embed, repeat = true) {
 
 
     for (var chan of channels[channel.guild.id].channels) {
-        bot.client.channels.get(chan).sendEmbed(embed).catch(err => console.error(err.stack))
+        bot.client.channels.cache.get(chan).sendEmbed(embed).catch(err => console.error(err.stack))
     }
 }
 
@@ -186,7 +186,7 @@ module.exports.events = {
     guildMemberAdd(member) {
         var greet = (channels[member.guild.id] || {}).greet
         if (greet) {
-            bot.client.channels.get(greet.channel).send(greet.message.replace('{user}', member.toString()))
+            bot.client.channels.cache.get(greet.channel).send(greet.message.replace('{user}', member.toString()))
         }
 
         var log = getLog(member.guild)
@@ -320,7 +320,7 @@ module.exports.commands = {
 
             var text = 'Logging Channels: ```\n'
             for (var channel of e.profile[e.guild.id].channels) {
-                text += bot.client.channels.get(channel).name + '\n'
+                text += bot.client.channels.cache.get(channel).name + '\n'
             }
             e.channel.send(text + '```')
         }
@@ -395,7 +395,7 @@ module.exports.commands = {
 				// check for channel mention
                 var [m, id] = e.args[0].match(/<#(\d+)>/) || [null]
                 if (!m) return
-                var chan = e.bot.client.channels.get(id)
+                var chan = e.bot.client.channels.cache.get(id)
                 if (!chan) return
 
                 profile.greet = {

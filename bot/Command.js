@@ -220,8 +220,8 @@ class Command {
         // message-like object for command context
         let msg = {
             client: bot.client,
-            channel: bot.client.channels.get(i9n.channel_id),
-            guild: bot.client.guilds.get(i9n.guild_id),
+            channel: bot.client.channels.cache.get(i9n.channel_id),
+            guild: bot.client.guilds.cache.get(i9n.guild_id),
             author: await bot.client.fetchUser(i9n.member.user.id),
             createdTimestamp: Date.now(),
             mentions: {
@@ -266,7 +266,7 @@ class Command {
                         msg.mentions.members.set(id, await msg.guild.fetchMember(id))    
                         break
                     case 'channel':
-                        msg.mentions.channels.set(id, bot.client.channels.get(id))
+                        msg.mentions.channels.set(id, bot.client.channels.cache.get(id))
                         break
                     case 'role':
                         msg.mentions.roles.set(id, await msg.guild.roles.get(id))

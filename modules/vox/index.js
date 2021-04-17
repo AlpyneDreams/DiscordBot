@@ -49,13 +49,13 @@ async function vox(e, dir) {
                 if (killed) {killed = false; return;}
                 if (queue.length < 1) return
                 console.log(queue[queue.length - 1])
-                voice.playFile(queue.pop()).on('end', next)
+                voice.play(queue.pop()).on('end', next)
             }*/
 
             if (queue) {
                 e.channel.send(words.join(' ').toUpperCase(), {code: 'ini'})
                 child_process.execSync('ffmpeg -safe 0 -f concat -i vox.txt -c copy -y -f wav vox.wav')
-                voice.playFile('vox.wav', {volume: 0.5})
+                voice.play('vox.wav', {volume: 0.5})
             }
 
 
@@ -97,7 +97,7 @@ module.exports.commands = {
         execute(e) {
             if (e.member.voiceChannel) {
                 var voice = e.member.voiceChannel.connection
-                voice.player.dispatcher.end()
+                voice.player.dispatcher.destroy()
             }
         }
     },

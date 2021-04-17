@@ -106,7 +106,7 @@ function getDefaultHelp(e, modulename = '', minTags = false) {
     embed.fields.push({
         name: 'Help',
         value:    'Use `' + e.commandPrefix + 'help <command>` for information on a specific command,\n'
-                + 'Use `' + e.commandPrefix + 'help.all` for a detailed list of all commands.'
+                + 'Use `' + (e.bot.config.commandPrefix || e.commandPrefix) + 'help.all` for a detailed list of all commands.'
     })
 
     if (footnote) {
@@ -189,9 +189,9 @@ exports.commands = {
                     continue
                 // Add a newline and a tab only if the command has a help text
                 var description = bot.commands[i].help ? "\n\t" + bot.commands[i].help : ""
-                str += "```css\n" + e.commandPrefix + i + description + "```"
+                str += e.commandPrefix + i + description + '\n'
             }
-            e.author.send(str)
+            e.author.send(str, {split: true, code: true})
 
             if (e.channel.type != 'dm') {
                 e.channel.send("<@" + e.author.id + ">: Check your private messages.")

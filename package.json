@@ -6,7 +6,7 @@
   "dependencies": {
     "ansi-colors": "^3.2.3",
     "deep-assign": "^2.0.0",
-    "discord.js": "^11.4.2",
+    "discord.js": "^12.5.3",
     "erlpack": "github:discordapp/erlpack",
     "got": "^6.7.1",
     "hjson": "^2.4.3",
@@ -20,7 +20,7 @@
     "strip-ansi": "^5.0.0"
   },
   "optionalDependencies": {
-    "raw.js": "^0.6.0"
+    "raw.js": "^0.1.8"
   },
   "scripts": {
     "start": "node index configs/config.hjson"

@@ -29,6 +29,8 @@ class DiscordBot {
         this.commands = {}
         this.modules = {}
 
+        this.firstReady = false
+
         /** @type {Discord.Client} */
         this.client = new Discord.Client(this.config.client || {})
         this.configureClient()
@@ -84,7 +86,7 @@ class DiscordBot {
             this.client.on('raw', firstReady)
 
         // register slash commands on ready
-        this.client.on('ready', () => {
+        this.client.once('ready', () => {
             for (let [name, cmd] of Object.entries(this.commands)) {
                 if (cmd.interaction) {
                     console.log('Registering interaction command: ' + name)
@@ -100,9 +102,9 @@ class DiscordBot {
                 let i9n = payload.d
                 
                 if (i9n.type === 2 && i9n.data.name in this.commands) {
-                    console.dir(i9n, {
+                    /*console.dir(i9n, {
                         depth: null
-                    })
+                    })*/
 
                     this.commands[i9n.data.name].invokeSlashCommand(this, i9n)
                 }

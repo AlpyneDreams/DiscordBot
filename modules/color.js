@@ -66,7 +66,7 @@ module.exports.commands = {
             if (!e.profile.guilds.includes(e.guild.id))
                 return e.channel.send("Error: The color command is not enabled on this server.")
             
-            var botMember = await e.guild.fetchMember(e.client.user)
+            var botMember = await e.guild.members.fetch(e.client.user)
             if (!botMember.hasPermission('MANAGE_ROLES'))
                 return e.channel.send("Error: This bot does not have the `Manage Roles` permission in this guild.")
 

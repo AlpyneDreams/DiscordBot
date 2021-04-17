@@ -50,7 +50,7 @@ module.exports.commands = {
         tags: 'owner',
         async execute(e) {
             var m = await db.getMessage(e.args[0])
-            var author = await e.client.fetchUser(m.author)
+            var author = await e.client.users.fetch(m.author)
             sendQuote(e.channel, m, author)
         }
     },
@@ -61,7 +61,7 @@ module.exports.commands = {
         async execute(e) {
             var messages = await db.getMessages(e.channel.id, e.args[0], 4)
             for (var m of messages) {
-                var author = await e.client.fetchUser(m.author)
+                var author = await e.client.users.fetch(m.author)
                 sendQuote(e.channel, m, author)
             }
 
@@ -74,7 +74,7 @@ module.exports.commands = {
             //if (e.args.length === 1) {
             var q = await db.getQuote(e.client, e.guild.id, e.args[0])
             for (var m of q.messages) {
-                var author = await e.client.fetchUser(m.author)
+                var author = await e.client.users.fetch(m.author)
                 sendQuote(e.channel, m, author)
             }
             //} else {

@@ -12,7 +12,7 @@ module.exports.commands = {
         help: "purge messages in this channel with at least a certain age",
         usage: "<hours>",
         async execute(e) {
-            var botMember = await e.guild.fetchMember(e.client.user)
+            var botMember = await e.guild.members.fetch(e.client.user)
             if (!botMember.hasPermission('MANAGE_MESSAGES'))
                 return e.channel.send("Error: This bot does not have the `Manage Messages` permission in this guild.")
 
@@ -76,7 +76,7 @@ module.exports.commands = {
             var messageCount = 0
             var oldestMessage = undefined
             while (!done) {
-                var messages = await e.channel.fetchMessages({limit: MESSAGE_LIMIT, before: oldestMessage})
+                var messages = await e.channel.messages.fetch({limit: MESSAGE_LIMIT, before: oldestMessage})
                 done = messages.size < MESSAGE_LIMIT
                 if (messages.size == 0) {
                     break;

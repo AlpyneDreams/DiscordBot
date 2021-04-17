@@ -17,9 +17,9 @@ let lastUserInCounting = ''
 
 function checkChannelPins(channel) {
 	
-	if (!channel || !channel.fetchPinnedMessages) return
+	if (!channel || !channel.fetchPinned) return
 
-    channel.fetchPinnedMessages().then(pins => {
+    channel.messages.fetchPinned().then(pins => {
 
         if (pins.size > generalChannelNumPins) {
 
@@ -84,7 +84,7 @@ module.exports.commands = {
         args: 1,
         async execute(e) {
             let channel = bot.client.channels.cache.get(CHANNEL_GENERAL)
-            let msg = channel.fetchMessage(e.args[0]).then(msg => {
+            let msg = channel.messages.fetch(e.args[0]).then(msg => {
                 let embed = generateEmbed(msg)
                 bot.client.channels.cache.get(CHANNEL_GENERAL_PINS).send('', { embed })
             }).catch(err => {
@@ -108,7 +108,7 @@ module.exports.commands = {
 				
 				e.client.on('guildMembersChunk', handler)
 				
-				await e.guild.fetchMembers().catch((err) => {
+				await e.guild.members.fetch().catch((err) => {
 					console.error(err)
 					console.warn('Ensure client.options.ws.intents has flag GUILD_MEMBERS (1 << 1) set.')
 				})
@@ -116,7 +116,7 @@ module.exports.commands = {
 				e.client.off('guildMembersChunk', handler)
 			}
 			
-			let pending = e.guild.members.cache.filter(m => m.roles.has(ROLE_PENDING_USER) && !m.roles.has(ROLE_APPROVED_USER))
+			let pending = e.guild.members.cache.filter(m => m.roles.cache.has(ROLE_PENDING_USER) && !m.roles.cache.has(ROLE_APPROVED_USER))
 			let numRejections = pending.sweep(m => m.id in e.profile.rejections)
 			let totalRejections = Object.keys(e.profile.rejections).length
 			
@@ -154,13 +154,13 @@ module.exports.commands = {
 				if (!Number.isNaN(parseInt(userRef))) {
 					console.log(parseInt(userRef))
 					try {
-						user = await e.client.fetchUser(userRef)
+						user = await e.client.users.fetch(userRef)
 					} catch (err) {
 						return e.channel.send(`Unknown user ID \`${userRef}\`.`)
 					}
 				} else {
 					// search for a user
-					if (e.guild.members.cache.size < e.guild.memberCount) await e.guild.fetchMembers()
+					if (e.guild.members.cache.size < e.guild.memberCount) await e.guild.members.fetchs()
 					
 					let tag = userRef.trim().toLowerCase()
 					if (tag.startsWith('@')) tag = tag.slice(1)
@@ -241,7 +241,7 @@ module.exports.events = {
 
     ready() {
 
-        /*bot.client.channels.cache.get(CHANNEL_GENERAL).fetchPinnedMessages().then(pins => {
+        /*bot.client.channels.cache.get(CHANNEL_GENERAL).messages.fetchPinned().then(pins => {
 
             generalChannelNumPins = pins.size
 

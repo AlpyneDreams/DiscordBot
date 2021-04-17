@@ -20,10 +20,10 @@ async function smartFindUser(e, input) {
             result = e.bot.client.users.cache.find(u => u.tag.toLowerCase() === input.toLowerCase())
 
         if (!result && parseInt(result))
-            result = await e.bot.client.fetchUser(input)
+            result = await e.bot.client.users.fetch(input)
     }
     if (!result) return null
-    else return await e.bot.client.fetchUser(result.id)
+    else return await e.bot.client.users.fetch(result.id)
 }
 
 async function smartFindGuild(e, input) {

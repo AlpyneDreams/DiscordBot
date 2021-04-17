@@ -113,7 +113,7 @@ function starEmbed(msg, count=1) {
 
 // Gets the message on the starboard that quotes the starred message
 async function getLinked(msg, starboard, profile) {
-    return await starboard.fetchMessage(profile.stars[msg.id].linked)
+    return await starboard.messages.fetch(profile.stars[msg.id].linked)
 }
 
 // Called when the first star is added to a message
@@ -273,7 +273,7 @@ module.exports.commands = {
             if (!profile) return
 
             if (e.args[0] in profile.stars) {
-                var msg = await e.guild.channels.get(profile.stars[e.args[0]].channel).fetchMessage(e.args[0])
+                var msg = await e.guild.channels.get(profile.stars[e.args[0]].channel).messages.fetch(e.args[0])
                 e.channel.send(starAnnotation(msg, profile.stars[e.args[0]].count), {embed: starEmbed(msg, profile.stars[e.args[0]].count)})
             } else {
                 e.channel.send('That message is not starred.')
@@ -291,7 +291,7 @@ module.exports.commands = {
             var r = starKeys[getRandomInt(0, starKeys.length)]
 
             if (r in profile.stars) {
-                var msg = await e.guild.channels.get(profile.stars[r].channel).fetchMessage(r)
+                var msg = await e.guild.channels.get(profile.stars[r].channel).messages.fetch(r)
                 e.channel.send(starAnnotation(msg, profile.stars[r].count), {embed: starEmbed(msg, profile.stars[r].count)})
             }
         }
@@ -371,7 +371,7 @@ module.exports.commands = {
 
             var id = e.args[0]
             if (id in profile.stars) {
-                var msg = await e.guild.channels.get(profile.stars[id].channel).fetchMessage(id)
+                var msg = await e.guild.channels.get(profile.stars[id].channel).messages.fetch(id)
                 e.channel.send(msg.reactions
                     .filterArray(r => r.emoji.name === STAR_EMOJI)[0]
                     .users

@@ -222,7 +222,7 @@ class Command {
             client: bot.client,
             channel: bot.client.channels.cache.get(i9n.channel_id),
             guild: bot.client.guilds.cache.get(i9n.guild_id),
-            author: await bot.client.fetchUser(i9n.member.user.id),
+            author: await bot.client.users.fetch(i9n.member.user.id),
             createdTimestamp: Date.now(),
             mentions: {
                 channels: new Discord.Collection(),
@@ -234,7 +234,7 @@ class Command {
             }
         }
 
-        msg.member = await msg.guild.fetchMember(i9n.member.user.id)
+        msg.member = await msg.guild.members.fetch(i9n.member.user.id)
 
         msg.channel = Object.assign({
 
@@ -262,8 +262,8 @@ class Command {
 
                 switch (opt.type?.toLowerCase()) {
                     case 'user':
-                        msg.mentions.users.set(id, await bot.client.fetchUser(id))
-                        msg.mentions.members.set(id, await msg.guild.fetchMember(id))    
+                        msg.mentions.users.set(id, await bot.client.users.fetch(id))
+                        msg.mentions.members.set(id, await msg.guild.members.fetch(id))    
                         break
                     case 'channel':
                         msg.mentions.channels.set(id, bot.client.channels.cache.get(id))

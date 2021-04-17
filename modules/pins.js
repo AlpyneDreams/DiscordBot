@@ -16,7 +16,7 @@ module.exports.commands = {
 
             let channel = e.mentions.channels.size > 0 ? e.mentions.channels.first() : e.channel
 
-            let pins = await channel.fetchPinnedMessages()
+            let pins = await channel.messages.fetchPinned()
             e.channel.send(`${channel} has ${pins.size} pinned messages`)
 
             
@@ -51,7 +51,7 @@ module.exports.commands = {
                 e.bot.profile.save()
                 await e.channel.send(`Watching for pinned messages from ${src}, will post them in ${dest}.`)
                 channelProf.lastPinAt = e.channel.lastPinAt
-                src.fetchPinnedMessages().then(pins => {
+                src.messages.fetchPinned().then(pins => {
                     channelProf.count = pins.size
                     channelProf.cache = pins.map(msg => msg.id)
                     console.info(`[PINS] Initial count ${pins.size} pins in #${src.name}`)
@@ -144,7 +144,7 @@ module.exports.commands = {
 
             let src = e.mentions.channels.first()
 
-            let pins = await src.fetchPinnedMessages()
+            let pins = await src.messages.fetchPinned()
             e.channel.send(`Deleting ${pins.size} pinned messages from ${src}`)
             console.info(`Beginning ${pins.size} pinned message purge in #${src.name} (${src.id}).`, 'Deleted Pins')
             if (src.guild) console.info(`(In guild ${src.guild} - ${src.guild.id})`, 'Deleted Pins')
@@ -173,7 +173,7 @@ module.exports.commands = {
             let [src, dest] = e.mentions.channels.first(2)
             dest = dest || e.channel
 
-            let pins = await src.fetchPinnedMessages()
+            let pins = await src.messages.fetchPinned()
             await e.channel.send(`Recording ${pins.size} pinned messages from ${src} to channel ${dest}. This may take a minute.`)
 
             //console.dir(pins)
@@ -200,7 +200,7 @@ module.exports.commands = {
         args: 2,
         async execute(e) {
             let channelID = e.args[0], msgID = e.args[1]
-            let msg = await e.client.channels.cache.get(channelID).fetchMessage(msgID)
+            let msg = await e.client.channels.cache.get(channelID).messages.fetch(msgID)
             
             e.channel.send('', {embed: generateEmbed(msg)})
         }
@@ -228,7 +228,7 @@ module.exports.events = {
                 }
 
                 channelProf.lastPinAt = channel.lastPinAt
-                channel.fetchPinnedMessages().then(pins => {
+                channel.messages.fetchPinned().then(pins => {
                     channelProf.count = pins.size
                     channelProf.cache = pins.map(msg => msg.id)
                     console.info(`[PINS] #${channel.name}: ${pins.size} pins`)
@@ -255,7 +255,7 @@ module.exports.events = {
 
         console.info(`[PINS] Pins update in #${channel.name}.`)
         
-        channel.fetchPinnedMessages().then(pins => {
+        channel.messages.fetchPinned().then(pins => {
             if (!channelProf.lastPinAt || channelProf.lastPinAt < time) {
 
                 let foundNewPins = 0

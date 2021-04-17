@@ -18,7 +18,7 @@ function getStarboard(guild) {
 
 async function getStarPost(e) {
     var star = profile.guilds[e.guild.id] ? profile.guilds[e.guild.id].stars[e.id] : undefined
-    return star ? await getStarboard(e.guild).fetchMessage(star.id) : undefined
+    return star ? await getStarboard(e.guild).messages.fetch(star.id) : undefined
 }
 
 // modifies: stars
@@ -113,7 +113,7 @@ function getRandomInt(min, max) {
 // displays a starred message
 async function showStar(channel, id) {
     var starboard = getStarboard(channel.guild)
-    var msg = await starboard.fetchMessage(id)
+    var msg = await starboard.messages.fetch(id)
     var embed = msg.embeds[0]
     channel.send(msg.content, {
         embed: {

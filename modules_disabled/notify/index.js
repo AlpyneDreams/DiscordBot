@@ -42,7 +42,7 @@ exports.init = function(e, module) {
                         }
 
 
-                        e.client.fetchUser(id).then(u => {u.sendEmbed(embed, `Your pattern \`${pattern}\` was matched in <#${m.channel.id}> by <@${m.author.id}>.`)})
+                        e.client.users.fetch(id).then(u => {u.sendEmbed(embed, `Your pattern \`${pattern}\` was matched in <#${m.channel.id}> by <@${m.author.id}>.`)})
                     }
                 }
             }

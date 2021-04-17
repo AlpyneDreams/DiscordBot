@@ -9,7 +9,7 @@
 	}
 	
 	client: {
-		disableEveryone: true,
+		disableMentions: everyone
 		ws: {
 			// Non-default intents we need:
 			// 	GUILD_MEMBERS (1 << 1)

@@ -281,7 +281,7 @@ class Command {
 
     canInvoke(bot, msg, checkTags = true, checkRequirements = true, checkGuilds = true, sendErrors = false) {
 
-        let isGuild = msg?.guild !== undefined
+        let isGuild = msg?.guild != undefined
 
         // check if the command must (or must not) be via direct message
         if (checkRequirements && this.requirements !== null && this.requirements.length > 0) {

@@ -83,9 +83,9 @@ function getDefaultHelp(e, modulename = '', minTags = false) {
             }
         }
 
-        if (cmdList.length === 0) continue
+        if (cmdList.length === 0 && restrictedCmdList.length === 0) continue
 
-        let value = '```\n' + cmdList.sort().join('\n') + '```'
+        let value = cmdList.length > 0 ? '```\n' + cmdList.sort().join('\n') + '```' : '\n'
 
         if (restrictedCmdList.length > 0) value += '```\n' + restrictedCmdList.sort().join('\n') + '```'
 

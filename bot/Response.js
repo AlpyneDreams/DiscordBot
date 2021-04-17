@@ -32,7 +32,11 @@ class Response extends Discord.Message {
             type: 0 // default
         }
 
-        super(channel, data, client)
+        let dataCopy = Object.assign({}, data)
+        // This confuses d.js somehow otherwise
+        delete dataCopy.author
+
+        super(channel, dataCopy, client)
 
         this.interaction = interaction
     }

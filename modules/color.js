@@ -31,7 +31,7 @@ function bestCosmeticRole(member, botMember) {
 
     // filter out roles we that outrank the bot
     possibleRoles = possibleRoles.filter(
-        x => x.comparePositionTo(botMember.highestRole) <= 0
+        x => x.comparePositionTo(botMember.roles.highest) <= 0
     )
 
     if (possibleRoles.size > 1) {		
@@ -90,10 +90,10 @@ module.exports.commands = {
 
             var minPosition = 0
             // first, find the color role
-            var role = e.member.colorRole
+            var role = e.member.roles.color
 
             // check that we can make a cosmetic role above their color role
-            if (role && role.comparePositionTo(botMember.highestRole) > 0)
+            if (role && role.comparePositionTo(botMember.roles.highest) > 0)
                 return e.channel.send("Error: Your color is set by a role that outranks this bot.")
 
             if (role && !role.name.startsWith('#')) {
@@ -112,7 +112,7 @@ module.exports.commands = {
                     color: e.args[0],
                     position: minPosition
                 }, reason)
-                e.member.addRole(role, reason)
+                e.member.roles.add(role, reason)
             } else if (role) {
                 role.setColor(e.args[0], reason)
             }

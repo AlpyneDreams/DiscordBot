@@ -269,7 +269,7 @@ class Command {
                         msg.mentions.channels.set(id, bot.client.channels.cache.get(id))
                         break
                     case 'role':
-                        msg.mentions.roles.set(id, await msg.guild.roles.get(id))
+                        msg.mentions.roles.set(id, await msg.guild.roles.cache.get(id))
                         break
                     default: break
                 }

@@ -5,7 +5,7 @@
  * "cosmetic role" = a role that starts with '#' (used by this module to set colors)
  */
 
-var RichEmbed = require('discord.js').RichEmbed
+var RichEmbed = require('discord.js').MessageEmbed
 
 let enabledGuilds = []
 

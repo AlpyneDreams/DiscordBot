@@ -309,7 +309,7 @@ function generateEmbed(msg) {
         author: {
             name: msg.member ? msg.member.displayName : msg.author.username,
             //url: msg.url,
-            icon_url: msg.author.displayAvatarURL
+            icon_url: msg.author.displayAvatarURL()
         },
         // Unicode FE0E makes the emoji render as text if possible
         description: msg.content + `\n[📌\uFE0E](${msg.url}) [](${msg.author.id})`,

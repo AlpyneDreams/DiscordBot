@@ -69,7 +69,7 @@ module.exports.events = {
         sendEmbed(log, {
             author: {
                 name: msg.member.nickname,
-                icon_url: msg.author.displayAvatarURL
+                icon_url: msg.author.displayAvatarURL()
             },
             color: color(255, 200, 0),
             timestamp: msg.editedAt,
@@ -93,7 +93,7 @@ module.exports.events = {
             description: msg.content + '\n\n*in ' + msg.channel.toString() + '*' || '',
             author: {
                 name: msg.member.nickname || msg.author.username,
-                icon_url: msg.author.displayAvatarURL
+                icon_url: msg.author.displayAvatarURL()
             },
             footer: {
                 text: `❌ Message Deleted`,
@@ -162,7 +162,7 @@ module.exports.events = {
             sendEmbed(log, {
                 author: {
                     name: member.user.username,
-                    icon_url: member.user.displayAvatarURL
+                    icon_url: member.user.displayAvatarURL()
                 },
                 fields: [ {
                     name: 'Before',
@@ -195,7 +195,7 @@ module.exports.events = {
         sendEmbed(log, {
             author: {
                 name: member.user.username,
-                icon_url: member.user.displayAvatarURL
+                icon_url: member.user.displayAvatarURL()
             },
             color: color(166, 166, 166),
             footer: {
@@ -215,7 +215,7 @@ module.exports.events = {
         sendEmbed(log, {
             author: {
                 name: member.user.username,
-                icon_url: member.user.displayAvatarURL
+                icon_url: member.user.displayAvatarURL()
             },
             color: color(166, 166, 166),
             footer: {
@@ -234,7 +234,7 @@ module.exports.events = {
             color: color(255, 0, 0),
             author: {
                 name: user.username,
-                icon_url: user.displayAvatarURL
+                icon_url: user.displayAvatarURL()
             },
             footer: {
                 text: `❌ User Banned`,
@@ -251,7 +251,7 @@ module.exports.events = {
             color: color(0, 255, 0),
             author: {
                 name: user.username,
-                icon_url: user.displayAvatarURL
+                icon_url: user.displayAvatarURL()
             },
             footer: {
                 text: `✔️️ User Unbanned`,
@@ -285,8 +285,8 @@ module.exports.commands = {
                 log = e.mentions.channels.first()
             }
 
-            var webhook = await log.createWebhook(e.client.user.username, e.client.user.displayAvatarURL)
-            webhook.edit(e.client.user.username, e.client.user.displayAvatarURL)
+            var webhook = await log.createWebhook(e.client.user.username, e.client.user.displayAvatarURL())
+            webhook.edit(e.client.user.username, e.client.user.displayAvatarURL())
 
             e.bot.profile.modules.admin[e.guild.id] = {
                 channels: [log.id],
@@ -354,7 +354,7 @@ module.exports.commands = {
             sendEmbed(log, {
                 author: {
                     name: e.author.username,
-                    icon_url: e.author.displayAvatarURL
+                    icon_url: e.author.displayAvatarURL()
                 },
                 footer: {
                     text: '💡 Admin Message'

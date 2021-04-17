@@ -44,7 +44,7 @@ module.exports.events = {
                 var embed = {
                     author: {
                         name: e.member.nickname || e.author.username,
-                        icon_url: e.author.avatarURL
+                        icon_url: e.author.avatarURL()
                     },
                     description: e.content,
                     timestamp: e.createdAt,
@@ -119,7 +119,7 @@ async function showStar(channel, id) {
         embed: {
             author: {
                 name: embed.author.name,
-                icon_url: embed.author.iconURL
+                icon_url: embed.author.iconURL()
             },
             timestamp: embed.createdTimestamp,
             description: embed.description,

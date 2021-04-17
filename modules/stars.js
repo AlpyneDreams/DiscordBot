@@ -80,7 +80,7 @@ function starEmbed(msg, count=1) {
     var em = {
         author: {
             name: msg.member.nickname || msg.author.username,
-            icon_url: msg.author.avatarURL
+            icon_url: msg.author.avatarURL()
         },
         help: msg.content,
         timestamp: msg.createdAt,
@@ -343,7 +343,7 @@ module.exports.commands = {
                 e.channel.send('', {embed: {
                     author: {
                         name: member.nickname || member.user.username,
-                        icon_url: member.user.avatarURL
+                        icon_url: member.user.avatarURL()
                     },
                     fields: [
                         {name: 'Messages Starred', value: stats.messages, inline: true},

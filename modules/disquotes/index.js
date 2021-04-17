@@ -31,7 +31,7 @@ function sendQuote(channel, m, author) {
         description: m.content,
         author: {
             name: author.username,
-            icon_url: author.displayAvatarURL
+            icon_url: author.displayAvatarURL()
             //icon_url: "http://dankparrot.xyz/i/dachn.png" // disquotes logo
         },
         footer: {

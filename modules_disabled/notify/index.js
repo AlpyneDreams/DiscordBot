@@ -37,7 +37,7 @@ exports.init = function(e, module) {
                     if (m.content.match(pattern)) {
                         var embed = {
                             description: m.content,
-                            author: {name: m.member.nickname || m.author.username, icon_url: m.author.displayAvatarURL},
+                            author: {name: m.member.nickname || m.author.username, icon_url: m.author.displayAvatarURL()},
 
                         }
 

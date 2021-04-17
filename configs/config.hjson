@@ -37,6 +37,10 @@
 			disabled: true
 		}
 
+		purge: {
+			disabled: true
+		}
+
 	}
 
 	// Profile Overrides

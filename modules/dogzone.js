@@ -310,7 +310,7 @@ module.exports.events = {
                 
         if (!newChannel.guild) return
 
-        let loggerChannel = newChannel.guild.channels.get('615440527428419584')
+        let loggerChannel = newChannel.guild.channels.cache.get('615440527428419584')
 
         if (newChannel.guild.id != '615407840257114132') return
         if (newChannel.parentID == oldChannel.parentID && newChannel.position == oldChannel.position) return

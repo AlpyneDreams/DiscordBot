@@ -148,7 +148,7 @@ const commands = {
         async execute(e) {
             if (!g.guild) return e.send('No guild selected.')
             let channels = []
-            for (const [, cat] of g.guild.channels.sort((a, b) => a.position - b.position).filter(ch => ch.type === 'category' || !ch.parent)) {
+            for (const [, cat] of g.guild.channels.cache.sort((a, b) => a.position - b.position).filter(ch => ch.type === 'category' || !ch.parent)) {
                 channels.push(cat)
                 if (cat.children) for (const [, c] of cat.children.sort((a, b) => a.position - b.position)) {
                     channels.push(c)
@@ -156,9 +156,9 @@ const commands = {
             }
             // Assert: correct # of channels
             e.con.assert(
-                channels.length === g.guild.channels.size,
+                channels.length === g.guild.channels.cache.size,
                 'Channels command missed %d channels',
-                g.guild.channels.size - channels.length
+                g.guild.channels.cache.size - channels.length
             )
             for (const c of channels) {
                 if (c.type === 'category') {

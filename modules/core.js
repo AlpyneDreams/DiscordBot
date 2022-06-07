@@ -123,6 +123,13 @@ exports.commands = {
         help: "Pong!",
         interaction: true,
         async execute(e) {
+            if (e.interaction) {
+                const before = new Date()
+                await e.interaction.deferReply()
+                const after = new Date()
+                await e.interaction.editReply(`Pong! Delay: ${after.getTime() - before.getTime()} ms`)
+                return
+            }
             var msg = await e.channel.send("Pong!")
             var delay = new Date(msg.createdTimestamp).getTime() - new Date(e.createdTimestamp).getTime()
             msg.edit(`Pong! Delay: ${delay} ms`)

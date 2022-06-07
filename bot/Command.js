@@ -142,14 +142,21 @@ class Command {
                 members: new Discord.Collection(),
                 roles: new Discord.Collection(),
                 users: new Discord.Collection()
-            }
+            },
+            interaction: itn
         }
 
         msg.member = await itn.member
 
         msg.channel = Object.assign({
 
-            send: (arg) => itn.reply({ephemeral: this.ephemeral, ...arg}),
+            send: async (arg) => {
+                const reply = await itn.reply(
+                    typeof(arg) === 'object' ? {ephemeral: this.ephemeral, ...arg} : arg
+                ) ?? {}
+                reply.edit = (...args) => itn.editReply(...args)
+                return reply
+            },
             //bot.interactionResponse(itn, msg, ...args)
 
         }, msg.channel)
@@ -336,7 +343,6 @@ class Command {
                 e.args = args
                 e.bot = bot
                 e.profile = bot.profile.modules[this.module.name]
-                e.interaction = interaction
                 e.options = options
                 e.commandPrefix = interaction ? '/' : bot.config.commandPrefix
 

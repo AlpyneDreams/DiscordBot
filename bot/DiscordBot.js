@@ -28,10 +28,17 @@ class DiscordBot {
         this.commands = {}
         this.modules = {}
 
-        const clientOptions = Object.assign({intents: []}, this.config.client ?? {})
+        const opts = Object.assign(this.config.client ?? {})
+        
+        // Add intents from config
+        if (opts.intents) {
+            for (const i in opts.intents) {
+                opts.intents[i] = Discord.Intents.FLAGS[opts.intents[i]]
+            }
+        }
 
         /** @type {Discord.Client} */
-        this.client = new Discord.Client(clientOptions)
+        this.client = new Discord.Client(opts)
         this.configureClient()
 
         if (loadModules)

@@ -10,13 +10,11 @@
 	
 	client: {
 		disableMentions: everyone
-		ws: {
-			// Non-default intents we need:
-			// 	GUILD_MEMBERS (1 << 1)
-			// Disabled Intents:
-			// 	GUILD_PRESENCES (1 << 8)
-			intents: 32511
-		}
+		intents: [
+			GUILDS
+			GUILD_MESSAGES
+			DIRECT_MESSAGES
+		]
 	}
 
 	// Modules

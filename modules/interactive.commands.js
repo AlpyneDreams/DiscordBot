@@ -95,6 +95,36 @@ const commands = {
             e.con.groupEnd()
         }
     },
+    'reload': {
+        help: "Reloads all modules or one specific module.",
+        usage: "[module]",
+        args: [0, 1],
+        async execute(e) {
+            var oldCount = Object.keys(e.bot.modules).length
+            if (e.args.length == 0) {
+
+                e.bot.reloadAllModules()
+
+                var count = Object.keys(e.bot.modules).length
+                console.log("Reloaded " + count + " modules.")
+
+                // check for discrepancies
+                if (count < oldCount) {
+                    var difference = oldCount - count
+                    console.log("Warning: " + difference + (difference == 1 ? " module was " : " modules were ") + "removed or failed to reload properly.")
+                }
+
+            } else {
+                var module = e.bot.modules[e.args[0]]
+                if (!module) {
+                    console.log("Module '" + e.args[0] + "' cannot be found.")
+                    return
+                }
+
+                e.bot.reloadModule(e.args[0], module.path)
+            }
+        }
+    },
     'eval': {
         args: 1,
         usage: '<expr>',

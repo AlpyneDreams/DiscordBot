@@ -100,6 +100,11 @@ class Module {
         if (addEvents) {
             for (var event in this.events) {
                 var listener = this.events[event]
+                
+                // Discord.js v13: 'message' -> 'messageCreate'
+                if (event === 'message')
+                    event = 'messageCreate'
+                
                 if (listener.prepend)
                     if (listener.once)
                         bot.client.prependOnceListener(event, listener)

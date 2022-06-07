@@ -46,7 +46,7 @@ class DiscordBot {
     configureClient() {
 
         // Command parsing
-        this.client.on("message", msg => {
+        this.client.on('messageCreate', msg => {
             var commandRegex = new RegExp(`^${this.config.commandPrefix}((?:.|[\n\r])+)`, "i")
 
             if (msg.author.id === this.client.user.id && !this.allowSelfCommands) {

@@ -8,6 +8,7 @@ class Command {
 
         Object.assign(this, {
             interaction: false,
+            ephemeral: false,
             options: [],
 
             guildIDs: [], // used by guild-specific slash commands
@@ -68,6 +69,125 @@ class Command {
     id(guild) {
         if (this._id) return this._id
         else return this.guildIDs[guild.id]
+    }
+
+    registerInteraction(bot) {
+        let options = []
+
+        if (Array.isArray(this.options)) {
+            // copy all option objects
+            options.concat((this.options || []).map(o => Object.assign({}, o)))
+
+        } else if (typeof this.options === 'object') {
+            // if options is an object, not an array, use the keys as the option names
+            for (let [key, value] of Object.entries(this.options)) {
+                let opt = Object.assign({}, value)
+
+                if (opt.name && opt.name !== key)
+                    console.warn(`Command '${this.name}' has option with key '${key}' but conflicting name property '${opt.name}'`)
+                
+                opt.name = key
+                value.name = key // update original object property too
+                options.push(opt)
+            }
+        }
+
+        // map to ApplicationCommandOptionType integers
+        for (let opt of options) {
+            if (Number.isInteger(opt.type)) continue
+            opt.type = [
+                null,
+                'subcommand',
+                'subcommandgroup',
+                'string',
+                'int',
+                'bool',
+                'user',
+                'channel',
+                'role'
+            ].indexOf(opt.type.toLowerCase())
+        }
+
+        let data = {
+            name: this.name,
+            description: this.help || this.usage || 'No description.',
+            options
+        }
+
+        // global commands
+        if (this.guild === null || this.guild?.length === 0) {
+            bot.client.application.commands.create(data)
+    
+        // guild-specific commands
+        } else {
+            for (let g of this.guild) {
+                bot.client.guilds.resolve(g.id).commands.create(data)
+            }
+        }
+    }
+
+    async invokeInteraction(bot, itn, checkTags = true) {
+
+        // message-like object for command context
+        let msg = {
+            client: bot.client,
+            channel: itn.channel,
+            guild: itn.guild,
+            author: itn.user,
+            createdTimestamp: Date.now(),
+            mentions: {
+                channels: new Discord.Collection(),
+                crosspostedChannels: new Discord.Collection(),
+                everyone: false,
+                members: new Discord.Collection(),
+                roles: new Discord.Collection(),
+                users: new Discord.Collection()
+            }
+        }
+
+        msg.member = await itn.member
+
+        msg.channel = Object.assign({
+
+            send: (arg) => itn.reply({ephemeral: this.ephemeral, ...arg}),
+            //bot.interactionResponse(itn, msg, ...args)
+
+        }, msg.channel)
+
+        let fullCommand = [
+            itn.name,
+            ...(itn.options.data || []).map(o => String(o.value))
+        ]
+
+        msg.content = '/' + fullCommand.join(' ')
+
+        // collect {name, value} options into object key values
+        let options = {}
+        for (let opt of (itn.options.data || [])) options[opt.name] = opt.value
+
+        // pass option values as mentions
+        if (this.options)
+            for (let opt of Object.values(this.options)) {
+
+                if (!(opt.name in options)) continue
+                let id = options[opt.name]
+
+                switch (opt.type?.toLowerCase()) {
+                    case 'user':
+                        msg.mentions.users.set(id, await bot.client.users.fetch(id))
+                        msg.mentions.members.set(id, await msg.guild.members.fetch(id))    
+                        break
+                    case 'channel':
+                        msg.mentions.channels.set(id, bot.client.channels.cache.get(id))
+                        break
+                    case 'role':
+                        msg.mentions.roles.set(id, await msg.guild.roles.cache.get(id))
+                        break
+                    default: break
+                }
+            }
+
+        this.invoke(bot, fullCommand, msg, true, true, options)
     }
 
     static splitArgs(fullCommand, maxArgs) {

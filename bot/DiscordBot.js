@@ -8,8 +8,15 @@ const Profile = require('./Profile.js')
 const Config = require('./Config.js')
 const Module = require('./Module.js')
 const TagManager = require('./TagManager.js')
+const Command = require('./Command.js')
 
 class DiscordBot {
+
+    /** @type {Array<Module>} */
+    modules = {}
+
+    /** @type {Array<Command>} */
+    commands = {}
 
     constructor(cfg, loadModules = true) {
         // disable flatfile logging until config is loaded
@@ -24,9 +31,6 @@ class DiscordBot {
         // setup Profile (JSON data file) and TagManager (basic permissions)
         this.profile = new Profile(this.config.paths.profile, this.config)
         this.tagManager = new TagManager(this.profile.users, this.profile.guilds)
-
-        this.commands = {}
-        this.modules = {}
 
         const opts = Object.assign(this.config.client ?? {})
         
@@ -49,8 +53,38 @@ class DiscordBot {
         return this.config.selfCommands || this.config.selfCommandsOnly
     }
 
+    async registerInteractions() {
+        for (const cmd of Object.values(this.commands)) {
+            if (cmd.interaction) {
+                console.log(`Registering slash command: /${cmd.name}`)
+                this.client.application.commands.create(cmd)
+            }
+        }
+    }
+
     // Attaches core event listeners to the Discord.js client
     configureClient() {
+
+        // Interaction registration
+        this.client.once('ready', () => {
+            for (let [name, cmd] of Object.entries(this.commands)) {
+                if (cmd.interaction) {
+                    console.log('Registering interaction command: ' + name)
+                    
+                    cmd.registerInteraction(this)
+                }
+            }
+        })
+
+        // Interaction handling
+        this.client.on('interactionCreate', itn => {
+            if (!itn.isCommand()) return
+
+            if (itn.commandName in this.commands) {
+                const cmd = this.commands[itn.commandName]
+                cmd.invokeInteraction(this, itn)
+            }
+        })
 
         // Command parsing
         this.client.on('messageCreate', msg => {

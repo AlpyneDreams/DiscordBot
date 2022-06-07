@@ -144,7 +144,8 @@ exports.commands = {
     "help": {
         help: "Provides information on commands and features.",
         usage: "[command]",
-        interaction: false,
+        interaction: true,
+        ephemeral: true,
         options: {
             command: {type: 'string', description: 'Get help about a specific command.', required: false}
         },

@@ -8,7 +8,6 @@ const Profile = require('./Profile.js')
 const Config = require('./Config.js')
 const Module = require('./Module.js')
 const TagManager = require('./TagManager.js')
-const Response = require('./Response.js')
 
 class DiscordBot {
 
@@ -29,7 +28,6 @@ class DiscordBot {
         this.commands = {}
         this.modules = {}
 
-        this.firstReady = false
         const clientOptions = Object.assign({intents: []}, this.config.client ?? {})
 
         /** @type {Discord.Client} */
@@ -44,74 +42,10 @@ class DiscordBot {
         return this.config.selfCommands || this.config.selfCommandsOnly
     }
 
-    // FIXME: D.JS UPDATE
-    async interactionResponse(i9n, msg, content, options = {}) {
-        
-        if (options.code === true) {
-            content = '```' + content + '```'
-        } else if (typeof options.code === 'string') {
-            content = '```' + options.code + '\n' + content + '```'
-        }
-
-        let body = {
-            type: 4,
-            data: {
-                content,
-                tts: options?.tts,
-                embeds: options?.embed ? [options.embed] : undefined
-            }
-        }
-        
-        await this.client.rest.request(
-            'post',
-            `/interactions/${i9n.id}/${i9n.token}/callback`,
-            {route: `/interactions/${i9n.id}/${i9n.token}/callback`, data: body}
-        )
-                
-        return new Response(i9n, msg.channel, body, this.client)
-
-    }
-    
     // Attaches core event listeners to the Discord.js client
     configureClient() {
 
-        // intercept the first raw READY event to get our application ID (FIXME: D.JS UPDATE)
-        let firstReady = async payload => {
-            if (payload.op === 0 && payload.t === 'READY') {
-                this.client.id = payload.d.application.id
-                this.client.off('raw', firstReady)
-            }
-        }
-        if (!this.client.id)
-            this.client.on('raw', firstReady)
-
-        // register slash commands on ready
-        this.client.once('ready', () => {
-            for (let [name, cmd] of Object.entries(this.commands)) {
-                if (cmd.interaction) {
-                    console.log('Registering interaction command: ' + name)
-                    
-                    cmd.registerSlashCommand(this)
-                }
-            }
-        })
-
-        // catch an interaction, such as a slash command (FIXME: D.JS UPDATE)
-        this.client.on('raw', async payload => {
-            if (payload.op === 0 && payload.t === 'INTERACTION_CREATE') {
-                let i9n = payload.d
-                
-                if (i9n.type === 2 && i9n.data.name in this.commands) {
-                    /*console.dir(i9n, {
-                        depth: null
-                    })*/
-
-                    this.commands[i9n.data.name].invokeSlashCommand(this, i9n)
-                }
-
-            }
-        })
-
+        // Command parsing
         this.client.on("message", msg => {
             var commandRegex = new RegExp(`^${this.config.commandPrefix}((?:.|[\n\r])+)`, "i")
 

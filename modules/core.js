@@ -115,7 +115,7 @@ function getDefaultHelp(e, modulename = '', minTags = false) {
         }
     }
 
-    return {embed}
+    return {embeds: [embed]}
 }
 
 exports.commands = {
@@ -154,9 +154,9 @@ exports.commands = {
 
             if (e.args.length <= 0) {
                 // same as 'commands'
-                e.channel.send('',getDefaultHelp(e))
+                e.channel.send(getDefaultHelp(e))
             } else if (e.args[0] === '--min') {
-                e.channel.send('', getDefaultHelp(e, '', true))
+                e.channel.send(getDefaultHelp(e, '', true))
             } else {
                 if (bot.commands[e.args[0]]) {
 
@@ -204,9 +204,9 @@ exports.commands = {
         execute(e) {
             if (e.args[0]) {
                 // Show commands for only one specific module
-                e.channel.send('', getDefaultHelp(e, e.args[0]))
+                e.channel.send(getDefaultHelp(e, e.args[0]))
             } else {
-                e.channel.send('', getDefaultHelp(e))
+                e.channel.send(getDefaultHelp(e))
             }
         }
     },

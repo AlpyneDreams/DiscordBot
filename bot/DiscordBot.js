@@ -30,9 +30,10 @@ class DiscordBot {
         this.modules = {}
 
         this.firstReady = false
+        const clientOptions = Object.assign({intents: []}, this.config.client ?? {})
 
         /** @type {Discord.Client} */
-        this.client = new Discord.Client(this.config.client || {})
+        this.client = new Discord.Client(clientOptions)
         this.configureClient()
 
         if (loadModules)

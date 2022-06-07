@@ -9,6 +9,8 @@
 		logs: logs
 	}
 
+	disabledModules: []
+
 	selfCommandsOnly: false
 	selfCommands: false
 

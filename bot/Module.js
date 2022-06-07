@@ -25,12 +25,16 @@ class Module {
         var isDirectory = fs.lstatSync(file).isDirectory()
         var isHjson = (!isDirectory) && ext.match(/h?json$/gi)
 
+        const modules = bot.config.modules
+        const disabled = bot.config.disabledModules
+
         // skip disabled modules
-        if (bot.config.modules && bot.config.modules[name] || Array.isArray(bot.config.modules) && bot.config.modules.includes(name)) {
-            if (!Array.isArray(bot.config.modules) && bot.config.modules[name].disabled) {
-                console.info(`Skipped Module: ${name.yellow.bold}`)
-                throw true
-            }
+        if (
+            modules && modules[name]?.disabled
+            || Array.isArray(disabled) && disabled.includes(name)
+        ) {
+            console.info(`Skipped Module: ${name.yellow.bold}`)
+            throw true
         } else {
             // skip if there's no config entry and the whitelist is on
             if (bot.config.moduleWhitelist && !force) {

@@ -17,28 +17,18 @@
 		]
 	}
 
+	disabledModules: [
+		disquotes
+		notify
+		reddit
+		vox
+		purge
+
+		starboard
+	]
+
 	// Modules
 	modules: {
-		disquotes: {
-			disabled: true
-		}
-
-		notify: {
-			disabled: true
-		}
-
-		reddit: {
-			disabled: true
-		}
-
-		vox: {
-			disabled: true
-		}
-
-		purge: {
-			disabled: true
-		}
-
 	}
 
 	// Profile Overrides

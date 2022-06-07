@@ -15,6 +15,9 @@
             }
         }
         moduleWhitelist: {type: "boolean"}
+        disabledModules: {
+            type: ["string", "array"]
+        }
         modules: {
             type: ["object", "array"]
             additionalProperties: {

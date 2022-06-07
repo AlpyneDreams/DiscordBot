@@ -32,7 +32,7 @@ function checkChannelPins(channel) {
             for (let i = 0; i < numNewPins; i++) {
 
                 let embed = generateEmbed(pins.array()[i])
-                bot.client.channels.cache.get(CHANNEL_GENERAL_PINS).send('', { embed })
+                bot.client.channels.cache.get(CHANNEL_GENERAL_PINS).send({ embeds:[embed] })
 
             }
 
@@ -86,7 +86,7 @@ module.exports.commands = {
             let channel = bot.client.channels.cache.get(CHANNEL_GENERAL)
             let msg = channel.messages.fetch(e.args[0]).then(msg => {
                 let embed = generateEmbed(msg)
-                bot.client.channels.cache.get(CHANNEL_GENERAL_PINS).send('', { embed })
+                bot.client.channels.cache.get(CHANNEL_GENERAL_PINS).send({ embeds:[embed] })
             }).catch(err => {
                 e.channel.send(`Could not find message ${e.args[0]}`)
                 console.warn(err)
@@ -96,7 +96,7 @@ module.exports.commands = {
 	
 	pending: {
         async execute(e) {
-			if (!e.member.hasPermission('MANAGE_ROLES')) return
+			if (!e.member.permissions.has('MANAGE_ROLES')) return
 			
 			
 			if (e.guild.members.cache.size < e.guild.memberCount) {
@@ -108,7 +108,8 @@ module.exports.commands = {
 				
 				e.client.on('guildMembersChunk', handler)
 				
-				await e.guild.members.fetch().catch((err) => {
+				const members = await e.guild.members.fetch()
+				.catch((err) => {
 					console.error(err)
 					console.warn('Ensure client.options.ws.intents has flag GUILD_MEMBERS (1 << 1) set.')
 				})
@@ -120,14 +121,17 @@ module.exports.commands = {
 			let numRejections = pending.sweep(m => m.id in e.profile.rejections)
 			let totalRejections = Object.keys(e.profile.rejections).length
 			
-			e.channel.send('', {
-				embed: {
+			e.channel.send({
+				embeds: [{
 					title: 'Pending Approvals',
 					description: pending.map(m => `<@${m.id}> (${m.user.tag})`).join('\n'),
 					footer: {
-						text: numRejections > 0 ? `${numRejections} users are hidden from this list because they have been rejected (use '--rejections' to see all ${totalRejections} rejections)` : undefined
+						text: numRejections > 0 
+							? `${numRejections} users are hidden from this list because they have been rejected (use '--rejections' to see all ${totalRejections} rejections)`
+							+ '\nTo reject a user, use \'--reject <user>\''
+							: 'To reject a user, use \'--reject <user>\''
 					}
-				}
+				}]
 			})
 			
 		}
@@ -138,7 +142,7 @@ module.exports.commands = {
 		args: [0, 2],
 		//reload: true,
 		async execute(e) {
-			if (!e.member.hasPermission('MANAGE_ROLES')) return
+			if (!e.member.permissions.has('MANAGE_ROLES')) return
 			
 			if (e.args.length < 2) return e.channel.send('You must specify a user and a reason. (Usage: `reject <user> <reason>`)')
 			
@@ -186,9 +190,9 @@ module.exports.commands = {
 				
 				bot.profile.save()
 				
-				return e.channel.send('', {embed: {
+				return e.channel.send({embeds: [{
 					description: `Removed rejection status for user <@${user.id}> (${user.username}#${user.discriminator}).`
-				}})
+				}]})
 			}
 			
 			let updated = null
@@ -204,11 +208,11 @@ module.exports.commands = {
 			
 			bot.profile.save()
 			
-			e.channel.send('', {
-				embed: {
+			e.channel.send({
+				embeds: [{
 					description: !updated ? `Rejected user <@${user.id}> (${user.username}#${user.discriminator}) with reason: \`${reason}\`.`
 										  : `Changed user <@${user.id}> (${user.username}#${user.discriminator}) rejection reason from \`${updated}\` to \`${reason}\`.`
-				}
+				}]
 			})
 
 		}
@@ -224,13 +228,13 @@ module.exports.commands = {
 	
 	rejections: {
 		async execute(e) {
-			if (!e.member.hasPermission('MANAGE_ROLES')) return
+			if (!e.member.permissions.has('MANAGE_ROLES')) return
 			
-			e.channel.send('', {
-				embed: {
+			e.channel.send({
+				embeds: [{
 					title: 'Rejections',
-					description: Object.entries(e.profile.rejections).map(m => `<@${m[0]}> (${m[1].tag}) - \`${m[1].reason}\``).join('\n')
-				}
+					description: Object.entries(e.profile.rejections).map(m => `<@${m[0]}> (${m[1].tag}) - \`\`\`${m[1].reason}\`\`\``).join('\n')
+				}]
 			})
 
 		}
@@ -341,11 +345,11 @@ module.exports.events = {
         console.info(`Channel ${newChannel.name} has been moved.\n` + info)
 		
 		if (report)
-			loggerChannel.send('', { embed: { 
+			loggerChannel.send({ embeds: [{ 
 				title: 'Channel Moved',
 				description: info,
 				color: 16755200
-			} })
+			}] })
 
     }
 

@@ -14,6 +14,7 @@
 			GUILDS
 			GUILD_MESSAGES
 			DIRECT_MESSAGES
+			GUILD_MEMBERS
 		]
 	}
 
@@ -24,7 +25,7 @@
 		vox
 		purge
 
-		starboard
+		stars
 	]
 
 	// Modules

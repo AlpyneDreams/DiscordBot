@@ -7,7 +7,7 @@
     "ansi-colors": "^3.2.3",
     "deep-assign": "^2.0.0",
     "discord.js": "^13.8.0",
-    "got": "^6.7.1",
+    "got": "^11.8.5",
     "hjson": "^2.4.3",
     "jsonschema": "^1.2.4",
     "libsodium-wrappers": "^0.7.3",

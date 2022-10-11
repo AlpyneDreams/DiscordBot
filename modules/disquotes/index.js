@@ -26,7 +26,7 @@ module.exports.events = {
 }
 
 function sendQuote(channel, m, author) {
-    channel.send('', {embed: {
+    channel.send({embed: {
         //description: m.cleanContent,
         description: m.content,
         author: {

@@ -184,7 +184,7 @@ module.exports.commands = {
                 
                 let embed = generateEmbed(msg)
 
-                await dest.send('', {embed})
+                await dest.send({embed})
                 numSent++
                 
             }
@@ -202,7 +202,7 @@ module.exports.commands = {
             let channelID = e.args[0], msgID = e.args[1]
             let msg = await e.client.channels.cache.get(channelID).messages.fetch(msgID)
             
-            e.channel.send('', {embed: generateEmbed(msg)})
+            e.channel.send({embed: generateEmbed(msg)})
         }
     }
 
@@ -276,7 +276,7 @@ module.exports.events = {
                                 continue
                             }
 
-                            bot.client.channels.cache.get(id).send('', { embed })
+                            bot.client.channels.cache.get(id).send({ embed })
                         }
                     }
                 }

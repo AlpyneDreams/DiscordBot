@@ -74,7 +74,7 @@ module.exports.commands = {
                 embed.image = {url: `https://cdn.discordapp.com/splashes/${guild.id}/${guild.splash}.png`}
             }
             
-            e.channel.send('', {embed})
+            e.channel.send({embed})
         }
     }
 }

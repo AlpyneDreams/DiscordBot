@@ -223,7 +223,7 @@ exports.commands = {
         help: "Lists all modules.",
         tags: 'owner',
         execute(e) {
-            e.channel.send('', {
+            e.channel.send({
                 embed: {
                     title: 'Modules:',
                     description: "```" + Object.values(e.bot.modules).map(m => m.name).sort().join('\n') + "```"

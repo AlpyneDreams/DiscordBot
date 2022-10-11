@@ -336,11 +336,11 @@ module.exports.commands = {
 
                 for (var f of embed.fields) if (!f.value) f.value = '[No Data]'
 
-                e.channel.send('', {embed})
+                e.channel.send({embed})
             } else if (e.mentions.members.size > 0) {
                 var member = e.mentions.members.first()
                 var stats = getUserStats(profile, member)
-                e.channel.send('', {embed: {
+                e.channel.send({embed: {
                     author: {
                         name: member.nickname || member.user.username,
                         icon_url: member.user.avatarURL()

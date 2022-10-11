@@ -200,7 +200,7 @@ module.exports.commands = {
             var guild = profile.guilds[e.guild.id]
             if (guild) {
                 var numStars = Object.keys(guild.stars).length
-                e.channel.send('', {
+                e.channel.send({
                     embed: {
                         fields: [
                             {name: 'Messages Starred', value: numStars, inline: true},

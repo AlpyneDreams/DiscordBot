@@ -224,10 +224,10 @@ exports.commands = {
         tags: 'owner',
         execute(e) {
             e.channel.send({
-                embed: {
+                embeds: [{
                     title: 'Modules:',
                     description: "```" + Object.values(e.bot.modules).map(m => m.name).sort().join('\n') + "```"
-                }
+                }]
                 
             })
         }

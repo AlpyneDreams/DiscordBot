@@ -26,7 +26,7 @@ module.exports.events = {
 }
 
 function sendQuote(channel, m, author) {
-    channel.send({embed: {
+    channel.send({embeds: [{
         //description: m.cleanContent,
         description: m.content,
         author: {
@@ -39,7 +39,7 @@ function sendQuote(channel, m, author) {
         },
         //timestamp: m.createdAt
         timestamp: m.timestamp
-    }})
+    }]})
 }
 
 module.exports.commands = {

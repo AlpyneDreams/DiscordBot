@@ -116,7 +116,7 @@ async function showStar(channel, id) {
     var msg = await starboard.messages.fetch(id)
     var embed = msg.embeds[0]
     channel.send(msg.content, {
-        embed: {
+        embeds: [{
             author: {
                 name: embed.author.name,
                 icon_url: embed.author.iconURL()
@@ -124,7 +124,7 @@ async function showStar(channel, id) {
             timestamp: embed.createdTimestamp,
             description: embed.description,
             color: embed.color
-        }
+        }]
     })
 }
 
@@ -201,7 +201,7 @@ module.exports.commands = {
             if (guild) {
                 var numStars = Object.keys(guild.stars).length
                 e.channel.send({
-                    embed: {
+                    embeds: [{
                         fields: [
                             {name: 'Messages Starred', value: numStars, inline: true},
                             {name: 'Total Stars', value: guild.stats.total, inline: true},
@@ -210,7 +210,7 @@ module.exports.commands = {
                             //{name: '🥈 2nd Place', value:'0', inline: true},
                             //{name: '🥉 3rd Place', value:'0', inline: true}
                         ]
-                    }
+                    }]
                 })
             }
         }

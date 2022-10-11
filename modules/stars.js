@@ -120,7 +120,7 @@ async function getLinked(msg, starboard, profile) {
 async function newStar(msg, starboard, profile) {
     // create linked message
     var linked = await
-    starboard.send(starAnnotation(msg), {embed: starEmbed(msg, 1)})
+    starboard.send(starAnnotation(msg), {embeds: [starEmbed(msg, 1)]})
 
     // create profile entry
     profile.stars[msg.id] = {linked: linked.id, count: 1, channel: msg.channel.id}
@@ -138,7 +138,7 @@ async function addStar(r, profile, starboard) {
     profile.stats.totalStars += 1
 
     // update linked
-    linked.edit(starAnnotation(r.message, profile.stars[r.message.id].count), {embed: starEmbed(r.message, profile.stars[r.message.id].count)})
+    linked.edit(starAnnotation(r.message, profile.stars[r.message.id].count), {embeds: [starEmbed(r.message, profile.stars[r.message.id].count)]})
 
     bot.profile.save()
 }
@@ -149,7 +149,7 @@ async function subStar(r, profile, starboard) {
     profile.stars[r.message.id].count -= 1
     profile.stats.totalStars -= 1
 
-    linked.edit(starAnnotation(r.message, profile.stars[r.message.id].count), {embed: starEmbed(r.message, profile.stars[r.message.id].count)})
+    linked.edit(starAnnotation(r.message, profile.stars[r.message.id].count), {embeds: [starEmbed(r.message, profile.stars[r.message.id].count)]})
 
     if (profile.stars[r.message.id].count <= 0) {
         // completely unstarred
@@ -274,7 +274,7 @@ module.exports.commands = {
 
             if (e.args[0] in profile.stars) {
                 var msg = await e.guild.channels.get(profile.stars[e.args[0]].channel).messages.fetch(e.args[0])
-                e.channel.send(starAnnotation(msg, profile.stars[e.args[0]].count), {embed: starEmbed(msg, profile.stars[e.args[0]].count)})
+                e.channel.send(starAnnotation(msg, profile.stars[e.args[0]].count), {embeds: [starEmbed(msg, profile.stars[e.args[0]].count)]})
             } else {
                 e.channel.send('That message is not starred.')
             }
@@ -292,7 +292,7 @@ module.exports.commands = {
 
             if (r in profile.stars) {
                 var msg = await e.guild.channels.get(profile.stars[r].channel).messages.fetch(r)
-                e.channel.send(starAnnotation(msg, profile.stars[r].count), {embed: starEmbed(msg, profile.stars[r].count)})
+                e.channel.send(starAnnotation(msg, profile.stars[r].count), {embeds: [starEmbed(msg, profile.stars[r].count)]})
             }
         }
     },
@@ -340,7 +340,7 @@ module.exports.commands = {
             } else if (e.mentions.members.size > 0) {
                 var member = e.mentions.members.first()
                 var stats = getUserStats(profile, member)
-                e.channel.send({embed: {
+                e.channel.send({embeds: [{
                     author: {
                         name: member.nickname || member.user.username,
                         icon_url: member.user.avatarURL()
@@ -355,7 +355,7 @@ module.exports.commands = {
                         +`🥉 `}*/
                     ],
                     color: COLOR_GOLD
-                }})
+                }]})
             } else {
                 e.channel.send('You must mention a user to see their stats.')
             }
@@ -388,7 +388,7 @@ module.exports.commands = {
         args: 1,
         execute(e) {
             var count = parseInt(e.args[0])
-            e.channel.send(starAnnotation(e, count), {embed: starEmbed(e, count)})
+            e.channel.send(starAnnotation(e, count), {embeds: [starEmbed(e, count)]})
         }
     },*/
 

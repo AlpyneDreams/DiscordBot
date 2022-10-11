@@ -11,9 +11,9 @@ function logMessage(msg) {
     //var entry = {} // db entry
 
     try {
-        let guildName = msg.channel.type != 'dm' ? msg.guild.name.replace(/\//g, '-').replace(/\\/g, '-') : ''
-        let folder = msg.channel.type == 'dm' ? 'Private Messages' : guildName + '-' + msg.guild.id
-        let file = msg.channel.type == 'dm' ? '@' + msg.channel.recipient.username + '-' + msg.channel.recipient.id : '#' + msg.channel?.name + '-' + msg.channel.id
+        let guildName = msg.channel.type != 'DM' ? msg.guild.name.replace(/\//g, '-').replace(/\\/g, '-') : ''
+        let folder = msg.channel.type == 'DM' ? 'Private Messages' : guildName + '-' + msg.guild.id
+        let file = msg.channel.type == 'DM' ? '@' + msg.channel.recipient.username + '-' + msg.channel.recipient.id : '#' + msg.channel?.name + '-' + msg.channel.id
 
         console.spew(
             msg.author.username + ": " + msg.content,

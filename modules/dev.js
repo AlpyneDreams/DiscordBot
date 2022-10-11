@@ -32,9 +32,9 @@ module.exports.commands = {
                 formattedResult = formattedResult.replace(e.client.token, '************')
 
                 if (formattedResult.length > 1500) formattedResult = formattedResult.slice(0, 1500) + '\n...'
-                e.channel.send("\nInput:  " + e.args[0] + "\nOutput: " + formattedResult, {code: 'js', split: false})
+                e.channel.send("```js\nInput:  " + e.args[0] + "\nOutput: " + formattedResult + '```')
             } catch (err) {
-                e.channel.send("\nInput: " + e.args[0] + "\nError: " + err.message, {code: 'js', split: false})
+                e.channel.send("```js\nInput: " + e.args[0] + "\nError: " + err.message + '```')
             }
 
         }

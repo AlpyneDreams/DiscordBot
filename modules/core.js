@@ -199,7 +199,7 @@ exports.commands = {
                 var description = bot.commands[i].help ? "\n\t" + bot.commands[i].help : ""
                 str += e.commandPrefix + i + description + '\n'
             }
-            e.author.send(str, {split: true, code: true})
+            e.author.send('```\n' + str + '\n```')
 
             if (e.channel.type != 'dm') {
                 e.channel.send("<@" + e.author.id + ">: Check your private messages.")

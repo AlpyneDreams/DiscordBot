@@ -216,10 +216,6 @@ class DiscordBot {
     reloadModule(name, path) {
         if (!this.modules[name]) return
         
-        for (var m in require.cache) {
-            delete require.cache[m]
-        }
-
         console.info("Reloading Module: " + name)
         this.unloadModule(name)
         this.loadModule(path, true, true)

@@ -263,7 +263,7 @@ exports.commands = {
         interaction: true,
         requirements: 'bot',
         async execute(e) {
-            var app = await e.client.fetchApplication()
+            var app = await e.client.application
             e.channel.send(`https://discordapp.com/api/oauth2/authorize?client_id=${app.id}&scope=bot%20applications.commands&permissions=0`)
         }
     }

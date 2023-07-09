@@ -11,7 +11,6 @@ module.exports.commands = {
     "pins.count": {
         args: [0, 1],
         usage: '[channel]',
-        reload: true,
         async execute(e) {
 
             let channel = e.mentions.channels.size > 0 ? e.mentions.channels.first() : e.channel
@@ -27,8 +26,7 @@ module.exports.commands = {
         args: [1, 2],
         help: 'Watches pinned messages from <#source> and posts them in [#destination]',
         usage: '<#source> [#destination]',
-        tags: 'admin',
-        reload: true,
+        requirements: 'admin',
         async execute(e) {
 
             if (e.mentions.channels.size <= 0) return await e.channel.send("You must #mention at least one channel.")
@@ -63,8 +61,7 @@ module.exports.commands = {
 
     "pins.info": {
         help: 'Info about pin monitoring on this server',
-        tags: 'admin',
-        reload: true,
+        requirements: 'admin',
         async execute(e) {
 
             let showAll = false
@@ -99,8 +96,7 @@ module.exports.commands = {
         args: [1, 2],
         help: 'Stop posting pinned messages from <#source> in [#destination]',
         usage: '<#source> [#destination]',
-        tags: 'admin',
-        reload: true,
+        requirements: 'admin',
         async execute(e) {
 
             if (e.mentions.channels.size <= 0) return await e.channel.send("You must #mention at least one channel.")
@@ -137,8 +133,7 @@ module.exports.commands = {
         args: [0, 1],
         help: 'Removes all pinned messages from <#channel>',
         usage: '<#channel>',
-        tags: 'admin',
-        reload: true,
+        requirements: 'admin',
         async execute(e) {
             if (e.mentions.channels.size <= 0) return e.channel.send("You must #mention one channel.")
 
@@ -164,8 +159,7 @@ module.exports.commands = {
         args: [1, 2],
         help: 'Posts all the pinned messages from <#source> in [#destination]',
         usage: '<#source> [#destination]',
-        tags: 'admin',
-        reload: true,
+        requirements: 'admin',
         async execute(e) {
 
             if (e.mentions.channels.size <= 0) return await e.channel.send("You must #mention at least one channel.")

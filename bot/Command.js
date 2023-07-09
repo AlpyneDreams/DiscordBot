@@ -293,7 +293,12 @@ class Command {
                     case 'userbot':
                         if (bot.client.user.bot) return false
                         break
-
+                    case 'admin':
+                        if (!msg.member || !msg.member.permissions.has('ADMINISTRATOR')) {
+                            if (sendErrors) msg.channel.send("Sorry, but you need to be a server administrator to use this command.")
+                            return;
+                        }
+                        break
                 }
             }
         }
